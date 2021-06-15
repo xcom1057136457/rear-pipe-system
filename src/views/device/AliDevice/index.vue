@@ -102,23 +102,26 @@
             type="selection"
             show-overflow-tooltip
             width="80px"
+            align="center"
           ></el-table-column>
           <el-table-column
             prop="deviceName"
             label="DeviceName/备注名称"
             show-overflow-tooltip
+            align="center"
           ></el-table-column>
           <el-table-column
             prop="beloneProduct"
             label="设备所属产品"
             show-overflow-tooltip
+            align="center"
           ></el-table-column>
-          <el-table-column show-overflow-tooltip label="节点类型">
+          <el-table-column show-overflow-tooltip label="节点类型" align="center">
             <template #default="record">
               {{ record.row.type == 0 ? "网关" : "" }}
             </template>
           </el-table-column>
-          <el-table-column label="状态/启用状态" show-overflow-tooltip>
+          <el-table-column label="状态/启用状态" show-overflow-tooltip align="center">
             <template #default="record">
               <span
                 :class="statusColorFormate(record.row.status)"
@@ -131,8 +134,9 @@
             prop="time"
             label="最后上线时间"
             show-overflow-tooltip
+            align="center"
           ></el-table-column>
-          <el-table-column label="操作" show-overflow-tooltip>
+          <el-table-column label="操作" show-overflow-tooltip align="center">
             <template #default="record">
               <el-button type="text" @click="doView(record.row.id)"
                 >查看</el-button
@@ -160,8 +164,8 @@
       </div>
     </div>
 
-    <addDialog :visible.sync="addDialogShow" />
-    <detailDialog :visible.sync="detailDialogShow" :deviceId="deviceId" />
+    <add-dialog :visible.sync="addDialogShow" />
+    <detail-dialog :visible.sync="detailDialogShow" :deviceId="deviceId" />
   </div>
 </template>
 
@@ -303,12 +307,11 @@ export default {
     }
   },
   created() {
-    console.log('this.$route.params', this.$route);
     if (this.$route.params.productKey) {
-      console.log('this.$route.params.productKey', this.$route.params.productKey);
-      this.searchParams.deviceType = this.$route.params.productKey
+      this.searchParams.deviceType = this.$route.params.productKey;
     }
-  }
+  },
+  mounted() {}
 };
 </script>
 

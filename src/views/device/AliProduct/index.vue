@@ -38,15 +38,22 @@
           show-overflow-tooltip
           prop="productName"
           label="产品名称"
+          align="center"
         ></el-table-column>
 
         <el-table-column
           show-overflow-tooltip
           prop="productKey"
           label="ProductKey"
+          align="center"
         ></el-table-column>
 
-        <el-table-column show-overflow-tooltip prop="type" label="节点类型">
+        <el-table-column
+          show-overflow-tooltip
+          prop="type"
+          label="节点类型"
+          align="center"
+        >
           <template #default="record">
             {{ record.row.type == 0 ? "网关" : "设备" }}
           </template>
@@ -56,11 +63,14 @@
           show-overflow-tooltip
           prop="createTime"
           label="创建时间"
+          align="center"
         ></el-table-column>
 
-        <el-table-column label="操作" show-overflow-tooltip>
+        <el-table-column label="操作" show-overflow-tooltip align="center">
           <template #default="record">
-            <el-button type="text">查看</el-button>
+            <el-button type="text" @click="doView(record.row.id)"
+              >查看</el-button
+            >
             <el-divider direction="vertical"></el-divider>
             <el-button type="text" @click="deviceManager(record.row.productKey)"
               >管理设备</el-button
@@ -82,10 +92,13 @@
       >
       </el-pagination>
     </div>
+
+    <detail-dialog :visible.sync="detailShow" :productKey="productKey" />
   </div>
 </template>
 
 <script>
+import detailDialog from "./components/detailDialog.vue";
 export default {
   data() {
     return {
@@ -107,7 +120,7 @@ export default {
           createTime: "2021/06/11 15:46:31"
         },
         {
-          id: 1,
+          id: 2,
           productName: "pulaoc_gateway",
           productKey: "g60wW1111",
           type: 0,
@@ -118,8 +131,13 @@ export default {
         total: 3,
         pageNum: 1,
         pageSize: 10
-      }
+      },
+      detailShow: false,
+      productKey: null
     };
+  },
+  components: {
+    detailDialog
   },
   methods: {
     // 节点类型转换
@@ -152,11 +170,16 @@ export default {
     // 管理设备
     deviceManager(key) {
       this.$router.push({
-        path: "/device/AliDevice",
+        name: "AliDevice",
         params: {
           productKey: key
         }
       });
+    },
+    // 查看详情
+    doView(id) {
+      this.productKey = id;
+      this.detailShow = true;
     }
   }
 };

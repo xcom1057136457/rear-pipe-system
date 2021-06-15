@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="添加设备" :visible.sync="dialogShow" width="30%">
+  <el-dialog title="添加设备" :visible.sync="dialogShow" width="30%" v-draggable>
     <div>
       <div class="top-alert">
         <div>

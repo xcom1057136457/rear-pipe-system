@@ -3,9 +3,9 @@
     title="设备信息"
     :visible.sync="dialogVisible"
     width="80%"
+    v-draggable
   >
     <div v-loading="loading">
-      {{ deviceId }}
       <table>
         <tr>
           <td class="label">产品名称</td>
