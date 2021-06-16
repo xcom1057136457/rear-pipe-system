@@ -2,7 +2,7 @@
   <div class="aliProduct-box">
     <div class="form-wrapper">
       <el-row :gutter="20">
-        <el-form label-position="left" label-width="90px">
+        <el-form label-position="left" label-width="90px" size="small">
           <el-col :span="6">
             <el-form-item label="产品名称">
               <el-input
@@ -50,25 +50,26 @@
 
         <el-table-column
           show-overflow-tooltip
-          prop="type"
+          prop="nodeType"
           label="节点类型"
           align="center"
         >
           <template #default="record">
-            {{ record.row.type == 0 ? "网关" : "设备" }}
+            {{ nodeTypeFormatter(record.row.nodeType) }}
           </template>
         </el-table-column>
 
         <el-table-column
           show-overflow-tooltip
-          prop="createTime"
+          prop="gmtCreate"
           label="创建时间"
           align="center"
+          :formatter="timeFormatter"
         ></el-table-column>
 
         <el-table-column label="操作" show-overflow-tooltip align="center">
           <template #default="record">
-            <el-button type="text" @click="doView(record.row.id)"
+            <el-button type="text" @click="doView(record.row.productKey)"
               >查看</el-button
             >
             <el-divider direction="vertical"></el-divider>
@@ -80,60 +81,23 @@
       </el-table>
     </div>
 
-    <div class="pagination-wrapper" v-show="pageParams.total > 0">
-      <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="pageParams.pageNum"
-        :page-size="pageParams.pageSize"
-        background
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="pageParams.total"
-      >
-      </el-pagination>
-    </div>
-
     <detail-dialog :visible.sync="detailShow" :productKey="productKey" />
   </div>
 </template>
 
 <script>
 import detailDialog from "./components/detailDialog.vue";
+import * as Api from "@/api/monitor/aliProduct";
+import { parseTime } from "@/utils/ruoyi";
 export default {
   data() {
     return {
       loading: false,
       searchParams: {},
-      tableData: [
-        {
-          id: 0,
-          productName: "pulaoc_gateway",
-          productKey: "g60wW1111",
-          type: 0,
-          createTime: "2021/06/11 15:46:31"
-        },
-        {
-          id: 1,
-          productName: "pulaoc_gateway",
-          productKey: "g60wW1111",
-          type: 1,
-          createTime: "2021/06/11 15:46:31"
-        },
-        {
-          id: 2,
-          productName: "pulaoc_gateway",
-          productKey: "g60wW1111",
-          type: 0,
-          createTime: "2021/06/11 15:46:31"
-        }
-      ],
-      pageParams: {
-        total: 3,
-        pageNum: 1,
-        pageSize: 10
-      },
+      tableData: [],
       detailShow: false,
-      productKey: null
+      productKey: null,
+      nodeTypeList: []
     };
   },
   components: {
@@ -145,27 +109,20 @@ export default {
     // 重置
     refreshHandler() {
       this.searchParams = {};
-      this.pageParams.pageNum = 1;
       this.getList();
     },
     // 搜索
     searchHandler() {
-      this.pageParams.pageNum = 1;
       this.getList();
     },
     // 获取数据
-    getList() {
-      let params = Object.assign({}, this.pageParams, this.searchParams);
-    },
-    // 页数改变
-    handleSizeChange(val) {
-      this.pageParams.pageSize = val;
-      this.getList();
-    },
-    // 分页
-    handleCurrentChange(val) {
-      this.pageParams.pageNum = val;
-      this.getList();
+    async getList() {
+      this.loading = true;
+      let { code, rows } = await Api.getAliProduct();
+      if (code == 200) {
+        this.tableData = rows;
+      }
+      this.loading = false;
     },
     // 管理设备
     deviceManager(key) {
@@ -177,10 +134,29 @@ export default {
       });
     },
     // 查看详情
-    doView(id) {
-      this.productKey = id;
+    doView(productKey) {
+      this.productKey = productKey;
       this.detailShow = true;
+    },
+    // 格式化时间
+    timeFormatter(row, col, cellValue) {
+      return parseTime(cellValue);
+    },
+    // 获取节点类型
+    async getNodeType() {
+      let { code, data } = await this.getDicts("aliyun_node_type");
+      if (code == 200) {
+        this.nodeTypeList = data;
+      }
+    },
+    nodeTypeFormatter(val) {
+      return this.nodeTypeList.filter(item => item.dictValue == val)[0]
+        .dictLabel;
     }
+  },
+  created() {
+    this.getNodeType();
+    this.getList();
   }
 };
 </script>

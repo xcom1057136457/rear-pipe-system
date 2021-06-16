@@ -3,11 +3,13 @@
     <div class="top-header">
       <div>
         <el-select
-          v-model="searchParams.deviceType"
+          v-model="searchParams.productKey"
           size="small"
           style="width: 200px"
           placeholder="请选择产品..."
+          @change="getList"
         >
+          <el-option label="全部产品" :value="allProduct"></el-option>
           <el-option
             v-for="(item, index) in productList"
             :key="index"
@@ -18,21 +20,21 @@
       </div>
       <div>
         <div class="top-text">设备总数</div>
-        <div class="count-text">155</div>
+        <div class="count-text">{{ deviceCount.deviceCount }}</div>
       </div>
       <div>
         <div>
           <span class="dot blue"></span>
           <span class="top-text">激活设备</span>
         </div>
-        <div class="count-text">148</div>
+        <div class="count-text">{{ deviceCount.activeCount }}</div>
       </div>
       <div>
         <div>
           <span class="dot green"></span>
           <span class="top-text">当前在线</span>
         </div>
-        <div class="count-text">27</div>
+        <div class="count-text">{{ deviceCount.onlineCount }}</div>
       </div>
     </div>
     <div class="bottom-detail">
@@ -42,8 +44,9 @@
             <el-col :span="6">
               <el-form-item label="设备名称">
                 <el-input
-                  v-model="searchParams.devicename"
+                  v-model="searchParams.deviceName"
                   placeholder="请输入设备名称..."
+                  clearable
                 ></el-input>
               </el-form-item>
             </el-col>
@@ -51,8 +54,9 @@
             <el-col :span="6">
               <el-form-item label="设备状态">
                 <el-select
-                  v-model="searchParams.status"
+                  v-model="searchParams.deviceStatus"
                   placeholder="请选择设备状态..."
+                  clearable
                 >
                   <el-option
                     v-for="(item, index) in status"
@@ -111,27 +115,27 @@
             align="center"
           ></el-table-column>
           <el-table-column
-            prop="beloneProduct"
+            prop="productKey"
             label="设备所属产品"
             show-overflow-tooltip
             align="center"
+            :formatter="productKeyFormatter"
           ></el-table-column>
-          <el-table-column show-overflow-tooltip label="节点类型" align="center">
-            <template #default="record">
-              {{ record.row.type == 0 ? "网关" : "" }}
-            </template>
-          </el-table-column>
-          <el-table-column label="状态/启用状态" show-overflow-tooltip align="center">
+          <el-table-column
+            label="状态/启用状态"
+            show-overflow-tooltip
+            align="center"
+          >
             <template #default="record">
               <span
-                :class="statusColorFormate(record.row.status)"
                 class="dot"
+                :class="statusClassFormatter(record.row.status)"
               ></span>
               {{ statusFormate(record.row.status) }}
             </template>
           </el-table-column>
           <el-table-column
-            prop="time"
+            prop="gmtModified"
             label="最后上线时间"
             show-overflow-tooltip
             align="center"
@@ -172,6 +176,8 @@
 <script>
 import addDialog from "./components/addDialog.vue";
 import detailDialog from "./components/deviceDetail.vue";
+import { getAliProduct } from "@/api/monitor/aliProduct";
+import { getDeviceList } from "@/api/monitor/aliDevice";
 export default {
   data() {
     return {
@@ -179,85 +185,41 @@ export default {
       addDialogShow: false,
       detailDialogShow: false,
       deviceId: null,
-      productList: [
-        {
-          value: "g60wW1111",
-          label: "全部产品"
-        }
-      ],
-      status: [
-        {
-          value: 0,
-          label: "全部"
-        },
-        {
-          value: 1,
-          label: "离线"
-        },
-        {
-          value: 2,
-          label: "未激活"
-        },
-        {
-          value: 3,
-          label: "在线"
-        }
-      ],
+      productList: [],
+      status: [],
       searchParams: {},
+      deviceCount: {
+        deviceCount: 0,
+        activeCount: 0,
+        onlineCount: 0
+      },
       pageParams: {
-        total: 3,
+        total: 0,
         pageNum: 1,
         pageSize: 10
       },
-      tableData: [
-        {
-          id: 0,
-          deviceName: "Test20210611",
-          beloneProduct: "pulaoc_gateway",
-          type: 0,
-          status: 1,
-          time: "2021/05/27 15:27:00.169"
-        },
-        {
-          id: 1,
-          deviceName: "Test20210611",
-          beloneProduct: "pulaoc_gateway2",
-          type: 0,
-          status: 2,
-          time: "2021/05/27 15:27:00.169"
-        },
-        {
-          id: 2,
-          deviceName: "Test20210611",
-          beloneProduct: "pulaoc_gateway3",
-          type: 0,
-          status: 3,
-          time: "2021/05/27 15:27:00.169"
-        }
-      ]
+      tableData: []
     };
   },
   components: {
     addDialog,
     detailDialog
   },
+  computed: {
+    allProduct() {
+      let temp = this.productList.map(item => item.value);
+      return temp.length ? temp.join(",") : "";
+    }
+  },
   methods: {
     statusFormate(val) {
       let temp = this.status.filter(item => item.value == val);
       return temp.length ? temp[0].label : "";
     },
-    statusColorFormate(val) {
-      if (val == 1) {
-        return "gray";
-      } else if (val == 2) {
-        return "orange";
-      } else {
-        return "green";
-      }
-    },
     // 重置
     refreshHandler() {
-      this.searchParams = {};
+      this.$set(this.searchParams, "deviceName", null);
+      this.$set(this.searchParams, "deviceStatus", null);
       this.pageParams.pageNum = 1;
       this.getList();
     },
@@ -267,8 +229,20 @@ export default {
       this.getList();
     },
     // 获取数据
-    getList() {
+    async getList() {
+      this.loading = true;
       let params = Object.assign({}, this.pageParams, this.searchParams);
+      let { code, rows, total } = await getDeviceList(params);
+      if (code == 200) {
+        this.tableData = rows.rows;
+        this.deviceCount = {
+          activeCount: rows.activeCount,
+          deviceCount: rows.deviceCount,
+          onlineCount: rows.onlineCount
+        };
+        this.pageParams.total = total;
+      }
+      this.loading = false;
     },
     // 页数改变
     handleSizeChange(val) {
@@ -304,14 +278,81 @@ export default {
             message: "已取消删除"
           });
         });
+    },
+    // 获取产品列表
+    getAliProductHandler() {
+      return new Promise(async resolve => {
+        let { code, rows } = await getAliProduct();
+        if (code == 200) {
+          this.productList = rows.map(item => {
+            return {
+              value: item.productKey,
+              label: item.productName
+            };
+          });
+          if (!this.$route.params.productKey) {
+            this.$set(
+              this.searchParams,
+              "productKey",
+              this.productList.map(item => item.value).join(",")
+            );
+          } else {
+            this.$set(
+              this.searchParams,
+              "productKey",
+              this.$route.params.productKey
+            );
+          }
+          resolve();
+        }
+      });
+    },
+    // 转码
+    productKeyFormatter(row, col, cellValue) {
+      let temp = this.productList.filter(item => item.value == cellValue);
+      return temp.length ? temp[0].label : "";
+    },
+    // 获取设备状态
+    getDeviceStatus() {
+      return new Promise(async resolve => {
+        let { code, data } = await this.getDicts("aliDevice_status");
+        if (code == 200) {
+          this.status = data.map(item => {
+            return {
+              value: item.dictValue,
+              label: item.dictLabel
+            };
+          });
+          resolve();
+        }
+      });
+    },
+    // 颜色提示
+    statusClassFormatter(status) {
+      switch (status) {
+        case "ONLINE": {
+          return "green";
+        }
+
+        case "OFFLINE": {
+          return "red";
+        }
+
+        case "UNACTIVE": {
+          return "orange";
+        }
+
+        case "DISABLE": {
+          return "gray";
+        }
+      }
     }
   },
-  created() {
-    if (this.$route.params.productKey) {
-      this.searchParams.deviceType = this.$route.params.productKey;
-    }
-  },
-  mounted() {}
+  async created() {
+    await this.getAliProductHandler();
+    await this.getDeviceStatus();
+    this.getList();
+  }
 };
 </script>
 
@@ -367,6 +408,9 @@ export default {
   }
   &.orange {
     background-color: orange;
+  }
+  &.red {
+    background-color: red;
   }
 }
 

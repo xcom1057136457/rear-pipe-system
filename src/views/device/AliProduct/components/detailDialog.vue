@@ -5,17 +5,17 @@
         <el-row :gutter="20">
           <el-col :span="8">
             <label for="">ProductKey:</label>
-            g60wW1111
+            {{ detailForm.productKey }}
           </el-col>
 
           <el-col :span="8">
             <label for="">ProductSecret:</label>
-            123456
+            {{ detailForm.productSecret }}
           </el-col>
 
           <el-col :span="8">
             <label for="">设备数:</label>
-            113
+            {{ detailForm.deviceCount }}
           </el-col>
         </el-row>
       </div>
@@ -24,37 +24,42 @@
         <table>
           <tr>
             <td class="label">产品名称</td>
-            <td>pulaoc_gateway</td>
+            <td>{{ detailForm.productName }}</td>
             <td class="label">节点类型</td>
-            <td>网关设备</td>
+            <td>{{ forMatter(detailForm.nodeType, 'nodeTypeList') }}</td>
             <td class="label">创建时间</td>
-            <td>2021/04/08 15:45:36</td>
+            <td>{{ parseTime(detailForm.gmtCreate) }}</td>
           </tr>
 
           <tr>
             <td class="label">所属品类</td>
-            <td>自定义品类</td>
+            <td>{{ detailForm.categoryName }}</td>
             <td class="label">数据格式</td>
-            <td>ICA标准数据格式 (Alink JSON)</td>
+            <td>{{ forMatter(detailForm.dataFormat, 'dataFormateList') }}</td>
             <td class="label">数据校验级别</td>
-            <td>弱校验</td>
+            <td>{{ forMatter(detailForm.validateType, 'validateTypeList') }}</td>
           </tr>
 
           <tr>
             <td class="label">认证方式</td>
-            <td>设备秘钥</td>
+            <td>{{ forMatter(detailForm.authType, 'authTypeList') }}</td>
             <td class="label">状态</td>
             <td>
-              <span class="dot green"></span>
-              已发布
+              <span
+                class="dot green"
+                :class="
+                  detailForm.productStatus == 'RELEASE_STATUS' ? 'green' : 'red'
+                "
+              ></span>
+              {{ forMatter(detailForm.productStatus, 'statusList') }}
             </td>
             <td class="label">连网协议</td>
-            <td>蜂窝 (2G/3G/4G/5G)</td>
+            <td>{{ forMatter(detailForm.netType, 'netTypeList') }}</td>
           </tr>
 
           <tr>
             <td class="label">产品描述</td>
-            <td colspan="5">topic通信协议</td>
+            <td colspan="5">{{ detailForm.description || '暂无描述...' }}</td>
           </tr>
         </table>
       </div>
@@ -66,11 +71,20 @@
 </template>
 
 <script>
+import { getAliProductDetail } from "@/api/monitor/aliProduct";
+import { parseTime } from "@/utils/ruoyi";
 export default {
   data() {
     return {
       dialogVisible: false,
-      loading: false
+      loading: false,
+      detailForm: {},
+      nodeTypeList: [],
+      validateTypeList: [],
+      authTypeList: [],
+      statusList: [],
+      netTypeList: [],
+      dataFormateList: []
     };
   },
   props: {
@@ -94,11 +108,76 @@ export default {
       this.$emit("update:visible", val);
     },
     productKey(val) {
-      this.loading = true;
-      setTimeout(() => {
-        this.loading = false;
-      }, 1000);
+      this.getProductDetail(val);
     }
+  },
+  methods: {
+    // 获取产品详情
+    async getProductDetail(productKey) {
+      this.loading = true;
+      let { code, data } = await getAliProductDetail({
+        productKey
+      });
+      if (code == 200) {
+        this.detailForm = data;
+      }
+      this.loading = false;
+    },
+    // 获取节点类型
+    async getNodeTypeList() {
+      let { code, data } = await this.getDicts("aliyun_node_type");
+      if (code == 200) {
+        this.nodeTypeList = data;
+      }
+    },
+    // 获取数据校验级别
+    async getValidateType() {
+      let { code, data } = await this.getDicts("validate_type");
+      if (code == 200) {
+        this.validateTypeList = data;
+      }
+    },
+    // 获取认证方式
+    async getAuthType() {
+      let { code, data } = await this.getDicts("auth_type");
+      if (code == 200) {
+        this.authTypeList = data;
+      }
+    },
+    // 获取状态
+    async getStatus() {
+      let { code, data } = await this.getDicts("product_status");
+      if (code == 200) {
+        this.statusList = data;
+      }
+    },
+    // 获取联网协议
+    async getNetType() {
+      let { code, data } = await this.getDicts("net_type");
+      if (code == 200) {
+        this.netTypeList = data;
+      }
+    },
+    // 获取数据格式
+    async getDataFormate() {
+      let { code, data } = await this.getDicts('data_format')
+      if (code == 200) {
+        this.dataFormateList = data
+      }
+    },
+    // 格式化
+    forMatter(val, type) {
+      let temp = this[type].filter(item => item.dictValue == val);
+      return temp.length ? temp[0].dictLabel : ''
+    }
+  },
+  created() {
+    this.getNodeTypeList();
+    this.getValidateType();
+    this.getAuthType();
+    this.getStatus();
+    this.getNetType();
+    this.getDataFormate()
   }
 };
 </script>
