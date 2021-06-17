@@ -7,7 +7,7 @@
           size="small"
           style="width: 200px"
           placeholder="请选择产品..."
-          @change="getList"
+          @change="searchHandler"
         >
           <el-option label="全部产品" :value="allProduct"></el-option>
           <el-option
@@ -142,7 +142,9 @@
           ></el-table-column>
           <el-table-column label="操作" show-overflow-tooltip align="center">
             <template #default="record">
-              <el-button type="text" @click="doView(record.row.id)"
+              <el-button
+                type="text"
+                @click="doView(record.row.productKey, record.row.iotId)"
                 >查看</el-button
               >
               <el-divider direction="vertical"></el-divider>
@@ -163,13 +165,14 @@
           background
           layout="total, sizes, prev, pager, next, jumper"
           :total="pageParams.total"
+          :page-sizes="[10, 15, 20]"
         >
         </el-pagination>
       </div>
     </div>
 
-    <add-dialog :visible.sync="addDialogShow" />
-    <detail-dialog :visible.sync="detailDialogShow" :deviceId="deviceId" />
+    <add-dialog :visible.sync="addDialogShow" @closeAdd="refreshHandler" />
+    <detail-dialog :visible.sync="detailDialogShow" :deviceInfo="deviceInfo" />
   </div>
 </template>
 
@@ -177,14 +180,14 @@
 import addDialog from "./components/addDialog.vue";
 import detailDialog from "./components/deviceDetail.vue";
 import { getAliProduct } from "@/api/monitor/aliProduct";
-import { getDeviceList } from "@/api/monitor/aliDevice";
+import { getDeviceList, deleteDevice } from "@/api/monitor/aliDevice";
 export default {
   data() {
     return {
       loading: false,
       addDialogShow: false,
       detailDialogShow: false,
-      deviceId: null,
+      deviceInfo: {},
       productList: [],
       status: [],
       searchParams: {},
@@ -255,8 +258,11 @@ export default {
       this.getList();
     },
     // 详情
-    doView(id) {
-      this.deviceId = id;
+    doView(productKey, iotId) {
+      this.deviceInfo = {
+        productKey,
+        iotId
+      };
       this.detailDialogShow = true;
     },
     // 删除
@@ -266,11 +272,25 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       })
-        .then(() => {
-          this.$message({
-            type: "success",
-            message: "删除成功!"
+        .then(async () => {
+          let { code } = await deleteDevice({
+            iotId: record.iotId
           });
+          if (code == 200) {
+            if (
+              (this.pageParams.total - 1) % this.pageParams.pageSize == 0 &&
+              this.pageParams.total > this.pageParams.pageSize
+            ) {
+              this.pageParams.pageNum -= 1;
+            }
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+            setTimeout(() => {
+              this.getList();
+            }, 1000)
+          }
         })
         .catch(() => {
           this.$message({

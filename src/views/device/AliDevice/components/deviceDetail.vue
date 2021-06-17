@@ -9,47 +9,47 @@
       <table>
         <tr>
           <td class="label">产品名称</td>
-          <td>pulaoc_gateway</td>
+          <td>{{ detailInfo.productName }}</td>
           <td class="label">productKey</td>
-          <td>test2021xxx</td>
+          <td>{{ detailInfo.productKey }}</td>
           <td class="label">地域</td>
-          <td>华东2(上海)</td>
+          <td>{{ detailInfo.region }}</td>
         </tr>
 
         <tr>
           <td class="label">节点类型</td>
-          <td>网关</td>
+          <td>{{ forMatter(detailInfo.nodeType, "nodeTypeList") }}</td>
           <td class="label">DeviceName</td>
-          <td>bxbxbxbxbxb22</td>
+          <td>{{ detailInfo.deviceName }}</td>
           <td class="label">认证方式</td>
-          <td>设备秘钥</td>
+          <td> </td>
         </tr>
 
         <tr>
           <td class="label">备注名称</td>
-          <td>markDone</td>
+          <td>{{ detailInfo.nickname }}</td>
           <td class="label">IP地址</td>
-          <td>221.178.124.145</td>
+          <td>{{ detailInfo.ipAddress }}</td>
           <td class="label">固件版本</td>
-          <td>default - Teb - 7EC - 001 - GW - 1.000</td>
+          <td>{{ detailInfo.firmwareVersion }}</td>
         </tr>
 
         <tr>
           <td class="label">创建时间</td>
-          <td>2021/05/27 11:07:25</td>
+          <td>{{ detailInfo.gmtCreate }}</td>
           <td class="label">激活时间</td>
-          <td>2021/05/27 11:07:25</td>
+          <td>{{ detailInfo.gmtActive }}</td>
           <td class="label">最后上线时间</td>
-          <td>2021/05/27 11:07:25</td>
+          <td>{{ detailInfo.gmtOnline }}</td>
         </tr>
 
         <tr>
           <td class="label">当前状态</td>
-          <td>离线</td>
+          <td>{{ forMatter(detailInfo.status, "statusList") }}</td>
           <td class="label">实时延迟</td>
-          <td>11Ms</td>
+          <td> </td>
           <td class="label">设备本地日志上报</td>
-          <td>已关闭</td>
+          <td> </td>
         </tr>
       </table>
     </div>
@@ -60,11 +60,15 @@
 </template>
 
 <script>
+import { getDeviceDetail } from "@/api/monitor/aliDevice";
 export default {
   data() {
     return {
       dialogVisible: false,
-      loading: false
+      loading: false,
+      detailInfo: {},
+      nodeTypeList: [],
+      statusList: []
     };
   },
   props: {
@@ -75,9 +79,9 @@ export default {
         return false;
       }
     },
-    deviceId: {
+    deviceInfo: {
       default: () => {
-        return "";
+        return {};
       }
     }
   },
@@ -88,12 +92,48 @@ export default {
     dialogVisible(val) {
       this.$emit("update:visible", val);
     },
-    deviceId(val) {
-      this.loading = true;
-      setTimeout(() => {
-        this.loading = false;
-      }, 1000);
+    deviceInfo(val) {
+      this.getDeviceDetailhandler(val);
     }
+  },
+  methods: {
+    // 获取详情
+    async getDeviceDetailhandler(val) {
+      this.loading = true;
+      let { code, data } = await getDeviceDetail(val);
+      if (code == 200) {
+        for (let key in data) {
+          if (data[key] == null) {
+            data[key] = "暂无数据...";
+          }
+        }
+        this.detailInfo = data;
+      }
+      this.loading = false;
+    },
+    // 获取节点类型
+    async getNodeTypeList() {
+      let { code, data } = await this.getDicts("aliyun_node_type");
+      if (code == 200) {
+        this.nodeTypeList = data;
+      }
+    },
+    // 获取状态
+    async getStatus() {
+      let { code, data } = await this.getDicts("aliDevice_status");
+      if (code == 200) {
+        this.statusList = data;
+      }
+    },
+    // 格式化
+    forMatter(val, type) {
+      let temp = this[type].filter(item => item.dictValue == val);
+      return temp.length ? temp[0].dictLabel : "";
+    }
+  },
+  created() {
+    this.getNodeTypeList();
+    this.getStatus();
   }
 };
 </script>

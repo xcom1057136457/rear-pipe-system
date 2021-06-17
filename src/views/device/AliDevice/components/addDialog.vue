@@ -1,5 +1,10 @@
 <template>
-  <el-dialog title="添加设备" :visible.sync="dialogShow" width="30%" v-draggable>
+  <el-dialog
+    title="添加设备"
+    :visible.sync="dialogShow"
+    width="30%"
+    v-draggable
+  >
     <div>
       <div class="top-alert">
         <div>
@@ -13,7 +18,7 @@
       <div class="form-wrapper">
         <el-form size="small">
           <el-form-item label="产品">
-            <el-select v-model="formParams.productName" placeholder="请选择产品">
+            <el-select v-model="formParams.productKey" placeholder="请选择产品">
               <el-option
                 v-for="(item, index) in productList"
                 :key="index"
@@ -24,11 +29,17 @@
           </el-form-item>
 
           <el-form-item label="DeviceName">
-            <el-input v-model="formParams.deviceName" placeholder="请输入DeviceName"></el-input>
+            <el-input
+              v-model="formParams.deviceName"
+              placeholder="请输入DeviceName"
+            ></el-input>
           </el-form-item>
 
           <el-form-item label="备注名称">
-            <el-input v-model="formParams.mark" placeholder="请输入备注名称"></el-input>
+            <el-input
+              v-model="formParams.nickName"
+              placeholder="请输入备注名称"
+            ></el-input>
           </el-form-item>
         </el-form>
       </div>
@@ -43,6 +54,8 @@
 </template>
 
 <script>
+import { getAliProduct } from "@/api/monitor/aliProduct";
+import { addDevice } from "@/api/monitor/aliDevice";
 export default {
   data() {
     return {
@@ -69,7 +82,28 @@ export default {
     }
   },
   methods: {
-    addDevicehandler() {}
+    async addDevicehandler() {
+      let { code } = await addDevice(this.formParams);
+      if (code == 200) {
+        this.$message.success("新增成功!");
+        this.dialogShow = false;
+        this.$emit("closeAdd");
+      }
+    },
+    async getAliProductHandler() {
+      let { code, rows } = await getAliProduct();
+      if (code == 200) {
+        this.productList = rows.map(item => {
+          return {
+            value: item.productKey,
+            label: item.productName
+          };
+        });
+      }
+    }
+  },
+  created() {
+    this.getAliProductHandler();
   }
 };
 </script>
