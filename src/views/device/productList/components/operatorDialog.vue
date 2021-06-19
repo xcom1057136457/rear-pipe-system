@@ -3,7 +3,6 @@
     :title="operatorType ? '修改产品' : '新增产品'"
     :visible.sync="dialogVisible"
     width="40%"
-    @closed="resetForm"
   >
     <div class="form-wrapper">
       <el-form
@@ -100,6 +99,8 @@ export default {
       if (val.productId) {
         let params = JSON.parse(JSON.stringify(val))
         this.$set(this, "formParams", params);
+      } else {
+        this.resetForm()
       }
     }
   },

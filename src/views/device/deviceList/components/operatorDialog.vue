@@ -3,8 +3,6 @@
     :title="operatorType ? '修改设备' : '新增设备'"
     :visible.sync="dialogVisible"
     width="30%"
-    @closed="resetForm"
-    @opened="openHandler"
   >
     <div class="form-wrapper">
       <el-form
@@ -212,7 +210,9 @@ export default {
     updateInfo(val) {
       if (val.deviceId) {
         let update = JSON.parse(JSON.stringify(val));
-        this.$set(this, 'params', update);
+        this.$set(this, "params", update);
+      } else {
+        this.resetForm();
       }
     }
   },
@@ -257,14 +257,15 @@ export default {
       });
     },
     resetForm() {
-      // console.log(123);
-      // this.$refs["ruleForm"].resetFields();
       this.productList = [];
       this.snList = [];
-      this.$set(this, 'params', {})
+      this.$set(this, "params", {});
+      this.$nextTick(() => {
+        this.$refs["ruleForm"].clearValidate();
+      });
     },
     openHandler() {
-      this.$refs["ruleForm"].clearValidate()
+      this.$refs["ruleForm"].clearValidate();
     },
     // 模糊搜索SN
     remoteMethod(query) {
@@ -273,7 +274,6 @@ export default {
         let params = Object.assign({}, this.pageParams, { sn: query });
         getSN(params)
           .then(res => {
-            console.log(res);
             if (res.code == 200) {
               this.snList = res.rows.map(item => {
                 return {
