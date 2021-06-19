@@ -20,6 +20,7 @@
             :filter-node-method="filterNode"
             ref="tree"
             default-expand-all
+            highlight-current
             @node-click="handleNodeClick"
           />
         </div>
@@ -47,10 +48,10 @@
               </el-col>
 
               <el-col :span="6">
-                <el-form-item label="设备类型">
+                <el-form-item label="所属产品">
                   <el-select
                     v-model="searchParams.deviceType"
-                    placeholder="请选择设备类型"
+                    placeholder="请选择所属产品"
                   >
                     <el-option
                       v-for="(item, index) in deviceType"
@@ -105,7 +106,7 @@
             type="primary"
             icon="el-icon-plus"
             v-hasPermi="['device:deviceList:add']"
-            @click="operatorShow = true"
+            @click="addHandler"
             :disabled="!searchParams.deptId"
             >新增</el-button
           >
@@ -116,6 +117,7 @@
             icon="el-icon-delete"
             v-hasPermi="['device:deviceList:delete']"
             :disabled="selectData.length > 0 ? false : true"
+            @click="batchDeleteHandler"
             >批量删除</el-button
           >
           <el-button
@@ -166,7 +168,7 @@
 
             <el-table-column
               prop="deviceType"
-              label="设备类型"
+              label="所属产品"
               show-overflow-tooltip
               align="center"
             ></el-table-column>
@@ -176,6 +178,7 @@
               label="设备状态"
               show-overflow-tooltip
               align="center"
+              :formatter="statusFormatter"
             ></el-table-column>
 
             <el-table-column
@@ -194,11 +197,15 @@
 
             <el-table-column label="操作" align="center" show-overflow-tooltip>
               <template #default="record">
-                <el-button type="text">查看</el-button>
+                <el-button type="text" @click="doDetail(record.row.deviceId)"
+                  >查看</el-button
+                >
                 <el-divider direction="vertical"></el-divider>
-                <el-button type="text">修改</el-button>
+                <el-button type="text" @click="doUpdate(record.row)">修改</el-button>
                 <el-divider direction="vertical"></el-divider>
-                <el-button type="text">删除</el-button>
+                <el-button type="text" @click="doDelete(record.row)"
+                  >删除</el-button
+                >
               </template>
             </el-table-column>
           </el-table>
@@ -219,14 +226,28 @@
       </el-col>
     </el-row>
 
-    <operator-dialog :visible.sync="operatorShow" :deptId="searchParams.deptId" @closeDialog="searchHandler" />
+    <operator-dialog
+      :visible.sync="operatorShow"
+      :deptId="searchParams.deptId"
+      :updateInfo="updateInfo"
+      @closeDialog="searchHandler"
+      :operatorType="operatorType"
+    />
+
+    <detail-dialog :visible.sync="detailShow" :detailId="detailId" />
   </div>
 </template>
 
 <script>
 import { treeselect } from "@/api/system/dept";
-import { getDeviceList } from "@/api/monitor/device";
-import operatorDialog from "./components/operatorDialog.vue"
+import {
+  getDeviceList,
+  deleteDevice,
+  batchDeleteDevice
+} from "@/api/monitor/device";
+import { getAllProduct } from "@/api/monitor/product";
+import operatorDialog from "./components/operatorDialog.vue";
+import detailDialog from "./components/detailDialog.vue";
 export default {
   data() {
     return {
@@ -249,7 +270,11 @@ export default {
         children: "children",
         label: "label"
       },
-      operatorShow: false
+      operatorShow: false,
+      detailShow: false,
+      detailId: null,
+      updateInfo: {},
+      operatorType: 0 // 0：新增, 1: 修改
     };
   },
   watch: {
@@ -259,25 +284,26 @@ export default {
     }
   },
   components: {
-    operatorDialog
+    operatorDialog,
+    detailDialog
   },
   methods: {
     searchHandler() {
       this.pageParams.pageNum = 1;
-      this.getDeviceList()
+      this.getDeviceList();
     },
     refreshHandler() {
-      this.searchParams = {}
-      this.pageParams.pageNum = 1
-      this.getDeviceList()
+      this.searchParams = {};
+      this.pageParams.pageNum = 1;
+      this.getDeviceList();
     },
     handleSizeChange(val) {
-      this.pageParams.pageSize = val
-      this.getDeviceList()
+      this.pageParams.pageSize = val;
+      this.getDeviceList();
     },
     handleCurrentChange(val) {
-      this.pageParams.pageNum = val
-      this.getDeviceList()
+      this.pageParams.pageNum = val;
+      this.getDeviceList();
     },
     selectHandler(val) {
       this.selectData = val;
@@ -298,9 +324,32 @@ export default {
         this.deptOptions = response.data;
       });
     },
+    // 获取产品列表
+    getAllProductHandler() {
+      return new Promise(async resolve => {
+        let { code, rows } = await getAllProduct();
+        if (code == 200) {
+          this.deviceType = rows.map(item => {
+            return {
+              label: item.productName,
+              value: item.productId
+            };
+          });
+          this.$route.params.productId
+            ? this.$set(
+                this.searchParams,
+                "deviceType",
+                this.$route.params.productId
+              )
+            : "";
+        }
+        resolve();
+      });
+    },
     // 获取列表数据
     async getDeviceList() {
       this.tableLoading = true;
+
       let params = Object.assign({}, this.searchParams, this.pageParams);
       let { code, rows, total } = await getDeviceList(params);
       if (code == 200) {
@@ -308,11 +357,110 @@ export default {
         this.pageParams.total = total;
       }
       this.tableLoading = false;
+    },
+    // 删除数据
+    doDelete(val) {
+      this.$confirm(`此操作将永久删除${val.deviceName}, 是否继续?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(async () => {
+          let { code } = await deleteDevice(val.deviceId);
+          if (code == 200) {
+            if (
+              (this.pageParams.total - 1) % this.pageParams.pageSize == 0 &&
+              this.pageParams.total > this.pageParams.pageSize
+            ) {
+              this.pageParams.pageNum -= 1;
+            }
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+            this.getDeviceList();
+          }
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
+    },
+    // 批量删除
+    batchDeleteHandler() {
+      let deviceName = this.selectData.map(item => item.deviceName).join(",");
+      let deviceIds = this.selectData.map(item => item.deviceId);
+      this.$confirm(`此操作将永久批量删除${deviceName}, 是否继续?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(async () => {
+          let { code } = await batchDeleteDevice(deviceIds);
+          if (code == 200) {
+            if (
+              (this.pageParams.total - this.selectData.length) %
+                this.pageParams.pageSize ==
+                0 &&
+              this.pageParams.total > this.pageParams.pageSize
+            ) {
+              this.pageParams.pageNum -= 1;
+            }
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+            this.getDeviceList();
+          }
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
+    },
+    // 设备详情
+    doDetail(id) {
+      this.detailId = id;
+      this.detailShow = true;
+    },
+    // 获取设备状态
+    async getDeviceStatus() {
+      let { code, data } = await this.getDicts("device_status");
+      if (code == 200) {
+        this.deviceStatus = data.map(item => {
+          return {
+            value: item.dictValue,
+            label: item.dictLabel
+          };
+        });
+      }
+    },
+    statusFormatter(rows, cell, value) {
+      let temp = this.deviceStatus.filter(item => item.value == value);
+      return temp.length ? temp[0].label : "";
+    },
+    // 修改
+    doUpdate(val) {
+      this.operatorType = 1
+      this.updateInfo = val
+      this.operatorShow = true
+    },
+    // 新增
+    addHandler() {
+      this.operatorType = 0
+      this.updateInfo = {}
+      this.operatorShow = true
     }
   },
-  created() {
+  async created() {
     this.getTreeselect();
+    await this.getAllProductHandler();
     this.getDeviceList();
+    this.getDeviceStatus();
   }
 };
 </script>

@@ -14,10 +14,17 @@
 
           <el-col :span="6">
             <el-form-item label="产品key">
-              <el-input
+              <el-select
                 v-model="searchParams.productKey"
-                placeholder="请输入产品KEY"
-              ></el-input>
+                placeholder="请选择产品"
+              >
+                <el-option
+                  v-for="(item, index) in aliProductList"
+                  :key="index"
+                  :value="item.value"
+                  :label="item.label"
+                ></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
 
@@ -48,6 +55,7 @@
         type="primary"
         icon="el-icon-plus"
         v-hasPermi="['device:productList:add']"
+        @click="addHandler"
         >新增</el-button
       >
       <el-button
@@ -57,6 +65,7 @@
         icon="el-icon-delete"
         v-hasPermi="['device:productList:delete']"
         :disabled="selectData.length > 0 ? false : true"
+        @click="batchDelete"
         >批量删除</el-button
       >
     </div>
@@ -64,49 +73,51 @@
     <div class="table-wrapper">
       <el-table
         :data="tableData"
-        :loading="tableLoading"
+        v-loading="tableLoading"
         @selection-change="selectHandler"
       >
         <el-table-column type="selection" width="50" align="center" />
         <el-table-column
           label="产品名称"
-          prop="data1"
+          prop="productName"
           show-overflow-tooltip
           align="center"
         ></el-table-column>
         <el-table-column
           label="产品key"
-          prop="data2"
+          prop="productKey"
           show-overflow-tooltip
           align="center"
         ></el-table-column>
         <el-table-column
           label="上报格式"
-          prop="data3"
+          prop="dataFormat"
           show-overflow-tooltip
           align="center"
         ></el-table-column>
         <el-table-column
           label="创建人"
-          prop="data4"
+          prop="createBy"
           show-overflow-tooltip
           align="center"
         ></el-table-column>
         <el-table-column
           label="创建时间"
-          prop="data5"
+          prop="createTime"
           show-overflow-tooltip
           align="center"
         ></el-table-column>
         <el-table-column label="操作" show-overflow-tooltip align="center">
           <template #default="record">
-            <el-button type="text">查看</el-button>
+            <el-button type="text" @click="doView(record.row.productId)">查看</el-button>
             <el-divider direction="vertical"></el-divider>
-            <el-button type="text">修改</el-button>
+            <el-button type="text" @click="doUpdate(record.row)">修改</el-button>
             <el-divider direction="vertical"></el-divider>
-            <el-button type="text" @click="deleteHandler(record.row)">删除</el-button>
+            <el-button type="text" @click="doDelete(record.row)"
+              >删除</el-button
+            >
             <el-divider direction="vertical"></el-divider>
-            <el-button type="text">管理设备</el-button>
+            <el-button type="text" @click="doManager(record.row.productId)">管理设备</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -124,51 +135,118 @@
       >
       </el-pagination>
     </div>
+
+    <operator-dialog
+      :visible.sync="operatorShow"
+      @closeHandler="searchHandler"
+      :updateInfo="updateInfo"
+      :operatorType='operatorType'
+    />
+
+    <detail-dialog :visible.sync="detailShow" :productId="productId" />
   </div>
 </template>
 
 <script>
+import {
+  getProductList,
+  deleteProduct,
+  batchDeleteProduct
+} from "@/api/monitor/product";
+import operatorDialog from "./components/operatorDialog.vue";
+import detailDialog from "./components/detailDialog.vue"
+import { getAliProduct } from "@/api/monitor/aliProduct";
 export default {
   data() {
     return {
       searchParams: {},
       selectData: [],
-      tableData: [
-        {
-          data1: 1,
-          data2: 1,
-          data3: 1,
-          data4: 1,
-          data5: 1
-        }
-      ],
+      tableData: [],
       tableLoading: false,
       pageParams: {
         pageNum: 1,
         pageSize: 10,
         total: 1
-      }
+      },
+      operatorShow: false,
+      aliProductList: [],
+      detailShow: false,
+      productId: null,
+      updateInfo: {},
+      operatorType: null
     };
   },
+  components: {
+    operatorDialog,
+    detailDialog
+  },
   methods: {
-    searchHandler() {},
-    refreshHandler() {},
-    handleSizeChange() {},
-    handleCurrentChange() {},
+    searchHandler() {
+      this.pageParams.pageNum = 1;
+      this.getList();
+    },
+    refreshHandler() {
+      this.searchParams = {};
+      this.pageParams.pageNum = 1;
+      this.getList();
+    },
+    handleSizeChange(val) {
+      this.pageParams.pageSize = val;
+      this.getList();
+    },
+    handleCurrentChange(val) {
+      this.pageParams.pageNum = val;
+      this.getList();
+    },
     selectHandler(val) {
       this.selectData = val;
     },
-    deleteHandler(record) {
-      this.$confirm(`此操作将永久删除${record.data1}, 是否继续?`, "提示", {
+    getList() {
+      this.tableLoading = true;
+      let params = Object.assign({}, this.searchParams, this.pageParams);
+      getProductList(params).then(res => {
+        if (res.code == 200) {
+          this.tableData = res.rows;
+          this.pageParams.total = res.total;
+        }
+        this.tableLoading = false;
+      });
+    },
+    // 获取阿里云产品列表
+    getAliProductHandler() {
+      getAliProduct().then(res => {
+        if (res.code == 200) {
+          this.aliProductList = res.rows.map(item => {
+            return {
+              value: item.productKey,
+              label: item.productName
+            };
+          });
+        }
+      });
+    },
+    // 删除产品
+    doDelete(val) {
+      this.$confirm(`此操作将永久删除${val.productName}, 是否继续?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
-        .then(() => {
-          this.$message({
-            type: "success",
-            message: "删除成功!"
-          });
+        .then(async () => {
+          let { code } = await deleteProduct(val.productId);
+          if (code == 200) {
+            if (
+              (this.pageParams.total - 1) % this.pageParams.pageSize == 0 &&
+              this.pageParams.total > this.pageParams.pageSize
+            ) {
+              this.pageParams.pageNum -= 1;
+            }
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+            this.getList();
+          }
         })
         .catch(() => {
           this.$message({
@@ -176,7 +254,70 @@ export default {
             message: "已取消删除"
           });
         });
+    },
+    // 批量删除
+    batchDelete() {
+      let productName = this.selectData.map(item => item.productName).join(",");
+      let productIds = this.selectData.map(item => item.productId);
+      this.$confirm(`此操作将永久批量删除${productName}, 是否继续?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(async () => {
+          let { code } = await batchDeleteProduct(productIds);
+          if (code == 200) {
+            if (
+              (this.pageParams.total - this.selectData.length) %
+                this.pageParams.pageSize ==
+                0 &&
+              this.pageParams.total > this.pageParams.pageSize
+            ) {
+              this.pageParams.pageNum -= 1;
+            }
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+            this.getList();
+          }
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
+    },
+    // 查看详情
+    doView(productId) {
+      this.productId = productId
+      this.detailShow = true
+    },
+    // 管理设备
+    doManager(productId) {
+      this.$router.push({
+        name: 'DeviceList',
+        params: {
+          productId
+        }
+      })
+    },
+    addHandler() {
+      this.operatorType = 0;
+      this.updateInfo = {}
+      this.operatorShow = true
+    },
+    // 修改
+    doUpdate(val) {
+      this.operatorType = 1;
+      this.updateInfo = val
+      this.operatorShow = true
     }
+  },
+  created() {
+    this.getAliProductHandler();
+    this.getList();
   }
 };
 </script>

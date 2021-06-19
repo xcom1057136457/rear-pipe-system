@@ -1,9 +1,10 @@
 <template>
   <el-dialog
-    title="新增设备"
+    :title="operatorType ? '修改设备' : '新增设备'"
     :visible.sync="dialogVisible"
     width="30%"
     @closed="resetForm"
+    @opened="openHandler"
   >
     <div class="form-wrapper">
       <el-form
@@ -12,6 +13,7 @@
         size="small"
         ref="ruleForm"
         :model="params"
+        :rules="rules"
       >
         <el-form-item label="设备编码" prop="deviceCode">
           <el-input
@@ -27,11 +29,46 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="设备类型" prop="deviceType">
-          <el-input
+        <el-form-item label="设备SN码" prop="sn">
+          <el-select
+            v-model="params.sn"
+            filterable
+            remote
+            reserve-keyword
+            placeholder="请输入设备SN码"
+            :remote-method="remoteMethod"
+            :loading="selectLoading"
+            @change="productSearch"
+            clearable
+          >
+            <el-option
+              v-for="item in snList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+              :disabled="item.disabled"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="所属产品" prop="deviceType">
+          <!-- <el-input
             v-model="params.deviceType"
-            placeholder="请输入设备类型..."
-          ></el-input>
+            placeholder="请输入所属产品..."
+            disabled
+          ></el-input> -->
+          <el-select
+            v-model="params.deviceType"
+            :disabled="!productList.length"
+          >
+            <el-option
+              v-for="(item, index) in productList"
+              :key="index"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
         </el-form-item>
 
         <el-form-item label="设备专责" prop="equipSpecialist">
@@ -69,13 +106,6 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="设备SN码" prop="sn">
-          <el-input
-            v-model="params.sn"
-            placeholder="请输入设备SN码..."
-          ></el-input>
-        </el-form-item>
-
         <el-form-item label="备注" prop="remark">
           <el-input
             v-model="params.remark"
@@ -86,7 +116,11 @@
       </el-form>
     </div>
     <span slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="submitHandler" size="small"
+      <el-button
+        type="primary"
+        @click="submitHandler"
+        size="small"
+        :loading="buttonLoading"
         >确 定</el-button
       >
       <el-button @click="dialogVisible = false" size="small">取 消</el-button>
@@ -95,12 +129,45 @@
 </template>
 
 <script>
-import { addDevice } from "@/api/monitor/device";
+import { addDevice, getSN, updateDevice } from "@/api/monitor/device";
+import { getProductList } from "@/api/monitor/product";
 export default {
   data() {
     return {
       dialogVisible: false,
-      params: {}
+      params: {
+        deviceCode: "",
+        deviceName: "",
+        sn: "",
+        deviceType: "",
+        equipSpecialist: "",
+        ieme: "",
+        installPosition: "",
+        manufactor: "",
+        powergridSpecialist: "",
+        remark: ""
+      },
+      buttonLoading: false,
+      pageParams: {
+        pageNum: 1,
+        pageSize: 20
+      },
+      rules: {
+        ieme: [{ required: true, message: "请输入IEME卡号", trigger: "blur" }],
+        deviceCode: [
+          { required: true, message: "请输入设备编码", trigger: "blur" }
+        ],
+        sn: [{ required: true, message: "请输入设备SN码", trigger: "change" }],
+        deviceName: [
+          { required: true, message: "请输入设备名称", trigger: "blur" }
+        ],
+        deviceType: [
+          { required: true, message: "请输入所属产品", trigger: "change" }
+        ]
+      },
+      selectLoading: false,
+      snList: [],
+      productList: []
     };
   },
   props: {
@@ -113,6 +180,16 @@ export default {
       default: () => {
         return "";
       }
+    },
+    updateInfo: {
+      default: () => {
+        return {};
+      }
+    },
+    operatorType: {
+      default: () => {
+        return "";
+      }
     }
   },
   watch: {
@@ -121,24 +198,128 @@ export default {
     },
     dialogVisible(val) {
       this.$emit("update:visible", val);
+    },
+    "params.sn": {
+      handler(val) {
+        if (!val) {
+          this.$set(this.params, "deviceType", "");
+          this.productList = [];
+          this.snList = [];
+        }
+      },
+      deep: true
+    },
+    updateInfo(val) {
+      if (val.deviceId) {
+        let update = JSON.parse(JSON.stringify(val));
+        this.$set(this, 'params', update);
+      }
     }
   },
   methods: {
     async submitHandler() {
-      let params = JSON.parse(JSON.stringify(this.params));
-      params.deptId = this.deptId;
-      let { code } = await addDevice(params);
-      if (code == 200) {
-        this.$message.success("新增设备成功!");
-        this.dialogVisible = false;
-        this.$emit("closeDialog");
-      }
+      this.$refs["ruleForm"].validate(valid => {
+        if (valid) {
+          this.buttonLoading = true;
+          let params = JSON.parse(JSON.stringify(this.params));
+          params.deptId = this.deptId;
+          if (this.operatorType == 0) {
+            addDevice(params)
+              .then(res => {
+                if (res.code == 200) {
+                  this.$message.success("新增设备成功!");
+                  this.dialogVisible = false;
+                  this.$emit("closeDialog");
+                }
+                this.buttonLoading = false;
+              })
+              .catch(() => {
+                this.buttonLoading = false;
+              });
+          } else {
+            updateDevice(params)
+              .then(res => {
+                if (res.code == 200) {
+                  this.$message.success("修改设备成功!");
+                  this.dialogVisible = false;
+                  this.$emit("closeDialog");
+                }
+                this.buttonLoading = false;
+              })
+              .catch(() => {
+                this.buttonLoading = false;
+              });
+          }
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
     },
     resetForm() {
-      this.$refs["ruleForm"].resetFields();
+      // console.log(123);
+      // this.$refs["ruleForm"].resetFields();
+      this.productList = [];
+      this.snList = [];
+      this.$set(this, 'params', {})
+    },
+    openHandler() {
+      this.$refs["ruleForm"].clearValidate()
+    },
+    // 模糊搜索SN
+    remoteMethod(query) {
+      if (query.split("").length >= 4) {
+        this.selectLoading = true;
+        let params = Object.assign({}, this.pageParams, { sn: query });
+        getSN(params)
+          .then(res => {
+            console.log(res);
+            if (res.code == 200) {
+              this.snList = res.rows.map(item => {
+                return {
+                  label: item.deviceName + " (" + item.isEnabled + ")",
+                  value: item.deviceName,
+                  productKey: item.productKey,
+                  disabled: item.isEnabled == "已使用" ? true : false
+                };
+              });
+            }
+            this.selectLoading = false;
+          })
+          .catch(() => {
+            this.selectLoading = false;
+          });
+      } else {
+        this.snList = [];
+      }
+    },
+    // 搜索产品
+    productSearch(val) {
+      if (val) {
+        this.$set(this.params, "deviceType", "");
+        this.productList = [];
+        let productKey = this.snList.filter(item => item.value == val)[0]
+          .productKey;
+        getProductList({
+          productKey: productKey
+        }).then(res => {
+          if (res.code == 200) {
+            this.productList = res.rows.map(item => {
+              return {
+                value: item.productId,
+                label: item.productName
+              };
+            });
+          }
+        });
+      }
     }
   }
 };
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.el-select {
+  width: 100%;
+}
+</style>
