@@ -153,7 +153,6 @@ export default {
     },
     resetForm() {
       this.$refs["ruleForm"].resetFields();
-      // this.$set(this, "formParams", {});
     }
   },
   created() {

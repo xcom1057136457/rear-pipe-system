@@ -12,7 +12,16 @@
         ref="ruleForm"
         :model="params"
         :rules="rules"
+        status-icon
       >
+        <el-form-item label="归属部门" prop="deptId">
+          <treeselect
+            v-model="params.deptId"
+            :options="deptOptions"
+            :show-count="true"
+            placeholder="请选择归属部门"
+          />
+        </el-form-item>
         <el-form-item label="设备编码" prop="deviceCode">
           <el-input
             v-model="params.deviceCode"
@@ -129,6 +138,9 @@
 <script>
 import { addDevice, getSN, updateDevice } from "@/api/monitor/device";
 import { getProductList } from "@/api/monitor/product";
+import Treeselect from "@riophae/vue-treeselect";
+import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import { treeselect } from "@/api/system/dept";
 export default {
   data() {
     return {
@@ -151,6 +163,9 @@ export default {
         pageSize: 20
       },
       rules: {
+        deptId: [
+          { required: true, message: "请选择归属部门", trigger: "change" }
+        ],
         ieme: [{ required: true, message: "请输入IEME卡号", trigger: "blur" }],
         deviceCode: [
           { required: true, message: "请输入设备编码", trigger: "blur" }
@@ -165,8 +180,13 @@ export default {
       },
       selectLoading: false,
       snList: [],
-      productList: []
+      productList: [],
+      // 部门树选项
+      deptOptions: undefined
     };
+  },
+  components: {
+    Treeselect
   },
   props: {
     visible: {
@@ -222,7 +242,6 @@ export default {
         if (valid) {
           this.buttonLoading = true;
           let params = JSON.parse(JSON.stringify(this.params));
-          params.deptId = this.deptId;
           if (this.operatorType == 0) {
             addDevice(params)
               .then(res => {
@@ -313,7 +332,16 @@ export default {
           }
         });
       }
+    },
+    /** 查询部门下拉树结构 */
+    getTreeselect() {
+      treeselect().then(response => {
+        this.deptOptions = response.data;
+      });
     }
+  },
+  created() {
+    this.getTreeselect();
   }
 };
 </script>

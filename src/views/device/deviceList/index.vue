@@ -107,7 +107,6 @@
             icon="el-icon-plus"
             v-hasPermi="['device:deviceList:add']"
             @click="addHandler"
-            :disabled="!searchParams.deptId"
             >新增</el-button
           >
           <el-button

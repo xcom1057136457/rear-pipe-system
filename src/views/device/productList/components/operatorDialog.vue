@@ -35,6 +35,7 @@
           <el-input
             v-model="formParams.dataFormat"
             placeholder="请输入数据格式..."
+            type="textarea"
           ></el-input>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
