@@ -9,6 +9,14 @@ export function getDeviceList(params) {
   })
 }
 
+// 获取全部设备
+export function getAllDevice() {
+  return request({
+    url: '/manager/device/deviceList',
+    method: 'get'
+  })
+}
+
 // 新增设备
 export function addDevice(data) {
   return request({

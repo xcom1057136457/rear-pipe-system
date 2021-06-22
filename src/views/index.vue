@@ -3,20 +3,22 @@
 </template>
 
 <script>
+import { getAllDevice } from "@/api/monitor/device";
 export default {
   name: "index",
   data() {
     return {
       map: null,
-      infoWindow: null
+      infoWindow: null,
+      deviceInfo: []
     };
   },
   methods: {
     createMap() {
       return new Promise(resolve => {
         this.map = new AMap.Map("container", {
-          zoom: 11, //级别
-          center: [112.98, 28.19], //中心点坐标
+          zoom: 15, //级别
+          center: [this.deviceInfo[0].longitude, this.deviceInfo[0].latitude], //中心点坐标
           viewMode: "3D" //使用3D视图
         });
 
@@ -51,20 +53,51 @@ export default {
       });
     },
     async initMap() {
+      await this.getAllDeviceHandler();
       await this.createMap();
-      var lnglats = [
-        [116.368904, 39.923423],
-        [116.382122, 39.921176],
-        [116.387271, 39.922501],
-        [116.398258, 39.9146]
-      ];
+      var lnglats = this.deviceInfo;
       this.infoWindow = new AMap.InfoWindow({ offset: new AMap.Pixel(0, -30) });
       for (var i = 0, marker; i < lnglats.length; i++) {
         var marker = new AMap.Marker({
-          position: lnglats[i],
+          position: [lnglats[i].longitude, lnglats[i].latitude],
           map: this.map
         });
-        marker.content = "我是第" + (i + 1) + "个Marker";
+        let content = `
+          <table style="width: 720px;border-left: 1px solid #dedede;border-bottom: 1px solid #dedede;border-collapse: collapse;">
+            <tr>
+              <td class="label" style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;background-color: #f0f0f0;width:110px">设备编码</td>
+              <td style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;">${ lnglats[i].deviceCode}</td>
+              <td class="label" style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;background-color: #f0f0f0;width:110px">设备名称</td>
+              <td style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;">${ lnglats[i].deviceName}</td>
+              <td class="label" style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;background-color: #f0f0f0;width:110px">设备SN码</td>
+              <td style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;">${ lnglats[i].sn}</td>
+            </tr>
+
+            <tr>
+              <td class="label" style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;background-color: #f0f0f0;width:110px">所属产品</td>
+              <td style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;">${ lnglats[i].deviceType}</td>
+              <td class="label" style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;background-color: #f0f0f0;width:110px">设备专责</td>
+              <td style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;">${ lnglats[i].equipSpecialist}</td>
+              <td class="label" style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;background-color: #f0f0f0;width:110px">IEME卡号</td>
+              <td style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;">${ lnglats[i].ieme}</td>
+            </tr>
+
+            <tr>
+              <td class="label" style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;background-color: #f0f0f0;width:110px">安装位置</td>
+              <td style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;">${ lnglats[i].installPosition}</td>
+              <td class="label" style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;background-color: #f0f0f0;width:110px">联系厂家</td>
+              <td style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;">${ lnglats[i].manufactor}</td>
+              <td class="label" style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;background-color: #f0f0f0;width:110px">电网专责</td>
+              <td style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;">${ lnglats[i].powergridSpecialist}</td>
+            </tr>
+
+            <tr>
+              <td class="label" style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;background-color: #f0f0f0;width:110px">备注</td>
+              <td colspan="5" style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;">${ lnglats[i].remark}</td>
+            </tr>
+          </table>
+        `;
+        marker.content = content;
         marker.on("click", this.markerClick);
         marker.emit("click", { target: marker });
       }
@@ -72,6 +105,18 @@ export default {
     markerClick(e) {
       this.infoWindow.setContent(e.target.content);
       this.infoWindow.open(this.map, e.target.getPosition());
+    },
+    // 获取设备数据
+    getAllDeviceHandler() {
+      return new Promise(resolve => {
+        getAllDevice().then(res => {
+          console.log(res);
+          if (res.code == 200) {
+            this.deviceInfo = res.rows;
+            resolve();
+          }
+        });
+      });
     }
   },
   mounted() {
@@ -86,5 +131,21 @@ export default {
 #container {
   width: 100%;
   height: calc(100vh - 34px - 50px);
+}
+
+table {
+  width: 100%;
+  border-left: 1px solid #dedede;
+  border-bottom: 1px solid #dedede;
+  border-collapse: collapse;
+  tr > td {
+    border-top: 1px solid #dedede;
+    border-right: 1px solid #dedede;
+    padding: 10px 0 10px 10px;
+  }
+}
+
+.label {
+  background-color: #f0f0f0;
 }
 </style>
