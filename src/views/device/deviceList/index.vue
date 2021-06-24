@@ -166,7 +166,7 @@
             ></el-table-column>
 
             <el-table-column
-              prop="deviceType"
+              prop="deviceTypeName"
               label="所属产品"
               show-overflow-tooltip
               align="center"
@@ -200,7 +200,9 @@
                   >查看</el-button
                 >
                 <el-divider direction="vertical"></el-divider>
-                <el-button type="text" @click="doUpdate(record.row)">修改</el-button>
+                <el-button type="text" @click="doUpdate(record.row)"
+                  >修改</el-button
+                >
                 <el-divider direction="vertical"></el-divider>
                 <el-button type="text" @click="doDelete(record.row)"
                   >删除</el-button
@@ -232,8 +234,6 @@
       @closeDialog="searchHandler"
       :operatorType="operatorType"
     />
-
-    <detail-dialog :visible.sync="detailShow" :detailId="detailId" />
   </div>
 </template>
 
@@ -246,7 +246,6 @@ import {
 } from "@/api/monitor/device";
 import { getAllProduct } from "@/api/monitor/product";
 import operatorDialog from "./components/operatorDialog.vue";
-import detailDialog from "./components/detailDialog.vue";
 export default {
   data() {
     return {
@@ -270,7 +269,6 @@ export default {
         label: "label"
       },
       operatorShow: false,
-      detailShow: false,
       detailId: null,
       updateInfo: {},
       operatorType: 0 // 0：新增, 1: 修改
@@ -283,8 +281,7 @@ export default {
     }
   },
   components: {
-    operatorDialog,
-    detailDialog
+    operatorDialog
   },
   methods: {
     searchHandler() {
@@ -423,8 +420,12 @@ export default {
     },
     // 设备详情
     doDetail(id) {
-      this.detailId = id;
-      this.detailShow = true;
+      this.$router.push({
+        name: "DeviceListDetail",
+        query: {
+          deviceId: id
+        }
+      });
     },
     // 获取设备状态
     async getDeviceStatus() {
@@ -444,15 +445,15 @@ export default {
     },
     // 修改
     doUpdate(val) {
-      this.operatorType = 1
-      this.updateInfo = val
-      this.operatorShow = true
+      this.operatorType = 1;
+      this.updateInfo = val;
+      this.operatorShow = true;
     },
     // 新增
     addHandler() {
-      this.operatorType = 0
-      this.updateInfo = {}
-      this.operatorShow = true
+      this.operatorType = 0;
+      this.updateInfo = {};
+      this.operatorShow = true;
     }
   },
   async created() {

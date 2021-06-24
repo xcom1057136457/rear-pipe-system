@@ -110,7 +110,6 @@ export default {
     getAllDeviceHandler() {
       return new Promise(resolve => {
         getAllDevice().then(res => {
-          console.log(res);
           if (res.code == 200) {
             this.deviceInfo = res.rows;
             resolve();

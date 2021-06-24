@@ -58,13 +58,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-
         <el-form-item label="所属产品" prop="deviceType">
-          <!-- <el-input
-            v-model="params.deviceType"
-            placeholder="请输入所属产品..."
-            disabled
-          ></el-input> -->
           <el-select
             v-model="params.deviceType"
             :disabled="!productList.length"
@@ -228,11 +222,11 @@ export default {
       deep: true
     },
     updateInfo(val) {
+      this.resetForm();
       if (val.deviceId) {
         let update = JSON.parse(JSON.stringify(val));
+        this.getSnProductKey(update.sn);
         this.$set(this, "params", update);
-      } else {
-        this.resetForm();
       }
     }
   },
@@ -270,7 +264,6 @@ export default {
               });
           }
         } else {
-          console.log("error submit!!");
           return false;
         }
       });
@@ -315,6 +308,7 @@ export default {
     // 搜索产品
     productSearch(val) {
       if (val) {
+        console.log("val", val);
         this.$set(this.params, "deviceType", "");
         this.productList = [];
         let productKey = this.snList.filter(item => item.value == val)[0]
@@ -337,6 +331,26 @@ export default {
     getTreeselect() {
       treeselect().then(response => {
         this.deptOptions = response.data;
+      });
+    },
+    getSnProductKey(query) {
+      let params = Object.assign({}, this.pageParams, { sn: query });
+      getSN(params).then(res => {
+        if (res.code == 200) {
+          getProductList({
+            productKey: res.rows[0].productKey
+          }).then(res => {
+            if (res.code == 200) {
+              let test = res.rows.map(item => {
+                return {
+                  value: String(item.productId),
+                  label: item.productName
+                };
+              });
+              this.$set(this, "productList", test);
+            }
+          });
+        }
       });
     }
   },

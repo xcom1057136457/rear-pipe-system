@@ -135,7 +135,6 @@ export default {
               this.buttonLoading = false;
             });
         } else {
-          console.log("error submit!!");
           return false;
         }
       });
