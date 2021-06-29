@@ -1,5 +1,10 @@
 <template>
-  <el-dialog title="产品详情" :visible.sync="dialogVisible" width="50%">
+  <el-dialog
+    title="产品详情"
+    :visible.sync="dialogVisible"
+    width="50%"
+    v-draggable
+  >
     <div v-loading="loading" class="detail-wrapper">
       <div>
         <label for="">ProductKey:</label>
@@ -14,7 +19,12 @@
       <div>
         <label for="">数据格式:</label>
         <span>
-          <el-input v-model="detailInfo.dataFormat" type="textarea" readonly rows="5"></el-input>
+          <el-input
+            v-model="detailInfo.dataFormat"
+            type="textarea"
+            readonly
+            rows="5"
+          ></el-input>
         </span>
       </div>
 
@@ -100,7 +110,7 @@ export default {
 .detail-wrapper {
   > div {
     line-height: 50px;
-    border-bottom: 1px solid #F0F0F0;
+    border-bottom: 1px solid #f0f0f0;
     &:nth-child(3) {
       display: flex;
       padding: 10px 0;

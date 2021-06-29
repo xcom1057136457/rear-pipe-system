@@ -36,7 +36,6 @@ module.exports = {
       [process.env.VUE_APP_BASE_API]: {
         target: `http://192.168.3.153:58080`,
         // target: `http://47.106.193.135:58080`, // 线上
-        // target: `http://192.168.3.153:8080`,
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''

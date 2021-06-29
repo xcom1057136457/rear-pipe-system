@@ -18,6 +18,10 @@ body {
   src: url("../fonts/Alibaba-PuHuiTi-Regular.ttf");
 }
 
+textarea, button, input  {
+  font-family: PiHuiTi, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif !important;
+}
+
 label {
   font-weight: 700;
 }

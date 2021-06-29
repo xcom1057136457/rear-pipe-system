@@ -2,7 +2,12 @@
   <div class="productList-box">
     <div class="form-wrapper">
       <el-row :gutter="20">
-        <el-form label-width="90px" label-position="left" size="small">
+        <el-form
+          label-width="90px"
+          label-position="left"
+          size="small"
+          v-if="showSearch"
+        >
           <el-col :span="6">
             <el-form-item label="产品名称">
               <el-input
@@ -68,6 +73,12 @@
         @click="batchDelete"
         >批量删除</el-button
       >
+
+      <right-toolbar
+        :columns="columns"
+        :showSearch.sync="showSearch"
+        @queryTable="getList"
+      ></right-toolbar>
     </div>
 
     <div class="table-wrapper">
@@ -82,42 +93,53 @@
           prop="productName"
           show-overflow-tooltip
           align="center"
+          v-if="columns[0].visible"
         ></el-table-column>
         <el-table-column
           label="产品key"
           prop="productKey"
           show-overflow-tooltip
           align="center"
+          v-if="columns[1].visible"
         ></el-table-column>
         <el-table-column
           label="上报格式"
           prop="dataFormat"
           show-overflow-tooltip
           align="center"
+          v-if="columns[2].visible"
         ></el-table-column>
         <el-table-column
           label="创建人"
           prop="createBy"
           show-overflow-tooltip
           align="center"
+          v-if="columns[3].visible"
         ></el-table-column>
         <el-table-column
           label="创建时间"
           prop="createTime"
           show-overflow-tooltip
           align="center"
+          v-if="columns[4].visible"
         ></el-table-column>
-        <el-table-column label="操作" show-overflow-tooltip align="center">
+        <el-table-column label="操作" show-overflow-tooltip align="center" fixed="right" width="280">
           <template #default="record">
-            <el-button type="text" @click="doView(record.row.productId)">查看</el-button>
+            <el-button type="text" @click="doView(record.row.productId)"
+              >查看</el-button
+            >
             <el-divider direction="vertical"></el-divider>
-            <el-button type="text" @click="doUpdate(record.row)">修改</el-button>
+            <el-button type="text" @click="doUpdate(record.row)"
+              >修改</el-button
+            >
             <el-divider direction="vertical"></el-divider>
             <el-button type="text" @click="doDelete(record.row)"
               >删除</el-button
             >
             <el-divider direction="vertical"></el-divider>
-            <el-button type="text" @click="doManager(record.row.productId)">管理设备</el-button>
+            <el-button type="text" @click="doManager(record.row.productId)"
+              >管理设备</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -140,7 +162,7 @@
       :visible.sync="operatorShow"
       @closeHandler="searchHandler"
       :updateInfo="updateInfo"
-      :operatorType='operatorType'
+      :operatorType="operatorType"
     />
 
     <detail-dialog :visible.sync="detailShow" :productId="productId" />
@@ -154,7 +176,7 @@ import {
   batchDeleteProduct
 } from "@/api/monitor/product";
 import operatorDialog from "./components/operatorDialog.vue";
-import detailDialog from "./components/detailDialog.vue"
+import detailDialog from "./components/detailDialog.vue";
 import { getAliProduct } from "@/api/monitor/aliProduct";
 export default {
   data() {
@@ -173,7 +195,15 @@ export default {
       detailShow: false,
       productId: null,
       updateInfo: {},
-      operatorType: null
+      operatorType: null,
+      showSearch: true,
+      columns: [
+        { key: 0, label: `产品名称`, visible: true },
+        { key: 1, label: `产品key`, visible: true },
+        { key: 2, label: `上报格式`, visible: true },
+        { key: 3, label: `创建人`, visible: true },
+        { key: 4, label: `创建时间`, visible: true }
+      ]
     };
   },
   components: {
@@ -291,28 +321,28 @@ export default {
     },
     // 查看详情
     doView(productId) {
-      this.productId = productId
-      this.detailShow = true
+      this.productId = productId;
+      this.detailShow = true;
     },
     // 管理设备
     doManager(productId) {
       this.$router.push({
-        name: 'DeviceList',
+        name: "DeviceList",
         params: {
           productId
         }
-      })
+      });
     },
     addHandler() {
       this.operatorType = 0;
-      this.updateInfo = {}
-      this.operatorShow = true
+      this.updateInfo = {};
+      this.operatorShow = true;
     },
     // 修改
     doUpdate(val) {
       this.operatorType = 1;
-      this.updateInfo = val
-      this.operatorShow = true
+      this.updateInfo = val;
+      this.operatorShow = true;
     }
   },
   created() {

@@ -28,7 +28,12 @@
       <el-col :span="20">
         <div class="form-wrapper">
           <el-row :gutter="20">
-            <el-form label-position="left" label-width="90px" size="small">
+            <el-form
+              label-position="left"
+              label-width="90px"
+              size="small"
+              v-show="showSearch"
+            >
               <el-col :span="6">
                 <el-form-item label="设备编码">
                   <el-input
@@ -135,6 +140,12 @@
             v-hasPermi="['device:deviceList:export']"
             >导出</el-button
           >
+
+          <right-toolbar
+            :columns="columns"
+            :showSearch.sync="showSearch"
+            @queryTable="getDeviceList"
+          ></right-toolbar>
         </div>
 
         <div class="table-wrapper">
@@ -149,6 +160,7 @@
               label="设备编码"
               show-overflow-tooltip
               align="center"
+              v-if="columns[0].visible"
             ></el-table-column>
 
             <el-table-column
@@ -156,6 +168,7 @@
               label="设备sn码"
               show-overflow-tooltip
               align="center"
+              v-if="columns[1].visible"
             ></el-table-column>
 
             <el-table-column
@@ -163,6 +176,7 @@
               label="设备名称"
               show-overflow-tooltip
               align="center"
+              v-if="columns[2].visible"
             ></el-table-column>
 
             <el-table-column
@@ -170,6 +184,7 @@
               label="所属产品"
               show-overflow-tooltip
               align="center"
+              v-if="columns[3].visible"
             ></el-table-column>
 
             <el-table-column
@@ -178,6 +193,7 @@
               show-overflow-tooltip
               align="center"
               :formatter="statusFormatter"
+              v-if="columns[4].visible"
             ></el-table-column>
 
             <el-table-column
@@ -185,6 +201,7 @@
               label="最后在线时间"
               show-overflow-tooltip
               align="center"
+              v-if="columns[5].visible"
             ></el-table-column>
 
             <el-table-column
@@ -192,9 +209,10 @@
               label="创建时间"
               show-overflow-tooltip
               align="center"
+              v-if="columns[6].visible"
             ></el-table-column>
 
-            <el-table-column label="操作" align="center" show-overflow-tooltip>
+            <el-table-column label="操作" align="center" show-overflow-tooltip fixed="right" width="220">
               <template #default="record">
                 <el-button type="text" @click="doDetail(record.row.deviceId)"
                   >查看</el-button
@@ -271,6 +289,16 @@ export default {
       operatorShow: false,
       detailId: null,
       updateInfo: {},
+      showSearch: true,
+      columns: [
+        { key: 0, label: `设备编码`, visible: true },
+        { key: 1, label: `设备sn码`, visible: true },
+        { key: 2, label: `设备名称`, visible: true },
+        { key: 3, label: `所属产品`, visible: true },
+        { key: 4, label: `设备状态`, visible: true },
+        { key: 5, label: `最后在线时间`, visible: true },
+        { key: 6, label: `创建时间`, visible: true }
+      ],
       operatorType: 0 // 0：新增, 1: 修改
     };
   },

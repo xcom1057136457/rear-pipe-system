@@ -18,7 +18,7 @@ export default {
       return new Promise(resolve => {
         this.map = new AMap.Map("container", {
           zoom: 15, //级别
-          center: [this.deviceInfo[0].longitude, this.deviceInfo[0].latitude], //中心点坐标
+          center: [Number(this.deviceInfo[0].longitude), Number(this.deviceInfo[0].latitude)], //中心点坐标
           viewMode: "3D" //使用3D视图
         });
 
@@ -59,7 +59,7 @@ export default {
       this.infoWindow = new AMap.InfoWindow({ offset: new AMap.Pixel(0, -35) });
       for (var i = 0, marker; i < lnglats.length; i++) {
         var marker = new AMap.Marker({
-          position: [lnglats[i].longitude, lnglats[i].latitude],
+          position: [Number(lnglats[i].longitude), Number(lnglats[i].latitude)],
           map: this.map
         });
         let content = `

@@ -3,6 +3,7 @@
     :title="operatorType ? '修改设备' : '新增设备'"
     :visible.sync="dialogVisible"
     width="30%"
+    v-draggable
   >
     <div class="form-wrapper">
       <el-form
