@@ -12,7 +12,7 @@
 
       <tr>
         <td class="label">所属产品</td>
-        <td>{{ detailInfo.deviceType }}</td>
+        <td>{{ detailInfo.deviceTypeName }}</td>
         <td class="label">设备专责</td>
         <td>{{ detailInfo.equipSpecialist }}</td>
         <td class="label">IEME卡号</td>

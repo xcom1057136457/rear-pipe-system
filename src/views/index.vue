@@ -56,50 +56,57 @@ export default {
       await this.getAllDeviceHandler();
       await this.createMap();
       var lnglats = this.deviceInfo;
-      this.infoWindow = new AMap.InfoWindow({ offset: new AMap.Pixel(0, -30) });
+      this.infoWindow = new AMap.InfoWindow({ offset: new AMap.Pixel(0, -35) });
       for (var i = 0, marker; i < lnglats.length; i++) {
         var marker = new AMap.Marker({
           position: [lnglats[i].longitude, lnglats[i].latitude],
           map: this.map
         });
         let content = `
-          <table style="width: 720px;border-left: 1px solid #dedede;border-bottom: 1px solid #dedede;border-collapse: collapse;">
-            <tr>
-              <td class="label" style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;background-color: #f0f0f0;width:110px">设备编码</td>
-              <td style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;">${ lnglats[i].deviceCode}</td>
-              <td class="label" style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;background-color: #f0f0f0;width:110px">设备名称</td>
-              <td style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;">${ lnglats[i].deviceName}</td>
-              <td class="label" style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;background-color: #f0f0f0;width:110px">设备SN码</td>
-              <td style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;">${ lnglats[i].sn}</td>
-            </tr>
+          <div class="info-wrapper">
+            <div class="info-title">
+              设备信息
+            </div>
+            <div class="info-detail">
+              <div class="info-item">
+                <span>设备编码：</span>
+                <span>${lnglats[i].deviceCode}</span>
+              </div>
 
-            <tr>
-              <td class="label" style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;background-color: #f0f0f0;width:110px">所属产品</td>
-              <td style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;">${ lnglats[i].deviceType}</td>
-              <td class="label" style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;background-color: #f0f0f0;width:110px">设备专责</td>
-              <td style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;">${ lnglats[i].equipSpecialist}</td>
-              <td class="label" style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;background-color: #f0f0f0;width:110px">IEME卡号</td>
-              <td style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;">${ lnglats[i].ieme}</td>
-            </tr>
+              <div class="info-item">
+                <span>设备名称：</span>
+                <span>${lnglats[i].deviceName}</span>
+              </div>
 
-            <tr>
-              <td class="label" style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;background-color: #f0f0f0;width:110px">安装位置</td>
-              <td style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;">${ lnglats[i].installPosition}</td>
-              <td class="label" style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;background-color: #f0f0f0;width:110px">联系厂家</td>
-              <td style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;">${ lnglats[i].manufactor}</td>
-              <td class="label" style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;background-color: #f0f0f0;width:110px">电网专责</td>
-              <td style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;">${ lnglats[i].powergridSpecialist}</td>
-            </tr>
+              <div class="info-item">
+                <span>所属产品：</span>
+                <span>${lnglats[i].deviceTypeName}</span>
+              </div>
 
-            <tr>
-              <td class="label" style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;background-color: #f0f0f0;width:110px">备注</td>
-              <td colspan="5" style="border-top: 1px solid #dedede;border-right: 1px solid #dedede;padding: 10px 0 10px 10px;">${ lnglats[i].remark}</td>
-            </tr>
-          </table>
+              <div class="info-item">
+                <span>联系厂家：</span>
+                <span>${lnglats[i].manufactor || "暂无数据"}</span>
+              </div>
+
+              <div class="info-item">
+                <span>设备状态：</span>
+                <span>${lnglats[i].status == "1" ? "在线" : "离线"}</span>
+              </div>
+
+              <div class="info-item">
+                <span>最后在线时间：</span>
+                <span>${lnglats[i].onlineTime || "暂无数据"}</span>
+              </div>
+
+            </div>
+
+            <div class="info-foot">
+              <a href="javascript:;" onClick="doDetail(${lnglats[i].deviceId})">进入详情</a>
+            </div>
+          </div>
         `;
         marker.content = content;
         marker.on("click", this.markerClick);
-        marker.emit("click", { target: marker });
       }
     },
     markerClick(e) {
@@ -122,6 +129,15 @@ export default {
     this.$nextTick(() => {
       this.initMap();
     });
+    let that = this
+    window.doDetail = (val) => {
+      that.$router.push({
+        name: 'DeviceListDetail',
+        query: {
+          deviceId: val
+        }
+      })
+    }
   }
 };
 </script>
@@ -146,5 +162,47 @@ table {
 
 .label {
   background-color: #f0f0f0;
+}
+
+::v-deep .info-wrapper {
+  background-color: #fff;
+  width: 200px;
+  font-size: 12px;
+
+  .info-title {
+    background-color: #25a5f7 !important;
+    padding: 5px 5px;
+    color: #fff;
+    border-bottom: 1px solid #fff;
+  }
+
+  .info-detail {
+    > div {
+      padding: 5px;
+    }
+  }
+
+  .info-foot {
+    padding: 5px;
+    border-top: 1px solid #f0f0f0;
+    text-align: right;
+    > a {
+      color: #25a5f7;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+::v-deep .amap-info-content {
+  padding: 0;
+  border-radius: 5px !important;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+::v-deep .amap-info-close {
+  color: #fff !important;
+  font-size: 12px;
 }
 </style>

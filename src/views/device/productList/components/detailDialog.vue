@@ -13,7 +13,9 @@
 
       <div>
         <label for="">数据格式:</label>
-        <span>{{ detailInfo.dataFormat }}</span>
+        <span>
+          <el-input v-model="detailInfo.dataFormat" type="textarea" readonly rows="5"></el-input>
+        </span>
       </div>
 
       <div>
@@ -99,6 +101,16 @@ export default {
   > div {
     line-height: 50px;
     border-bottom: 1px solid #F0F0F0;
+    &:nth-child(3) {
+      display: flex;
+      padding: 10px 0;
+      > label {
+        flex: 0 0 110px;
+      }
+      > span {
+        flex: 1;
+      }
+    }
     &:first-child {
       border-top: 1px solid #f0f0f0;
     }
