@@ -63,6 +63,7 @@
                   placeholder="请选择设备状态..."
                   clearable
                 >
+                  <el-option :value="null" label="全部状态"></el-option>
                   <el-option
                     v-for="(item, index) in status"
                     :key="index"

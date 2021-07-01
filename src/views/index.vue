@@ -101,7 +101,7 @@ export default {
             </div>
 
             <div class="info-foot">
-              <a href="javascript:;" onClick="doDetail(${lnglats[i].deviceId})">进入详情</a>
+              <a href="javascript:;" onClick="doDetail(${lnglats[i].deviceId}, ${lnglats[i].deviceType})">进入详情</a>
             </div>
           </div>
         `;
@@ -130,11 +130,12 @@ export default {
       this.initMap();
     });
     let that = this
-    window.doDetail = (val) => {
+    window.doDetail = (val, type) => {
       that.$router.push({
         name: 'DeviceListDetail',
         query: {
-          deviceId: val
+          deviceId: val,
+          deviceType: type
         }
       })
     }
@@ -146,18 +147,6 @@ export default {
 #container {
   width: 100%;
   height: calc(100vh - 34px - 50px);
-}
-
-table {
-  width: 100%;
-  border-left: 1px solid #dedede;
-  border-bottom: 1px solid #dedede;
-  border-collapse: collapse;
-  tr > td {
-    border-top: 1px solid #dedede;
-    border-right: 1px solid #dedede;
-    padding: 10px 0 10px 10px;
-  }
 }
 
 .label {

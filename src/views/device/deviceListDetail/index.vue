@@ -1,6 +1,7 @@
 <template>
   <div class="detail-wrapper" v-loading="loading">
-    <table>
+    <div class="top-title">设备信息</div>
+    <table style="margin-bottom: 30px">
       <tr>
         <td class="label">设备编码</td>
         <td>{{ detailInfo.deviceCode }}</td>
@@ -29,24 +30,30 @@
       </tr>
 
       <tr>
+        <td class="label">设备状态</td>
+        <td>{{ statusFormatter(detailInfo.status) }}</td>
         <td class="label">备注</td>
-        <td colspan="5">{{ detailInfo.remark }}</td>
+        <td colspan="3">{{ detailInfo.remark }}</td>
       </tr>
     </table>
-
     <!-- 设备不是EMS设备时 -->
     <template v-if="deviceData && deviceType == 0">
       <!-- S 设备实时数据 -->
       <div class="top-title">设备实时数据</div>
       <div class="deivice-data">
-        <el-row>
+        <el-row :gutter="20">
           <el-col
-            :span="8"
+            :span="6"
             v-for="(value, key, index) in deviceData"
             :key="index"
           >
-            <span for="" class="label">{{ key + "：" }}</span>
-            <span>{{ value }}</span>
+            <div class="top-item">
+              <div class="top-text">{{ labelFormat(key) }}</div>
+              <div class="bottom-detail">
+                {{ value || value == '0' ? value : '-'}}
+                <span v-if="!key.indexOf('Temp')">℃</span>
+              </div>
+            </div>
           </el-col>
         </el-row>
       </div>
@@ -64,7 +71,16 @@
     <!-- 设备是EMS设备时 -->
 
     <div class="back-bar">
-      <el-button size="small" type="primary" @click="() => { $router.back() }">返回</el-button>
+      <el-button
+        size="small"
+        type="primary"
+        @click="
+          () => {
+            $router.back();
+          }
+        "
+        >返回</el-button
+      >
     </div>
   </div>
 </template>
@@ -81,18 +97,66 @@ export default {
       deviceData: null,
       deviceType: 0,
       loadChart: [],
-      peakChart: []
+      peakChart: [],
+      deviceStatus: [],
+      deviceWordsName: [],
+      topDetail: [
+        {
+          label: "设备编码",
+          value: "deviceCode"
+        },
+        {
+          label: "设备名称",
+          value: "deviceName"
+        },
+        {
+          label: "所属产品",
+          value: "deviceTypeName"
+        },
+        {
+          label: "设备专责",
+          value: "equipSpecialist"
+        },
+        {
+          label: "IEME卡号",
+          value: "ieme"
+        },
+        {
+          label: "安装位置",
+          value: "installPosition"
+        },
+        {
+          label: "联系厂家",
+          value: "manufactor"
+        },
+        {
+          label: "电网专责",
+          value: "powergridSpecialist"
+        },
+        {
+          label: "设备状态",
+          value: "status"
+        },
+        {
+          label: "备注",
+          value: "remark"
+        }
+      ]
     };
   },
   components: {
     lineChart
   },
   created() {
-    this.getDetailInfo();
+    this.getDeviceStatus();
+    this.$nextTick(() => {
+      this.getDetailInfo();
+    });
   },
   methods: {
-    getDetailInfo() {
+    async getDetailInfo() {
       this.loading = true;
+      this.$route.query.deviceType != 17 && (await this.getDiceDict());
       getDeiveDetail({
         deviceId: this.$route.query.deviceId
       })
@@ -122,6 +186,48 @@ export default {
         .catch(() => {
           this.loading = false;
         });
+    },
+    // 获取设备状态
+    async getDeviceStatus() {
+      let { code, data } = await this.getDicts("device_status");
+      if (code == 200) {
+        this.deviceStatus = data.map(item => {
+          return {
+            value: item.dictValue,
+            label: item.dictLabel
+          };
+        });
+      }
+    },
+    statusFormatter(value) {
+      let temp = this.deviceStatus.filter(item => item.value == value);
+      return temp.length ? temp[0].label : "";
+    },
+    // 查设备字段字典
+    getDiceDict() {
+      return new Promise(resolve => {
+        let deviceType = null;
+        if (this.$route.query.deviceType == 19) {
+          deviceType = "4g4Device_dataFormat";
+        } else if (this.$route.query.deviceType == 18) {
+          deviceType = "2kwDevice_dataFormat";
+        }
+        this.getDicts(deviceType).then(res => {
+          if (res.code == 200) {
+            this.deviceWordsName = res.data.map(item => {
+              return {
+                value: item.dictValue,
+                label: item.dictLabel
+              };
+            });
+          }
+          resolve();
+        });
+      });
+    },
+    labelFormat(val) {
+      let temp = this.deviceWordsName.filter(item => item.value == val);
+      return temp.length ? temp.shift().label : val;
     }
   }
 };
@@ -130,9 +236,8 @@ export default {
 <style lang="scss" scoped>
 .detail-wrapper {
   padding: 20px;
-  padding-bottom: 50px;
   position: relative;
-  min-height: calc(100vh - 84px);
+  margin-bottom: 50px;
 }
 
 table {
@@ -144,41 +249,22 @@ table {
     border-top: 1px solid #dedede;
     border-right: 1px solid #dedede;
     padding: 10px 0 10px 10px;
+    font-size: 14px;
   }
 }
 
 .label {
   background-color: #f0f0f0;
   width: 180px;
+  color: #666;
 }
 
 .top-title {
-  font-size: 16px;
+  font-size: 18px;
   margin: 10px 0;
   font-weight: bold;
-}
-
-.deivice-data {
-  border-left: 1px solid #dedede;
-  border-top: 1px solid #dedede;
-  > .el-row {
-    > .el-col {
-      line-height: 40px;
-      display: flex;
-      border-right: 1px solid #dedede;
-      border-bottom: 1px solid #dedede;
-      span {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: inline-block;
-        padding: 0 10px;
-        &:last-child {
-          flex: 1;
-        }
-      }
-    }
-  }
+  padding-bottom: 10px;
+  border-bottom: 1px solid #dedede;
 }
 
 .chart-wrapper {
@@ -187,7 +273,7 @@ table {
 }
 
 .back-bar {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
@@ -196,5 +282,26 @@ table {
   padding: 0 20px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   background-color: #fff;
+}
+
+.top-item {
+  padding: 10px;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+  transition-property: all;
+  transition-duration: 0.2s;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
+  > div {
+    &:first-child {
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    &:last-child {
+      font-weight: bold;
+    }
+  }
 }
 </style>

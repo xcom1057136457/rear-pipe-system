@@ -52,8 +52,8 @@
                   v-model="searchParams.level"
                   placeholder="请选择告警级别"
                   style="width: 100%"
-                  clearable
                 >
+                  <el-option :value="null" label="全部告警级别"></el-option>
                   <el-option
                     v-for="(item, index) in levelList"
                     :key="index"
@@ -350,7 +350,6 @@ export default {
 }
 .alarm-wrapper {
   display: flex;
-  padding: 10px;
   > div {
     float: left;
   }

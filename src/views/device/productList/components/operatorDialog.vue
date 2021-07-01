@@ -67,25 +67,42 @@
 <script>
 import { addProduct, updateProduct } from "@/api/monitor/product";
 import { getAliProduct } from "@/api/monitor/aliProduct";
+import { isJSON } from "@/utils/validate"
 export default {
   data() {
+    var checkDataFormat = (rule, value, callback) => {
+      if (!value) return callback()
+      if (isJSON(value)) {
+        callback()
+      } else {
+        callback(new Error('请输入正确的JSON格式'))
+      }
+    };
     return {
       dialogVisible: false,
       aliProductList: [],
       formParams: {
-        productKey: '',
-        productName: '',
-        dataFormat: '',
-        remark: ''
+        productKey: "",
+        productName: "",
+        dataFormat: "",
+        remark: ""
       },
       buttonLoading: false,
       rules: {
         productKey: [
           { required: true, message: "请选择阿里云产品", triger: "change" }
         ],
+        dataFormat: [
+          { validator: checkDataFormat, triger: 'blur' }
+        ],
         productName: [
           { required: true, message: "请输入产品名称", triger: "blur" },
-          { min: 4, max: 10, message: "产品名称长度在 3 到 10 个字符", trigger: "blur" }
+          {
+            min: 4,
+            max: 10,
+            message: "产品名称长度在 4 到 10 个字符",
+            trigger: "blur"
+          }
         ]
       }
     };
@@ -115,7 +132,7 @@ export default {
       this.$emit("update:visible", val);
     },
     updateInfo(val) {
-      this.resetForm()
+      this.resetForm();
       if (val.productId) {
         let params = JSON.parse(JSON.stringify(val));
         this.$set(this, "formParams", params);
@@ -160,10 +177,10 @@ export default {
       });
     },
     resetForm() {
-      this.$set(this, 'formParams', {})
+      this.$set(this, "formParams", {});
       this.$nextTick(() => {
-        this.$refs['form'].clearValidate()
-      })
+        this.$refs["form"].clearValidate();
+      });
     },
     // 获取阿里云产品列表
     getAliProductHandler() {

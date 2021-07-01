@@ -1,8 +1,8 @@
 <template>
-  <section class="app-main">
+  <section class="app-main" :style="$route.path == '/index' ? 'padding: 0' : 'padding: 15px'">
     <transition name="fade-transform" mode="out-in">
       <keep-alive :include="cachedViews">
-        <router-view :key="key" />
+        <router-view :key="key" class="route-wrapper" />
       </keep-alive>
     </transition>
   </section>
@@ -10,16 +10,16 @@
 
 <script>
 export default {
-  name: 'AppMain',
+  name: "AppMain",
   computed: {
     cachedViews() {
-      return this.$store.state.tagsView.cachedViews
+      return this.$store.state.tagsView.cachedViews;
     },
     key() {
-      return this.$route.path
+      return this.$route.path;
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -31,7 +31,7 @@ export default {
   overflow: hidden;
 }
 
-.fixed-header+.app-main {
+.fixed-header + .app-main {
   padding-top: 50px;
 }
 
@@ -41,7 +41,7 @@ export default {
     min-height: calc(100vh - 84px);
   }
 
-  .fixed-header+.app-main {
+  .fixed-header + .app-main {
     padding-top: 84px;
   }
 }
@@ -53,5 +53,15 @@ export default {
   .fixed-header {
     padding-right: 15px;
   }
+}
+
+.app-main {
+  background-color: #f9f9f9;
+  // padding: 15px;
+}
+
+.route-wrapper {
+  background-color: #fff;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 </style>

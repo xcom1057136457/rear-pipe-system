@@ -23,6 +23,7 @@
                 v-model="searchParams.productKey"
                 placeholder="请选择产品"
               >
+                <el-option :value="null" label="全部产品"></el-option>
                 <el-option
                   v-for="(item, index) in aliProductList"
                   :key="index"
@@ -364,5 +365,9 @@ export default {
 .pagination-wrapper {
   margin-top: 20px;
   text-align: right;
+}
+
+.el-select {
+  width: 100%;
 }
 </style>

@@ -77,3 +77,20 @@ export function updateDevice(data) {
     data
   })
 }
+
+// 导出
+export function exportDevice(params) {
+  return request({
+    url: '/manager/device/export',
+    method: 'get',
+    params
+  })
+}
+
+// 下载模板
+export function importTemplate() {
+  return request({
+    url: '/manager/device/importTemplate',
+    method: 'get'
+  })
+}

@@ -58,6 +58,7 @@
                     v-model="searchParams.deviceType"
                     placeholder="请选择所属产品"
                   >
+                    <el-option label="全部产品" :value="null"></el-option>
                     <el-option
                       v-for="(item, index) in deviceType"
                       :key="index"
@@ -74,6 +75,7 @@
                     v-model="searchParams.status"
                     placeholder="请选择设备状态"
                   >
+                    <el-option label="全部状态" :value="null"></el-option>
                     <el-option
                       v-for="(item, index) in deviceStatus"
                       :key="index"
@@ -129,6 +131,7 @@
             plain
             type="info"
             icon="el-icon-upload2"
+            @click="uploadShow = !uploadShow"
             v-hasPermi="['device:deviceList:import']"
             >批量导入</el-button
           >
@@ -137,6 +140,8 @@
             plain
             type="warning"
             icon="el-icon-download"
+            @click="handleExport"
+            :loading="exportLoading"
             v-hasPermi="['device:deviceList:export']"
             >导出</el-button
           >
@@ -194,7 +199,15 @@
               align="center"
               :formatter="statusFormatter"
               v-if="columns[4].visible"
-            ></el-table-column>
+            >
+              <template #default="record">
+                <span
+                  class="dot"
+                  :class="statusClassFormatter(record.row.status)"
+                ></span>
+                {{ statusFormatter(record.row.status) }}
+              </template>
+            </el-table-column>
 
             <el-table-column
               prop="onlineTime"
@@ -212,9 +225,17 @@
               v-if="columns[6].visible"
             ></el-table-column>
 
-            <el-table-column label="操作" align="center" show-overflow-tooltip fixed="right" width="220">
+            <el-table-column
+              label="操作"
+              align="center"
+              show-overflow-tooltip
+              fixed="right"
+              width="220"
+            >
               <template #default="record">
-                <el-button type="text" @click="doDetail(record.row.deviceId)"
+                <el-button
+                  type="text"
+                  @click="doDetail(record.row.deviceId, record.row.deviceType)"
                   >查看</el-button
                 >
                 <el-divider direction="vertical"></el-divider>
@@ -252,15 +273,19 @@
       @closeDialog="searchHandler"
       :operatorType="operatorType"
     />
+
+    <update-dialog :visible.sync="uploadShow" @getAllList="getDeviceList" />
   </div>
 </template>
 
 <script>
 import { treeselect } from "@/api/system/dept";
+import updateDialog from "./components/uploadDialog.vue";
 import {
   getDeviceList,
   deleteDevice,
-  batchDeleteDevice
+  batchDeleteDevice,
+  exportDevice
 } from "@/api/monitor/device";
 import { getAllProduct } from "@/api/monitor/product";
 import operatorDialog from "./components/operatorDialog.vue";
@@ -290,6 +315,8 @@ export default {
       detailId: null,
       updateInfo: {},
       showSearch: true,
+      exportLoading: false,
+      uploadShow: false,
       columns: [
         { key: 0, label: `设备编码`, visible: true },
         { key: 1, label: `设备sn码`, visible: true },
@@ -309,7 +336,8 @@ export default {
     }
   },
   components: {
-    operatorDialog
+    operatorDialog,
+    updateDialog
   },
   methods: {
     searchHandler() {
@@ -447,11 +475,12 @@ export default {
         });
     },
     // 设备详情
-    doDetail(id) {
+    doDetail(id, type) {
       this.$router.push({
         name: "DeviceListDetail",
         query: {
-          deviceId: id
+          deviceId: id,
+          deviceType: type
         }
       });
     },
@@ -467,9 +496,25 @@ export default {
         });
       }
     },
-    statusFormatter(rows, cell, value) {
+    statusFormatter(value) {
       let temp = this.deviceStatus.filter(item => item.value == value);
       return temp.length ? temp[0].label : "";
+    },
+    // 颜色提示
+    statusClassFormatter(status) {
+      switch (status) {
+        case "1": {
+          return "green";
+        }
+
+        case "0": {
+          return "red";
+        }
+
+        case "2": {
+          return "orange";
+        }
+      }
     },
     // 修改
     doUpdate(val) {
@@ -482,6 +527,24 @@ export default {
       this.operatorType = 0;
       this.updateInfo = {};
       this.operatorShow = true;
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      const queryParams = Object.assign({}, this.searchParams, this.pageParams);
+      this.$confirm("是否确认导出所有设备数据项?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.exportLoading = true;
+          return exportDevice(queryParams);
+        })
+        .then(response => {
+          this.download(response.msg);
+          this.exportLoading = false;
+        })
+        .catch(() => {});
     }
   },
   async created() {
@@ -512,5 +575,28 @@ export default {
 .pagination-wrapper {
   margin-top: 20px;
   text-align: right;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 7px;
+  &.blue {
+    background-color: cornflowerblue;
+  }
+  &.green {
+    background-color: green;
+  }
+  &.gray {
+    background-color: gray;
+  }
+  &.orange {
+    background-color: orange;
+  }
+  &.red {
+    background-color: red;
+  }
 }
 </style>
