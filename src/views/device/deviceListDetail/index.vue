@@ -29,12 +29,39 @@
         <td>{{ detailInfo.powergridSpecialist }}</td>
       </tr>
 
-      <tr>
-        <td class="label">设备状态</td>
-        <td>{{ statusFormatter(detailInfo.status) }}</td>
-        <td class="label">备注</td>
-        <td colspan="3">{{ detailInfo.remark }}</td>
-      </tr>
+      <template v-if="$route.query.deviceType != 17">
+        <tr>
+          <td class="label">设备状态</td>
+          <td>{{ statusFormatter(detailInfo.status) }}</td>
+          <td class="label">备注</td>
+          <td colspan="3">{{ detailInfo.remark }}</td>
+        </tr>
+      </template>
+
+      <template v-if="$route.query.deviceType == 17">
+        <tr>
+          <td class="label">设备状态</td>
+          <td>{{ statusFormatter(detailInfo.status) }}</td>
+          <td class="label">更新时间</td>
+          <td>{{ detailInfo.updateTime }}</td>
+          <td class="label">经纬度</td>
+          <td>
+            {{
+              "经度: " +
+                detailInfo.longitude +
+                "°" +
+                "，" +
+                "纬度: " +
+                detailInfo.latitude +
+                "°"
+            }}
+          </td>
+        </tr>
+        <tr>
+          <td class="label">备注</td>
+          <td colspan="5">{{ detailInfo.remark }}</td>
+        </tr>
+      </template>
     </table>
 
     <!-- 设备不是EMS设备时 -->
@@ -270,7 +297,7 @@ export default {
         })
         .catch(() => {
           this.deviceData["Switch1"] = val == "0" ? "1" : "0";
-          this.$message.info('已取消修改!')
+          this.$message.info("已取消修改!");
         });
     }
   }
@@ -282,6 +309,14 @@ export default {
   padding: 20px;
   position: relative;
   margin-bottom: 50px;
+}
+
+::v-deep .el-switch__label {
+  &.is-active {
+    color: black;
+  }
+  font-weight: bold;
+  font-size: 16px;
 }
 
 .el-row {
