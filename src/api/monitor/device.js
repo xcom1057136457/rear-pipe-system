@@ -94,3 +94,12 @@ export function importTemplate() {
     method: 'get'
   })
 }
+
+// 发布控制指令
+export function deviceControl(data) {
+  return request({
+    url: '/manager/device/ctrl',
+    method: 'post',
+    data
+  })
+}

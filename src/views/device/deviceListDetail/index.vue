@@ -36,6 +36,7 @@
         <td colspan="3">{{ detailInfo.remark }}</td>
       </tr>
     </table>
+
     <!-- 设备不是EMS设备时 -->
     <template v-if="deviceData && deviceType == 0">
       <!-- S 设备实时数据 -->
@@ -50,8 +51,23 @@
             <div class="top-item">
               <div class="top-text">{{ labelFormat(key) }}</div>
               <div class="bottom-detail">
-                {{ value || value == '0' ? value : '-'}}
-                <span v-if="!key.indexOf('Temp')">℃</span>
+                <template v-if="key != 'Switch1'">
+                  {{ value || value == "0" ? value : "-" }}
+                  <span v-if="!key.indexOf('Temp')">℃</span>
+                </template>
+
+                <template v-else>
+                  <el-switch
+                    v-model="deviceData[key]"
+                    active-color="#13ce66"
+                    inactive-color="#ff4949"
+                    :inactive-text="deviceData[key] == 0 ? '断开' : '闭合'"
+                    active-value="1"
+                    inactive-value="0"
+                    @change="switchChange"
+                  >
+                  </el-switch>
+                </template>
               </div>
             </div>
           </el-col>
@@ -86,7 +102,7 @@
 </template>
 
 <script>
-import { getDeiveDetail } from "@/api/monitor/device";
+import { getDeiveDetail, deviceControl } from "@/api/monitor/device";
 import lineChart from "../deviceList/components/line-chart.vue";
 export default {
   data() {
@@ -228,6 +244,34 @@ export default {
     labelFormat(val) {
       let temp = this.deviceWordsName.filter(item => item.value == val);
       return temp.length ? temp.shift().label : val;
+    },
+    switchChange(val) {
+      this.$confirm("此操作将更改开关数据, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          deviceControl({
+            item: "Switch1",
+            productKey: this.detailInfo.productKey,
+            sn: this.detailInfo.sn,
+            val
+          })
+            .then(res => {
+              if (res.code == 200) {
+                this.$message.success("修改成功!");
+                // this.getDetailInfo();
+              }
+            })
+            .catch(() => {
+              this.deviceData["Switch1"] = val == "0" ? "1" : "0";
+            });
+        })
+        .catch(() => {
+          this.deviceData["Switch1"] = val == "0" ? "1" : "0";
+          this.$message.info('已取消修改!')
+        });
     }
   }
 };
@@ -238,6 +282,11 @@ export default {
   padding: 20px;
   position: relative;
   margin-bottom: 50px;
+}
+
+.el-row {
+  display: flex;
+  flex-wrap: wrap;
 }
 
 table {

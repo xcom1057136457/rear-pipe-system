@@ -9,7 +9,7 @@
     <div class="form-wrapper">
       <el-form
         label-position="left"
-        label-width="120px"
+        label-width="130px"
         size="small"
         :model="formParams"
         ref="form"
@@ -67,15 +67,15 @@
 <script>
 import { addProduct, updateProduct } from "@/api/monitor/product";
 import { getAliProduct } from "@/api/monitor/aliProduct";
-import { isJSON } from "@/utils/validate"
+import { isJSON } from "@/utils/validate";
 export default {
   data() {
     var checkDataFormat = (rule, value, callback) => {
-      if (!value) return callback()
+      if (!value) return callback();
       if (isJSON(value)) {
-        callback()
+        callback();
       } else {
-        callback(new Error('请输入正确的JSON格式'))
+        callback(new Error("请输入正确的JSON格式"));
       }
     };
     return {
@@ -92,9 +92,7 @@ export default {
         productKey: [
           { required: true, message: "请选择阿里云产品", triger: "change" }
         ],
-        dataFormat: [
-          { validator: checkDataFormat, triger: 'blur' }
-        ],
+        dataFormat: [{ validator: checkDataFormat, triger: "blur" }],
         productName: [
           { required: true, message: "请输入产品名称", triger: "blur" },
           {
