@@ -74,22 +74,44 @@
             <div class="top-item">
               <div class="top-text">{{ labelFormat(key) }}</div>
               <div class="bottom-detail">
-                <template v-if="key != 'Switch1'">
-                  {{ value || value == "0" ? value : "-" }}
-                  <span v-if="!key.indexOf('Temp')">℃</span>
+                <template v-if="$route.query.deviceType == 19">
+                  <template v-if="key != 'Switch1'">
+                    {{ value || value == "0" ? value : "-" }}
+                    <span v-if="!key.indexOf('Temp')">℃</span>
+                  </template>
+
+                  <template v-else>
+                    <el-switch
+                      v-model="deviceData[key]"
+                      active-color="#13ce66"
+                      inactive-color="#ff4949"
+                      :inactive-text="deviceData[key] == 0 ? '断开' : '闭合'"
+                      active-value="1"
+                      inactive-value="0"
+                      @change="switchChange($event, key)"
+                    >
+                    </el-switch>
+                  </template>
                 </template>
 
-                <template v-else>
-                  <el-switch
-                    v-model="deviceData[key]"
-                    active-color="#13ce66"
-                    inactive-color="#ff4949"
-                    :inactive-text="deviceData[key] == 0 ? '断开' : '闭合'"
-                    active-value="1"
-                    inactive-value="0"
-                    @change="switchChange"
-                  >
-                  </el-switch>
+                <template v-if="$route.query.deviceType == 18">
+                  <template v-if="key != 'ContactorState' && key != 'PRSwitch' && key != 'LSwitch'">
+                    {{ value || value == "0" ? value : "-" }}
+                    <span v-if="!key.indexOf('Temp')">℃</span>
+                  </template>
+
+                  <template v-else>
+                    <el-switch
+                      v-model="deviceData[key]"
+                      active-color="#13ce66"
+                      inactive-color="#ff4949"
+                      :inactive-text="deviceData[key] == 0 ? '断开' : '闭合'"
+                      active-value="1"
+                      inactive-value="0"
+                      @change="switchChange($event, key)"
+                    >
+                    </el-switch>
+                  </template>
                 </template>
               </div>
             </div>
@@ -272,15 +294,17 @@ export default {
       let temp = this.deviceWordsName.filter(item => item.value == val);
       return temp.length ? temp.shift().label : val;
     },
-    switchChange(val) {
-      this.$confirm("此操作将更改开关数据, 是否继续?", "提示", {
+    switchChange(val, key) {
+      let temp = this.deviceWordsName.filter(item => item.value == key);
+      temp = temp.length ? temp.shift().label : key;
+      this.$confirm(`此操作将更改${ temp }, 是否继续?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
           deviceControl({
-            item: "Switch1",
+            item: key,
             productKey: this.detailInfo.productKey,
             sn: this.detailInfo.sn,
             val
@@ -292,11 +316,11 @@ export default {
               }
             })
             .catch(() => {
-              this.deviceData["Switch1"] = val == "0" ? "1" : "0";
+              this.deviceData[key] = val == "0" ? "1" : "0";
             });
         })
         .catch(() => {
-          this.deviceData["Switch1"] = val == "0" ? "1" : "0";
+          this.deviceData[key] = val == "0" ? "1" : "0";
           this.$message.info("已取消修改!");
         });
     }
