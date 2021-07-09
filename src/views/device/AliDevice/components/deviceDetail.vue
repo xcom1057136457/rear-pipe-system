@@ -4,6 +4,8 @@
     :visible.sync="dialogVisible"
     width="80%"
     v-draggable
+    @open="initData"
+    @closed="resetForm"
   >
     <div v-loading="loading">
       <table>
@@ -22,7 +24,7 @@
           <td class="label">DeviceName</td>
           <td>{{ detailInfo.deviceName }}</td>
           <td class="label">认证方式</td>
-          <td> </td>
+          <td></td>
         </tr>
 
         <tr>
@@ -47,9 +49,9 @@
           <td class="label">当前状态</td>
           <td>{{ forMatter(detailInfo.status, "statusList") }}</td>
           <td class="label">实时延迟</td>
-          <td> </td>
+          <td></td>
           <td class="label">设备本地日志上报</td>
-          <td> </td>
+          <td></td>
         </tr>
       </table>
     </div>
@@ -91,12 +93,12 @@ export default {
     },
     dialogVisible(val) {
       this.$emit("update:visible", val);
-    },
-    deviceInfo(val) {
-      this.getDeviceDetailhandler(val);
     }
   },
   methods: {
+    initData() {
+      this.getDeviceDetailhandler(this.deviceInfo);
+    },
     // 获取详情
     async getDeviceDetailhandler(val) {
       this.loading = true;
@@ -129,6 +131,9 @@ export default {
     forMatter(val, type) {
       let temp = this[type].filter(item => item.dictValue == val);
       return temp.length ? temp[0].dictLabel : "";
+    },
+    resetForm() {
+      this.detailInfo = {}
     }
   },
   created() {

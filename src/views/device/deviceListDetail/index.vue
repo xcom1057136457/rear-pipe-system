@@ -42,8 +42,6 @@
         <tr>
           <td class="label">设备状态</td>
           <td>{{ statusFormatter(detailInfo.status) }}</td>
-          <td class="label">更新时间</td>
-          <td>{{ detailInfo.updateTime }}</td>
           <td class="label">经纬度</td>
           <td>
             {{
@@ -56,10 +54,8 @@
                 "°"
             }}
           </td>
-        </tr>
-        <tr>
           <td class="label">备注</td>
-          <td colspan="5">{{ detailInfo.remark }}</td>
+          <td>{{ detailInfo.remark }}</td>
         </tr>
       </template>
     </table>
@@ -106,7 +102,10 @@
 
     <!-- 设备是EMS设备时 -->
     <template v-if="loadChart && peakChart && deviceType == 1">
-      <div class="top-title">24小时储能功率曲线</div>
+      <div class="top-title">
+        24小时储能功率曲线
+        <span>(数据更新时间: {{ detailInfo.updateTime }})</span>
+      </div>
       <div class="chart-wrapper">
         <line-chart :loadChart="loadChart" :peakChart="peakChart"></line-chart>
       </div>
@@ -218,6 +217,7 @@ export default {
               this.$nextTick(() => {
                 this.loadChart = deviceData.loadChart;
                 this.peakChart = deviceData.peakChart;
+                this.detailInfo.updateTime = deviceData.updatetime;
               });
               this.deviceType = 1;
             } else {
@@ -349,6 +349,14 @@ table {
   font-weight: bold;
   padding-bottom: 10px;
   border-bottom: 1px solid #dedede;
+  display: flex;
+  align-items: flex-end;
+  > span {
+    font-size: 14px;
+    color: #666;
+    margin-left: 10px;
+    font-weight: normal;
+  }
 }
 
 .chart-wrapper {

@@ -5,6 +5,7 @@
     width="40%"
     v-draggable
     append-to-body
+    @open="initData"
   >
     <div class="form-wrapper">
       <el-form
@@ -128,16 +129,16 @@ export default {
     },
     dialogVisible(val) {
       this.$emit("update:visible", val);
-    },
-    updateInfo(val) {
-      this.resetForm();
-      if (val.productId) {
-        let params = JSON.parse(JSON.stringify(val));
-        this.$set(this, "formParams", params);
-      }
     }
   },
   methods: {
+    initData() {
+      this.resetForm();
+      if (this.updateInfo.productId) {
+        let params = JSON.parse(JSON.stringify(this.updateInfo));
+        this.$set(this, "formParams", params);
+      }
+    },
     submitHandler() {
       this.$refs["form"].validate(valid => {
         if (valid) {

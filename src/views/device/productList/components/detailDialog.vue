@@ -4,6 +4,8 @@
     :visible.sync="dialogVisible"
     width="50%"
     v-draggable
+    @open="initData"
+    @close="resetForm"
   >
     <div v-loading="loading" class="detail-wrapper">
       <div>
@@ -77,12 +79,15 @@ export default {
     },
     dialogVisible(val) {
       this.$emit("update:visible", val);
-    },
-    productId(val) {
-      this.getProductDetailHandler(val);
     }
   },
   methods: {
+    resetForm() {
+      this.detailInfo = {};
+    },
+    initData() {
+      this.getProductDetailHandler(this.productId);
+    },
     getProductDetailHandler(val) {
       this.loading = true;
       getProductDetail({

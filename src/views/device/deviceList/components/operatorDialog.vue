@@ -3,6 +3,7 @@
     :title="operatorType ? '修改设备' : '新增设备'"
     :visible.sync="dialogVisible"
     width="30%"
+    @open="initData"
     v-draggable
   >
     <div class="form-wrapper">
@@ -221,17 +222,17 @@ export default {
         }
       },
       deep: true
-    },
-    updateInfo(val) {
-      this.resetForm();
-      if (val.deviceId) {
-        let update = JSON.parse(JSON.stringify(val));
-        this.getSnProductKey(update.sn);
-        this.$set(this, "params", update);
-      }
     }
   },
   methods: {
+    initData() {
+      this.resetForm();
+      if (this.updateInfo.deviceId) {
+        let update = JSON.parse(JSON.stringify(this.updateInfo));
+        this.getSnProductKey(update.sn);
+        this.$set(this, "params", update);
+      }
+    },
     async submitHandler() {
       this.$refs["ruleForm"].validate(valid => {
         if (valid) {
