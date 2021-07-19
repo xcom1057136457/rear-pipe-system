@@ -310,7 +310,6 @@ export default {
     // 搜索产品
     productSearch(val) {
       if (val) {
-        console.log("val", val);
         this.$set(this.params, "deviceType", "");
         this.productList = [];
         let productKey = this.snList.filter(item => item.value == val)[0]

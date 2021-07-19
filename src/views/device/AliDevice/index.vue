@@ -42,12 +42,12 @@
         <el-row :gutter="20">
           <el-form
             label-position="left"
-            label-width="80px"
+            label-width="100px"
             size="small"
             v-if="showSearch"
           >
             <el-col :span="6">
-              <el-form-item label="设备名称">
+              <el-form-item label="DeviceName">
                 <el-input
                   v-model="searchParams.deviceName"
                   placeholder="请输入设备名称..."

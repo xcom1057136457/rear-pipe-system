@@ -1,8 +1,14 @@
 <template>
-  <section class="app-main" :style="$route.path == '/index' ? 'padding: 0' : 'padding: 15px'">
+  <section
+    class="app-main"
+    :style="$route.path == '/index' ? 'padding: 0' : 'padding: 15px'"
+  >
     <transition name="fade-transform" mode="out-in">
       <keep-alive :include="cachedViews">
-        <router-view :key="key" class="route-wrapper" />
+        <router-view
+          :key="key"
+          :class="isCustomList.includes($route.path) ? '' : 'route-wrapper'"
+        />
       </keep-alive>
     </transition>
   </section>
@@ -17,6 +23,11 @@ export default {
     },
     key() {
       return this.$route.path;
+    }
+  },
+  data() {
+    return {
+      isCustomList: ['/device/deviceListDetail']
     }
   }
 };
@@ -61,7 +72,7 @@ export default {
 }
 
 .route-wrapper {
-  background-color: #fff;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  background-color: #fff;
 }
 </style>
