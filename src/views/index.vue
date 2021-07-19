@@ -86,7 +86,8 @@ export default {
       deviceInfo: [],
       searchParams: {},
       deviceType: [],
-      deviceStatus: []
+      deviceStatus: [],
+      markers: []
     };
   },
   methods: {
@@ -161,10 +162,26 @@ export default {
       var lnglats = this.deviceInfo;
       this.infoWindow = new AMap.InfoWindow({ offset: new AMap.Pixel(0, -35) });
       for (var i = 0, marker; i < lnglats.length; i++) {
-        var marker = new AMap.Marker({
-          position: [Number(lnglats[i].longitude), Number(lnglats[i].latitude)],
-          map: this.map
-        });
+        if (lnglats[i].deviceType == 18) {
+          var marker = new AMap.Marker({
+            position: [
+              Number(lnglats[i].longitude),
+              Number(lnglats[i].latitude)
+            ],
+            map: this.map,
+            icon: "https://i.loli.net/2021/07/19/lkqTbOmCudxrsXJ.png"
+          });
+          this.markers.push(marker);
+        } else {
+          var marker = new AMap.Marker({
+            position: [
+              Number(lnglats[i].longitude),
+              Number(lnglats[i].latitude)
+            ],
+            map: this.map
+          });
+          this.markers.push(marker);
+        }
         let content = `
           <div class="info-wrapper">
             <div class="info-title">
@@ -205,8 +222,30 @@ export default {
       }
     },
     markerClick(e) {
+      this.resetIcon();
+      let click2kwIcon = new AMap.Icon({
+        image: "https://i.loli.net/2021/07/19/eWwrOMcHSGTsZ7E.png",
+        size: new AMap.Size(40, 62), //图标大小
+        imageSize: new AMap.Size(40, 62)
+      });
+      if (e.target.content.indexOf("2KW移动电源") != -1) {
+        e.target.setIcon(click2kwIcon);
+      }
       this.infoWindow.setContent(e.target.content);
       this.infoWindow.open(this.map, e.target.getPosition());
+      this.infoWindow.on('close',this.closeInfo)
+    },
+    resetIcon() {
+      let click2kwIcon = new AMap.Icon({
+        image: "https://i.loli.net/2021/07/19/lkqTbOmCudxrsXJ.png",
+        size: new AMap.Size(40, 62), //图标大小
+        imageSize: new AMap.Size(40, 62)
+      });
+      this.markers.map(item => {
+        if (item.content.indexOf("2KW移动电源") != -1) {
+          item.setIcon(click2kwIcon);
+        }
+      });
     },
     // 获取设备数据
     getAllDeviceHandler() {
@@ -230,6 +269,9 @@ export default {
     },
     search() {
       this.initMap();
+    },
+    closeInfo() {
+      this.resetIcon()
     }
   },
   mounted() {
