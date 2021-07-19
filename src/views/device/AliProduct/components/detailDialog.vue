@@ -1,5 +1,12 @@
 <template>
-  <el-dialog title="提示" :visible.sync="dialogVisible" width="70%" v-draggable>
+  <el-dialog
+    title="提示"
+    :visible.sync="dialogVisible"
+    width="70%"
+    v-draggable
+    @closed="resetForm"
+    @open="initData"
+  >
     <div class="detail-box" v-loading="loading">
       <div class="top-header">
         <el-row :gutter="20">
@@ -26,7 +33,7 @@
             <td class="label">产品名称</td>
             <td>{{ detailForm.productName }}</td>
             <td class="label">节点类型</td>
-            <td>{{ forMatter(detailForm.nodeType, 'nodeTypeList') }}</td>
+            <td>{{ forMatter(detailForm.nodeType, "nodeTypeList") }}</td>
             <td class="label">创建时间</td>
             <td>{{ parseTime(detailForm.gmtCreate) }}</td>
           </tr>
@@ -35,14 +42,16 @@
             <td class="label">所属品类</td>
             <td>{{ detailForm.categoryName }}</td>
             <td class="label">数据格式</td>
-            <td>{{ forMatter(detailForm.dataFormat, 'dataFormateList') }}</td>
+            <td>{{ forMatter(detailForm.dataFormat, "dataFormateList") }}</td>
             <td class="label">数据校验级别</td>
-            <td>{{ forMatter(detailForm.validateType, 'validateTypeList') }}</td>
+            <td>
+              {{ forMatter(detailForm.validateType, "validateTypeList") }}
+            </td>
           </tr>
 
           <tr>
             <td class="label">认证方式</td>
-            <td>{{ forMatter(detailForm.authType, 'authTypeList') }}</td>
+            <td>{{ forMatter(detailForm.authType, "authTypeList") }}</td>
             <td class="label">状态</td>
             <td>
               <span
@@ -51,15 +60,15 @@
                   detailForm.productStatus == 'RELEASE_STATUS' ? 'green' : 'red'
                 "
               ></span>
-              {{ forMatter(detailForm.productStatus, 'statusList') }}
+              {{ forMatter(detailForm.productStatus, "statusList") }}
             </td>
             <td class="label">连网协议</td>
-            <td>{{ forMatter(detailForm.netType, 'netTypeList') }}</td>
+            <td>{{ forMatter(detailForm.netType, "netTypeList") }}</td>
           </tr>
 
           <tr>
             <td class="label">产品描述</td>
-            <td colspan="5">{{ detailForm.description || '暂无描述...' }}</td>
+            <td colspan="5">{{ detailForm.description || "暂无描述..." }}</td>
           </tr>
         </table>
       </div>
@@ -106,12 +115,15 @@ export default {
     },
     dialogVisible(val) {
       this.$emit("update:visible", val);
-    },
-    productKey(val) {
-      this.getProductDetail(val);
     }
   },
   methods: {
+    initData() {
+      this.getProductDetail(this.productKey);
+    },
+    resetForm() {
+      this.detailForm = {};
+    },
     // 获取产品详情
     async getProductDetail(productKey) {
       this.loading = true;
@@ -160,15 +172,15 @@ export default {
     },
     // 获取数据格式
     async getDataFormate() {
-      let { code, data } = await this.getDicts('data_format')
+      let { code, data } = await this.getDicts("data_format");
       if (code == 200) {
-        this.dataFormateList = data
+        this.dataFormateList = data;
       }
     },
     // 格式化
     forMatter(val, type) {
       let temp = this[type].filter(item => item.dictValue == val);
-      return temp.length ? temp[0].dictLabel : ''
+      return temp.length ? temp[0].dictLabel : "";
     }
   },
   created() {
@@ -177,7 +189,7 @@ export default {
     this.getAuthType();
     this.getStatus();
     this.getNetType();
-    this.getDataFormate()
+    this.getDataFormate();
   }
 };
 </script>

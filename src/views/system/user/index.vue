@@ -104,7 +104,7 @@
               icon="el-icon-plus"
               size="mini"
               @click="handleAdd"
-              v-hasPermi="['system:user:add']"
+              v-hasPermi="['authority:user:add']"
               >新增</el-button
             >
           </el-col>
@@ -116,7 +116,7 @@
               size="mini"
               :disabled="single"
               @click="handleUpdate"
-              v-hasPermi="['system:user:edit']"
+              v-hasPermi="['authority:user:edit']"
               >修改</el-button
             >
           </el-col>
@@ -128,7 +128,7 @@
               size="mini"
               :disabled="multiple"
               @click="handleDelete"
-              v-hasPermi="['system:user:remove']"
+              v-hasPermi="['authority:user:remove']"
               >删除</el-button
             >
           </el-col>
@@ -139,7 +139,7 @@
               icon="el-icon-upload2"
               size="mini"
               @click="handleImport"
-              v-hasPermi="['system:user:import']"
+              v-hasPermi="['authority:user:import']"
               >导入</el-button
             >
           </el-col>
@@ -151,7 +151,7 @@
               size="mini"
               :loading="exportLoading"
               @click="handleExport"
-              v-hasPermi="['system:user:export']"
+              v-hasPermi="['authority:user:export']"
               >导出</el-button
             >
           </el-col>
@@ -245,7 +245,7 @@
                 type="text"
                 icon="el-icon-edit"
                 @click="handleUpdate(scope.row)"
-                v-hasPermi="['system:user:edit']"
+                v-hasPermi="['authority:user:edit']"
                 >修改</el-button
               >
               <el-button
@@ -254,7 +254,7 @@
                 type="text"
                 icon="el-icon-delete"
                 @click="handleDelete(scope.row)"
-                v-hasPermi="['system:user:remove']"
+                v-hasPermi="['authority:user:remove']"
                 >删除</el-button
               >
               <el-button
@@ -262,7 +262,7 @@
                 type="text"
                 icon="el-icon-key"
                 @click="handleResetPwd(scope.row)"
-                v-hasPermi="['system:user:resetPwd']"
+                v-hasPermi="['authority:user:resetPwd']"
                 >重置</el-button
               >
             </template>

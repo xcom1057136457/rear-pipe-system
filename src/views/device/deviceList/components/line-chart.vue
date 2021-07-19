@@ -20,6 +20,9 @@ export default {
         legend: {
           data: ['负载电表曲线', '储能pcs曲线', '配变供电曲线']
         },
+        textStyle: {
+          fontFamily: 'PiHuiTi'
+        },
         grid: {
           left: '3%',
           right: '4%',

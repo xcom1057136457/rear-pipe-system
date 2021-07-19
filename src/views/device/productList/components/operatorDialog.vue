@@ -3,14 +3,18 @@
     :title="operatorType ? '修改产品' : '新增产品'"
     :visible.sync="dialogVisible"
     width="40%"
+    v-draggable
+    append-to-body
+    @open="initData"
   >
     <div class="form-wrapper">
       <el-form
         label-position="left"
-        label-width="110px"
+        label-width="130px"
         size="small"
         :model="formParams"
         ref="form"
+        :rules="rules"
       >
         <el-form-item label="所属阿里云产品" prop="productKey">
           <el-select
@@ -36,6 +40,7 @@
             v-model="formParams.dataFormat"
             placeholder="请输入数据格式..."
             type="textarea"
+            rows="10"
           ></el-input>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
@@ -63,13 +68,42 @@
 <script>
 import { addProduct, updateProduct } from "@/api/monitor/product";
 import { getAliProduct } from "@/api/monitor/aliProduct";
+import { isJSON } from "@/utils/validate";
 export default {
   data() {
+    var checkDataFormat = (rule, value, callback) => {
+      if (!value) return callback();
+      if (isJSON(value)) {
+        callback();
+      } else {
+        callback(new Error("请输入正确的JSON格式"));
+      }
+    };
     return {
       dialogVisible: false,
       aliProductList: [],
-      formParams: {},
-      buttonLoading: false
+      formParams: {
+        productKey: "",
+        productName: "",
+        dataFormat: "",
+        remark: ""
+      },
+      buttonLoading: false,
+      rules: {
+        productKey: [
+          { required: true, message: "请选择阿里云产品", triger: "change" }
+        ],
+        dataFormat: [{ validator: checkDataFormat, triger: "blur" }],
+        productName: [
+          { required: true, message: "请输入产品名称", triger: "blur" },
+          {
+            min: 4,
+            max: 10,
+            message: "产品名称长度在 4 到 10 个字符",
+            trigger: "blur"
+          }
+        ]
+      }
     };
   },
   props: {
@@ -95,49 +129,57 @@ export default {
     },
     dialogVisible(val) {
       this.$emit("update:visible", val);
-    },
-    updateInfo(val) {
-      if (val.productId) {
-        let params = JSON.parse(JSON.stringify(val))
-        this.$set(this, "formParams", params);
-      } else {
-        this.resetForm()
-      }
     }
   },
   methods: {
-    submitHandler() {
-      this.buttonLoading = true;
-      if (this.operatorType == 0) {
-        addProduct(this.formParams)
-          .then(res => {
-            if (res.code == 200) {
-              this.dialogVisible = false;
-              this.$message.success("新增成功!");
-              this.$emit("closeHandler");
-            }
-            this.buttonLoading = false;
-          })
-          .catch(() => {
-            this.buttonLoading = false;
-          });
-      } else {
-        updateProduct(this.formParams)
-          .then(res => {
-            if (res.code == 200) {
-              this.dialogVisible = false;
-              this.$message.success("修改成功!");
-              this.$emit("closeHandler");
-            }
-            this.buttonLoading = false;
-          })
-          .catch(() => {
-            this.buttonLoading = false;
-          });
+    initData() {
+      this.resetForm();
+      if (this.updateInfo.productId) {
+        let params = JSON.parse(JSON.stringify(this.updateInfo));
+        this.$set(this, "formParams", params);
       }
+    },
+    submitHandler() {
+      this.$refs["form"].validate(valid => {
+        if (valid) {
+          this.buttonLoading = true;
+          if (this.operatorType == 0) {
+            addProduct(this.formParams)
+              .then(res => {
+                if (res.code == 200) {
+                  this.dialogVisible = false;
+                  this.$message.success("新增成功!");
+                  this.$emit("closeHandler");
+                }
+                this.buttonLoading = false;
+              })
+              .catch(() => {
+                this.buttonLoading = false;
+              });
+          } else {
+            updateProduct(this.formParams)
+              .then(res => {
+                if (res.code == 200) {
+                  this.dialogVisible = false;
+                  this.$message.success("修改成功!");
+                  this.$emit("closeHandler");
+                }
+                this.buttonLoading = false;
+              })
+              .catch(() => {
+                this.buttonLoading = false;
+              });
+          }
+        } else {
+          return false;
+        }
+      });
     },
     resetForm() {
       this.$set(this, "formParams", {});
+      this.$nextTick(() => {
+        this.$refs["form"].clearValidate();
+      });
     },
     // 获取阿里云产品列表
     getAliProductHandler() {

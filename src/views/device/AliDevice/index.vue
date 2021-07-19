@@ -40,9 +40,14 @@
     <div class="bottom-detail">
       <div class="form-wrapper">
         <el-row :gutter="20">
-          <el-form label-position="left" label-width="80px" size="small">
+          <el-form
+            label-position="left"
+            label-width="100px"
+            size="small"
+            v-if="showSearch"
+          >
             <el-col :span="6">
-              <el-form-item label="设备名称">
+              <el-form-item label="DeviceName">
                 <el-input
                   v-model="searchParams.deviceName"
                   placeholder="请输入设备名称..."
@@ -58,6 +63,7 @@
                   placeholder="请选择设备状态..."
                   clearable
                 >
+                  <el-option :value="null" label="全部状态"></el-option>
                   <el-option
                     v-for="(item, index) in status"
                     :key="index"
@@ -98,6 +104,12 @@
           icon="el-icon-plus"
           >添加设备</el-button
         >
+
+        <right-toolbar
+          :columns="columns"
+          :showSearch.sync="showSearch"
+          @queryTable="getList"
+        ></right-toolbar>
       </div>
 
       <div class="table-wrapper">
@@ -113,6 +125,7 @@
             label="DeviceName/备注名称"
             show-overflow-tooltip
             align="center"
+            v-if="columns[0].visible"
           ></el-table-column>
           <el-table-column
             prop="productKey"
@@ -120,11 +133,13 @@
             show-overflow-tooltip
             align="center"
             :formatter="productKeyFormatter"
+            v-if="columns[1].visible"
           ></el-table-column>
           <el-table-column
             label="状态/启用状态"
             show-overflow-tooltip
             align="center"
+            v-if="columns[2].visible"
           >
             <template #default="record">
               <span
@@ -135,10 +150,11 @@
             </template>
           </el-table-column>
           <el-table-column
-            prop="gmtModified"
-            label="最后上线时间"
+            prop="gmtCreate"
+            label="创建时间"
             show-overflow-tooltip
             align="center"
+            v-if="columns[3].visible"
           ></el-table-column>
           <el-table-column label="操作" show-overflow-tooltip align="center">
             <template #default="record">
@@ -201,7 +217,14 @@ export default {
         pageNum: 1,
         pageSize: 10
       },
-      tableData: []
+      tableData: [],
+      showSearch: true,
+      columns: [
+        { key: 0, label: `DeviceName/备注名称`, visible: true },
+        { key: 1, label: `设备所属产品`, visible: true },
+        { key: 2, label: `状态/启用状态`, visible: true },
+        { key: 3, label: `创建时间`, visible: true }
+      ]
     };
   },
   components: {
@@ -289,7 +312,7 @@ export default {
             });
             setTimeout(() => {
               this.getList();
-            }, 1000)
+            }, 1000);
           }
         })
         .catch(() => {

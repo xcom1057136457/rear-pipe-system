@@ -32,8 +32,8 @@
           ref="searchForm"
         >
           <el-row :gutter="20">
-            <el-col :span="9">
-              <el-form-item label="时间">
+            <el-col :span="6">
+              <el-form-item label="告警时间">
                 <el-date-picker
                   v-model="searchParams.alarmDate"
                   type="daterange"
@@ -46,19 +46,38 @@
               </el-form-item>
             </el-col>
 
-            <el-col :span="9">
+            <el-col :span="6">
               <el-form-item label="告警级别">
                 <el-select
                   v-model="searchParams.level"
                   placeholder="请选择告警级别"
                   style="width: 100%"
-                  clearable
                 >
+                  <el-option :value="null" label="全部告警级别"></el-option>
                   <el-option
                     v-for="(item, index) in levelList"
                     :key="index"
                     :label="item.label"
                     :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+
+            <el-col :span="6">
+              <el-form-item label="设备名称">
+                <el-select
+                  v-model="searchParams.sn"
+                  filterable
+                  default-first-option
+                  placeholder="请选择设备名称"
+                >
+                  <el-option :value="null" label="全部设备"></el-option>
+                  <el-option
+                    v-for="(item, index) in deviceList"
+                    :key="index"
+                    :value="item.sn"
+                    :label="item.deviceName"
                   ></el-option>
                 </el-select>
               </el-form-item>
@@ -84,7 +103,7 @@
         </el-form>
       </div>
       <div class="table-wrapper">
-        <el-table :data="alarmData"  ref="formTable" v-loading="tableLoading">
+        <el-table :data="alarmData" ref="formTable" v-loading="tableLoading">
           <el-table-column
             label="设备"
             align="center"
@@ -170,6 +189,7 @@
 import { getAlarmPage } from "@/api/alarm/emsAlarm";
 import alarmChart from "./components/alarm-chart";
 import dayjs from "dayjs";
+import { getAllDevice } from "@/api/monitor/device";
 export default {
   data() {
     return {
@@ -194,7 +214,8 @@ export default {
         { label: "二级", value: "2" },
         { label: "三级", value: "3" }
       ],
-      tableLoading: false
+      tableLoading: false,
+      deviceList: []
     };
   },
   components: {
@@ -202,7 +223,7 @@ export default {
   },
   methods: {
     async getAlarmPageHandler() {
-      this.tableLoading = true
+      this.tableLoading = true;
       let params = Object.assign({}, this.pageParams, this.searchParams);
       if (params.alarmDate && params.alarmDate.length) {
         params.startTime = dayjs(params.alarmDate[0]).format(
@@ -213,32 +234,31 @@ export default {
         );
         delete params.alarmDate;
       }
-      let { code, data, rows, total } = await getAlarmPage(params);
+      let { code, data } = await getAlarmPage(params);
       if (code == 200) {
-        // this.chartData = data.alarmCount;
-        // this.alarmData = data.items.list;
-        // this.alarmCount = data.alarmCount;
-        // this.alarmCount.forEach(e => {
-        //   if (e.alarmtype === '1001') {
-        //     e.types = '逆变器';
-        //   } else if (e.alarmtype === '1002') {
-        //     e.types = '电池系统';
-        //   } else if (e.alarmtype === '1003') {
-        //     e.types = '电表';
-        //   } else if (e.alarmtype === '1004') {
-        //     e.types = '环境';
-        //   } else if (e.alarmtype === '1005') {
-        //     e.types = '消防';
-        //   } else if (e.alarmtype === '1006') {
-        //     e.types = '门禁';
-        //   } else {
-        //     e.types = e.alarmtype;
-        //   }
-        // });
-        this.alarmData = rows;
-        this.pageParams.total = total;
+        this.chartData = data.alarmCount;
+        this.alarmData = data.items.list;
+        this.alarmCount = data.alarmCount;
+        this.alarmCount.forEach(e => {
+          if (e.alarmtype === "1001") {
+            e.types = "逆变器";
+          } else if (e.alarmtype === "1002") {
+            e.types = "电池系统";
+          } else if (e.alarmtype === "1003") {
+            e.types = "电表";
+          } else if (e.alarmtype === "1004") {
+            e.types = "环境";
+          } else if (e.alarmtype === "1005") {
+            e.types = "消防";
+          } else if (e.alarmtype === "1006") {
+            e.types = "门禁";
+          } else {
+            e.types = e.alarmtype;
+          }
+        });
+        this.pageParams.total = data.items.total;
       }
-      this.tableLoading = false
+      this.tableLoading = false;
     },
     searchHandler() {
       this.pageParams.pageNum = 1;
@@ -290,15 +310,28 @@ export default {
         ? (this.searchParams.type = "")
         : (this.searchParams.type = val);
       this.searchHandler();
+    },
+    // 获取所有设备
+    getAllDeviceHandler() {
+      getAllDevice().then(res => {
+        if (res.code == 200) {
+          this.deviceList = res.rows.filter(item => item.deviceType == 17);
+        }
+      });
     }
   },
   mounted() {
     this.getAlarmPageHandler();
+    this.getAllDeviceHandler();
   }
 };
 </script>
 
 <style lang="scss" scoped>
+.el-select {
+  width: 100%;
+}
+
 .top-text {
   font-size: 18px;
   color: #666;
@@ -317,7 +350,6 @@ export default {
 }
 .alarm-wrapper {
   display: flex;
-  padding: 10px;
   > div {
     float: left;
   }

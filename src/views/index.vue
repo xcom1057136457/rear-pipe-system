@@ -1,24 +1,127 @@
 <template>
-  <div id="container"></div>
+  <div class="container">
+    <div id="container"></div>
+
+    <el-popover placement="top" width="350" trigger="click">
+      <div class="search-wrapper">
+        <el-form label-width="80px" label-position="left" size="small">
+          <el-form-item label="设备编码">
+            <el-input
+              v-model="searchParams.deviceCode"
+              placeholder="请输入设备编码"
+            ></el-input>
+          </el-form-item>
+
+          <el-form-item label="设备名称">
+            <el-input
+              v-model="searchParams.deviceName"
+              placeholder="请输入设备名称"
+            ></el-input>
+          </el-form-item>
+
+          <el-form-item label="所属产品">
+            <el-select
+              v-model="searchParams.deviceType"
+              placeholder="请选择所属产品"
+            >
+              <el-option label="全部产品" :value="null"></el-option>
+              <el-option
+                v-for="(item, index) in deviceType"
+                :key="index"
+                :value="item.value"
+                :label="item.label"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="设备状态">
+            <el-select
+              v-model="searchParams.status"
+              placeholder="请选择设备状态"
+            >
+              <el-option label="全部状态" :value="null"></el-option>
+              <el-option
+                v-for="(item, index) in deviceStatus"
+                :key="index"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+
+        <div class="btns-wrapper" style="text-align: center">
+          <el-button
+            type="primary"
+            icon="el-icon-search"
+            size="mini"
+            @click="search"
+            >搜索</el-button
+          >
+          <el-button
+            type="default"
+            icon="el-icon-refresh"
+            size="mini"
+            @click="refresh"
+            >重置</el-button
+          >
+        </div>
+      </div>
+      <div class="search-ball" slot="reference">
+        <span class="el-icon-search"></span>
+      </div>
+    </el-popover>
+  </div>
 </template>
 
 <script>
-import { getAllDevice } from "@/api/monitor/device";
+import { getAllDevice, getDeviceList } from "@/api/monitor/device";
+import { getAllProduct } from "@/api/monitor/product";
 export default {
   name: "index",
   data() {
     return {
       map: null,
       infoWindow: null,
-      deviceInfo: []
+      deviceInfo: [],
+      searchParams: {},
+      deviceType: [],
+      deviceStatus: []
     };
   },
   methods: {
+    // 获取设备状态
+    async getDeviceStatus() {
+      let { code, data } = await this.getDicts("device_status");
+      if (code == 200) {
+        this.deviceStatus = data.map(item => {
+          return {
+            value: item.dictValue,
+            label: item.dictLabel
+          };
+        });
+      }
+    },
+    // 获取产品列表
+    async getAllProductHandler() {
+      let { code, rows } = await getAllProduct();
+      if (code == 200) {
+        this.deviceType = rows.map(item => {
+          return {
+            label: item.productName,
+            value: item.productId
+          };
+        });
+      }
+    },
     createMap() {
       return new Promise(resolve => {
         this.map = new AMap.Map("container", {
           zoom: 15, //级别
-          center: [this.deviceInfo[0].longitude, this.deviceInfo[0].latitude], //中心点坐标
+          center: [
+            Number(this.deviceInfo[0].longitude),
+            Number(this.deviceInfo[0].latitude)
+          ], //中心点坐标
           viewMode: "3D" //使用3D视图
         });
 
@@ -59,7 +162,7 @@ export default {
       this.infoWindow = new AMap.InfoWindow({ offset: new AMap.Pixel(0, -35) });
       for (var i = 0, marker; i < lnglats.length; i++) {
         var marker = new AMap.Marker({
-          position: [lnglats[i].longitude, lnglats[i].latitude],
+          position: [Number(lnglats[i].longitude), Number(lnglats[i].latitude)],
           map: this.map
         });
         let content = `
@@ -79,16 +182,6 @@ export default {
               </div>
 
               <div class="info-item">
-                <span>所属产品：</span>
-                <span>${lnglats[i].deviceTypeName}</span>
-              </div>
-
-              <div class="info-item">
-                <span>联系厂家：</span>
-                <span>${lnglats[i].manufactor || "暂无数据"}</span>
-              </div>
-
-              <div class="info-item">
                 <span>设备状态：</span>
                 <span>${lnglats[i].status == "1" ? "在线" : "离线"}</span>
               </div>
@@ -101,7 +194,9 @@ export default {
             </div>
 
             <div class="info-foot">
-              <a href="javascript:;" onClick="doDetail(${lnglats[i].deviceId})">进入详情</a>
+              <a href="javascript:;" onClick="doDetail(${
+                lnglats[i].deviceId
+              }, ${lnglats[i].deviceType})">进入详情</a>
             </div>
           </div>
         `;
@@ -116,28 +211,43 @@ export default {
     // 获取设备数据
     getAllDeviceHandler() {
       return new Promise(resolve => {
-        getAllDevice().then(res => {
+        getDeviceList({
+          pageNum: 1,
+          pageSize: 100000,
+          ...this.searchParams
+        }).then(res => {
           if (res.code == 200) {
             this.deviceInfo = res.rows;
             resolve();
           }
         });
       });
+    },
+    // 刷新
+    refresh() {
+      this.searchParams = {};
+      this.initMap();
+    },
+    search() {
+      this.initMap();
     }
   },
   mounted() {
     this.$nextTick(() => {
       this.initMap();
     });
-    let that = this
-    window.doDetail = (val) => {
+    this.getAllProductHandler();
+    this.getDeviceStatus();
+    let that = this;
+    window.doDetail = (val, type, e) => {
       that.$router.push({
-        name: 'DeviceListDetail',
+        name: "DeviceListDetail",
         query: {
-          deviceId: val
+          deviceId: val,
+          deviceType: type
         }
-      })
-    }
+      });
+    };
   }
 };
 </script>
@@ -148,16 +258,8 @@ export default {
   height: calc(100vh - 34px - 50px);
 }
 
-table {
-  width: 100%;
-  border-left: 1px solid #dedede;
-  border-bottom: 1px solid #dedede;
-  border-collapse: collapse;
-  tr > td {
-    border-top: 1px solid #dedede;
-    border-right: 1px solid #dedede;
-    padding: 10px 0 10px 10px;
-  }
+.container {
+  position: relative;
 }
 
 .label {
@@ -166,7 +268,7 @@ table {
 
 ::v-deep .info-wrapper {
   background-color: #fff;
-  width: 200px;
+  width: 250px;
   font-size: 12px;
 
   .info-title {
@@ -179,6 +281,19 @@ table {
   .info-detail {
     > div {
       padding: 5px;
+      &:nth-child(2) {
+        display: flex;
+        align-items: flex-start;
+        > span {
+          &:first-child {
+            flex: 0 0 60px;
+          }
+
+          &:last-child {
+            flex: 1;
+          }
+        }
+      }
     }
   }
 
@@ -204,5 +319,25 @@ table {
 ::v-deep .amap-info-close {
   color: #fff !important;
   font-size: 12px;
+}
+
+.search-ball {
+  position: absolute;
+  right: 150px;
+  bottom: 80px;
+  background-color: rgb(24, 144, 255);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.el-select {
+  width: 100%;
 }
 </style>
