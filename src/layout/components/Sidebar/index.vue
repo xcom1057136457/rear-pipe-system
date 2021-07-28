@@ -28,12 +28,44 @@
         :collapse-transition="false"
         mode="vertical"
       >
-        <sidebar-item
-          v-for="(route, index) in sidebarRouters"
-          :key="route.path + index"
-          :item="route"
-          :base-path="route.path"
-        />
+        <template v-if="!roles.includes('visitor')">
+          <sidebar-item
+            v-for="(route, index) in sidebarRouters"
+            :key="route.path + index"
+            :item="route"
+            :base-path="route.path"
+          />
+        </template>
+
+        <template v-else>
+          <app-link :to="'/index'">
+            <el-menu-item index="/index" popper-append-to-body>
+              <i class="el-icon-menu"></i>
+              <span slot="title">首页</span>
+            </el-menu-item>
+          </app-link>
+
+          <app-link :to="'/alarm/emsAlarm'">
+            <el-menu-item index="/alarm/emsAlarm" popper-append-to-body>
+              <i class="el-icon-menu"></i>
+              <span slot="title">EMS设备告警</span>
+            </el-menu-item>
+          </app-link>
+
+          <app-link :to="'/alarm/powerAlarm'">
+            <el-menu-item index="/alarm/powerAlarm" popper-append-to-body>
+              <i class="el-icon-menu"></i>
+              <span slot="title">2kW电源告警</span>
+            </el-menu-item>
+          </app-link>
+
+          <app-link :to="'/alarm/4g4Alarm'">
+            <el-menu-item index="/alarm/4g4Alarm" popper-append-to-body>
+              <i class="el-icon-menu"></i>
+              <span slot="title">4G4设备告警</span>
+            </el-menu-item>
+          </app-link>
+        </template>
       </el-menu>
     </el-scrollbar>
   </div>
@@ -44,12 +76,14 @@ import { mapGetters, mapState } from "vuex";
 import Logo from "./Logo";
 import SidebarItem from "./SidebarItem";
 import variables from "@/assets/styles/variables.scss";
+import AppLink from "./Link.vue";
+import { isExternal } from "@/utils/validate";
 
 export default {
-  components: { SidebarItem, Logo },
+  components: { SidebarItem, Logo, AppLink },
   computed: {
     ...mapState(["settings"]),
-    ...mapGetters(["sidebarRouters", "sidebar"]),
+    ...mapGetters(["sidebarRouters", "sidebar", "roles"]),
     activeMenu() {
       const route = this.$route;
       const { meta, path } = route;
@@ -67,6 +101,15 @@ export default {
     },
     isCollapse() {
       return !this.sidebar.opened;
+    },
+    resolvePath(routePath) {
+      if (isExternal(routePath)) {
+        return routePath;
+      }
+      if (isExternal(this.basePath)) {
+        return this.basePath;
+      }
+      return path.resolve(this.basePath, routePath);
     }
   }
 };

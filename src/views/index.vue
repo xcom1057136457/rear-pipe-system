@@ -1,76 +1,39 @@
 <template>
   <div class="container">
-    <div id="container"></div>
-
-    <el-popover placement="top" width="350" trigger="click">
-      <div class="search-wrapper">
-        <el-form label-width="80px" label-position="left" size="small">
-          <el-form-item label="设备编码">
-            <el-input
-              v-model="searchParams.deviceCode"
-              placeholder="请输入设备编码"
-            ></el-input>
-          </el-form-item>
-
-          <el-form-item label="设备名称">
-            <el-input
-              v-model="searchParams.deviceName"
-              placeholder="请输入设备名称"
-            ></el-input>
-          </el-form-item>
-
-          <el-form-item label="所属产品">
-            <el-select
-              v-model="searchParams.deviceType"
-              placeholder="请选择所属产品"
-            >
-              <el-option label="全部产品" :value="null"></el-option>
-              <el-option
-                v-for="(item, index) in deviceType"
-                :key="index"
-                :value="item.value"
-                :label="item.label"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-
-          <el-form-item label="设备状态">
-            <el-select
-              v-model="searchParams.status"
-              placeholder="请选择设备状态"
-            >
-              <el-option label="全部状态" :value="null"></el-option>
-              <el-option
-                v-for="(item, index) in deviceStatus"
-                :key="index"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-        </el-form>
-
-        <div class="btns-wrapper" style="text-align: center">
-          <el-button
-            type="primary"
-            icon="el-icon-search"
-            size="mini"
-            @click="search"
-            >搜索</el-button
-          >
-          <el-button
-            type="default"
-            icon="el-icon-refresh"
-            size="mini"
-            @click="refresh"
-            >重置</el-button
-          >
+    <div class="top-nav">
+      <div class="top-nav-inner">
+        <div>
+          <div>绿色</div>
+          <div>威克</div>
         </div>
+
+        <div>
+          <div>
+            <span class="top-label">累计排放量:</span>
+            <span>423445kWh</span>
+          </div>
+          <div>
+            <span class="top-label">累计减排CO2约:</span>
+            <span>2342吨</span>
+          </div>
+        </div>
+
+        <div>累计减排SO2约：2342吨</div>
       </div>
-      <div class="search-ball" slot="reference">
-        <span class="el-icon-search"></span>
-      </div>
-    </el-popover>
+    </div>
+
+    <div class="select-device">
+      <el-checkbox-group v-model="deviceSelect">
+        <el-checkbox
+          v-for="(item, index) in deviceList"
+          :key="index"
+          :label="item.deviceTypeName"
+          :value="item.deviceType"
+          @change="deviceChange"
+        ></el-checkbox>
+      </el-checkbox-group>
+    </div>
+    <div id="container"></div>
   </div>
 </template>
 
@@ -87,7 +50,9 @@ export default {
       searchParams: {},
       deviceType: [],
       deviceStatus: [],
-      markers: []
+      markers: [],
+      deviceSelect: [],
+      deviceList: []
     };
   },
   methods: {
@@ -210,41 +175,198 @@ export default {
           });
           this.markers.push(marker);
         }
-        let content = `
-          <div class="info-wrapper">
-            <div class="info-title">
-              设备信息
+
+        let content = ''
+        if (lnglats[i].deviceType == 19) {
+          content = `
+            <div class="info-wrapper">
+              <div class="info-title">
+                设备信息
+              </div>
+              <div class="info-detail">
+                <div class="info-item">
+                  <span>设备编码：</span>
+                  <span>${lnglats[i].deviceCode}</span>
+                </div>
+
+                <div class="info-item">
+                  <span>设备名称：</span>
+                  <span>${lnglats[i].deviceName}</span>
+                </div>
+
+                <div class="info-item">
+                  <span>设备状态：</span>
+                  <span>${lnglats[i].status == "1" ? "在线" : "离线"}</span>
+                </div>
+
+                <div class="info-item">
+                  <span>最后在线时间：</span>
+                  <span>${lnglats[i].onlineTime || "暂无数据"}</span>
+                </div>
+
+                <div class="info-item">
+                  <span>运行状态：</span>
+                  <span>正常</span>
+                </div>
+
+                <div class="info-item">
+                  <span>电压检测状态：</span>
+                  <span>闭合</span>
+                </div>
+
+                <div class="info-item">
+                  <span>温度：</span>
+                  <span>32.1°C</span>
+                </div>
+
+                <div class="info-item">
+                  <span>触电检测1：</span>
+                  <span>通</span>
+                </div>
+
+                <div class="info-item">
+                  <span>触电检测2：</span>
+                  <span>通</span>
+                </div>
+
+              </div>
+
+              <div class="info-foot">
+                <a href="javascript:;" onClick="doDetail(${
+                  lnglats[i].deviceId
+                }, ${lnglats[i].deviceType})">进入详情</a>
+              </div>
             </div>
-            <div class="info-detail">
-              <div class="info-item">
-                <span>设备编码：</span>
-                <span>${lnglats[i].deviceCode}</span>
+          `;
+        } else if (lnglats[i].deviceType == 18) {
+          content = `
+            <div class="info-wrapper">
+              <div class="info-title">
+                设备信息
+              </div>
+              <div class="info-detail">
+                <div class="info-item">
+                  <span>设备编码：</span>
+                  <span>${lnglats[i].deviceCode}</span>
+                </div>
+
+                <div class="info-item">
+                  <span>设备名称：</span>
+                  <span>${lnglats[i].deviceName}</span>
+                </div>
+
+                <div class="info-item">
+                  <span>设备状态：</span>
+                  <span>${lnglats[i].status == "1" ? "在线" : "离线"}</span>
+                </div>
+
+                <div class="info-item">
+                  <span>最后在线时间：</span>
+                  <span>${lnglats[i].onlineTime || "暂无数据"}</span>
+                </div>
+
+                <div class="info-item">
+                  <span>运行状态：</span>
+                  <span>正常</span>
+                </div>
+
+                <div class="info-item">
+                  <span>电池总压：</span>
+                  <span>36.0V</span>
+                </div>
+
+                <div class="info-item">
+                  <span>直流功率：</span>
+                  <span>0.43kW</span>
+                </div>
+
+                <div class="info-item">
+                  <span>温度：</span>
+                  <span>27.1°C</span>
+                </div>
+
+                <div class="info-item">
+                  <span>SOC：</span>
+                  <span>90%</span>
+                </div>
+
               </div>
 
-              <div class="info-item">
-                <span>设备名称：</span>
-                <span>${lnglats[i].deviceName}</span>
+              <div class="info-foot">
+                <a href="javascript:;" onClick="doDetail(${
+                  lnglats[i].deviceId
+                }, ${lnglats[i].deviceType})">进入详情</a>
               </div>
-
-              <div class="info-item">
-                <span>设备状态：</span>
-                <span>${lnglats[i].status == "1" ? "在线" : "离线"}</span>
-              </div>
-
-              <div class="info-item">
-                <span>最后在线时间：</span>
-                <span>${lnglats[i].onlineTime || "暂无数据"}</span>
-              </div>
-
             </div>
+          `;
+        } else if (lnglats[i].deviceType == 17) {
+          content = `
+            <div class="info-wrapper">
+              <div class="info-title">
+                设备信息
+              </div>
+              <div class="info-detail">
+                <div class="info-item">
+                  <span>设备编码：</span>
+                  <span>${lnglats[i].deviceCode}</span>
+                </div>
 
-            <div class="info-foot">
-              <a href="javascript:;" onClick="doDetail(${
-                lnglats[i].deviceId
-              }, ${lnglats[i].deviceType})">进入详情</a>
+                <div class="info-item">
+                  <span>设备名称：</span>
+                  <span>${lnglats[i].deviceName}</span>
+                </div>
+
+                <div class="info-item">
+                  <span>设备状态：</span>
+                  <span>${lnglats[i].status == "1" ? "在线" : "离线"}</span>
+                </div>
+
+                <div class="info-item">
+                  <span>最后在线时间：</span>
+                  <span>${lnglats[i].onlineTime || "暂无数据"}</span>
+                </div>
+
+                <div class="info-item">
+                  <span>运行状态：</span>
+                  <span>正常</span>
+                </div>
+
+                <div class="info-item">
+                  <span>储能交流有功功率：</span>
+                  <span>-/+1.3kW</span>
+                </div>
+
+                <div class="info-item">
+                  <span>温度：</span>
+                  <span>36.1°C</span>
+                </div>
+
+                <div class="info-item">
+                  <span>单体最高/低电压：</span>
+                  <span>3.328/3.324V</span>
+                </div>
+
+                <div class="info-item">
+                  <span>相电压：</span>
+                  <span>221.5/216.8/225.3V</span>
+                </div>
+
+                <div class="info-item">
+                  <span>SOC：</span>
+                  <span>90%</span>
+                </div>
+
+              </div>
+
+              <div class="info-foot">
+                <a href="javascript:;" onClick="doDetail(${
+                  lnglats[i].deviceId
+                }, ${lnglats[i].deviceType})">进入详情</a>
+              </div>
             </div>
-          </div>
-        `;
+          `;
+        }
+
         marker.content = content;
         marker.on("click", this.markerClick);
 
@@ -352,10 +474,35 @@ export default {
         }).then(res => {
           if (res.code == 200) {
             this.deviceInfo = res.rows;
+            let arr = [];
+            for (let item of res.rows) {
+              if (
+                this.deviceList.filter(
+                  actItem => actItem.deviceType == item.deviceType
+                ).length == 0
+              ) {
+                this.deviceList.push(item);
+              }
+            }
+            this.deviceSelect = this.deviceList.map(
+              item => item.deviceTypeName
+            );
             resolve();
           }
         });
       });
+    },
+    // 设备更改
+    deviceChange() {
+      let params = [];
+      this.deviceSelect.forEach(item1 => {
+        this.deviceList.forEach(item2 => {
+          if (item2.deviceTypeName == item1) {
+            params.push(item2);
+          }
+        });
+      });
+      console.log("params", params);
     },
     // 刷新
     refresh() {
@@ -390,13 +537,45 @@ export default {
 </script>
 
 <style scoped lang="scss">
+$detailHeight: 60px;
+
 #container {
   width: 100%;
-  height: calc(100vh - 34px - 50px);
+  height: calc(100vh - 34px - 50px - 120px);
 }
 
 .container {
   position: relative;
+}
+
+.top-nav {
+  padding: 10px;
+  height: 80px;
+  overflow: hidden;
+  font-size: 14px;
+  background-color: #f0f0f0;
+  box-sizing: border-box;
+  .top-nav-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  }
+}
+
+.top-label {
+  width: 120px;
+  display: inline-block;
+}
+
+.select-device {
+  padding: 10px;
+  background-color: #dedede;
+  height: 40px;
+  overflow: hidden;
 }
 
 .label {

@@ -28,12 +28,24 @@ export function loginByPhone(phonenumber, code) {
   });
 }
 
+// 游客登陆
+export function loginByVisitor(phonenumber) {
+  const data = {
+    phonenumber
+  };
+  return request({
+    url: "/login",
+    method: "post",
+    data: data
+  });
+}
+
 // 发送验证码
 export function sendSms(phoneNumbers) {
   return request({
     url: `/captchaSms/${phoneNumbers}`,
-    method: 'get'
-  })
+    method: "get"
+  });
 }
 
 // 获取用户详细信息

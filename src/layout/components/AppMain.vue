@@ -68,7 +68,6 @@ export default {
 
 .app-main {
   background-color: #f9f9f9;
-  // padding: 15px;
 }
 
 .route-wrapper {
