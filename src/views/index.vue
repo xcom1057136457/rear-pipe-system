@@ -158,9 +158,9 @@ export default {
       });
     },
     /**
-     * https://i.loli.net/2021/07/27/8IpceAPmVL4gNTz.png
-     https://i.loli.net/2021/07/27/TKXzNU5EkbjolMI.png
-     https://i.loli.net/2021/07/27/5NCSxJq6lfMY91O.png
+     * https://i.loli.net/2021/07/27/8IpceAPmVL4gNTz.png 蓝箱子
+     https://i.loli.net/2021/07/27/TKXzNU5EkbjolMI.png 黄箱子
+     https://i.loli.net/2021/07/27/5NCSxJq6lfMY91O.png click黄箱子
      https://i.loli.net/2021/07/27/SBwTivEZzrDnPhW.png
      * */
     async initMap() {
@@ -290,13 +290,24 @@ export default {
         imageSize: new AMap.Size(40, 62)
       });
 
-      // let clickEmsIcon =  new AMap.Icon({
-      //   image: "https://i.loli.net/2021/07/19/eWwrOMcHSGTsZ7E.png",
-      //   size: new AMap.Size(40, 62), //图标大小
-      //   imageSize: new AMap.Size(40, 62)
-      // });
+      let clickEmsIcon = new AMap.Icon({
+        image: "https://i.loli.net/2021/07/27/5NCSxJq6lfMY91O.png",
+        size: new AMap.Size(40, 62), //图标大小
+        imageSize: new AMap.Size(40, 62)
+      });
+
+      let click4g4Icon = new AMap.Icon({
+        image: "https://i.loli.net/2021/07/27/SBwTivEZzrDnPhW.png",
+        size: new AMap.Size(40, 62), //图标大小
+        imageSize: new AMap.Size(40, 62)
+      });
+
       if (e.target.content.indexOf("2KW移动电源") != -1) {
         e.target.setIcon(click2kwIcon);
+      } else if (e.target.content.indexOf("EMS设备") != -1) {
+        e.target.setIcon(clickEmsIcon);
+      } else if (e.target.content.indexOf("4G4远控设备") != -1) {
+        e.target.setIcon(click4g4Icon);
       }
       this.infoWindow.setContent(e.target.content);
       this.infoWindow.open(this.map, e.target.getPosition());
@@ -308,9 +319,26 @@ export default {
         size: new AMap.Size(40, 62), //图标大小
         imageSize: new AMap.Size(40, 62)
       });
+
+      let clickEmsIcon = new AMap.Icon({
+        image: "https://i.loli.net/2021/07/27/5NCSxJq6lfMY91O.png",
+        size: new AMap.Size(40, 62), //图标大小
+        imageSize: new AMap.Size(40, 62)
+      });
+
+      let click4g4Icon = new AMap.Icon({
+        image: "https://i.loli.net/2021/07/27/SBwTivEZzrDnPhW.png",
+        size: new AMap.Size(40, 62), //图标大小
+        imageSize: new AMap.Size(40, 62)
+      });
+
       this.markers.map(item => {
         if (item.content.indexOf("2KW移动电源") != -1) {
           item.setIcon(click2kwIcon);
+        } else if (item.content.indexOf("EMS设备") != -1) {
+          item.setIcon(clickEmsIcon);
+        } else if (item.content.indexOf("4G4远控设备") != -1) {
+          item.setIcon(click4g4Icon);
         }
       });
     },
