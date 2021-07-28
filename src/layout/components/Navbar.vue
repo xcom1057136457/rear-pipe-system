@@ -108,7 +108,9 @@ export default {
       })
         .then(() => {
           this.$store.dispatch("LogOut").then(() => {
-            location.href = "/index";
+            this.$router.push({
+              path: "/login"
+            });
           });
         })
         .catch(() => {});
