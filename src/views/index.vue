@@ -118,7 +118,7 @@ export default {
     createMap() {
       return new Promise(resolve => {
         this.map = new AMap.Map("container", {
-          zoom: 15, //级别
+          zoom: 5, //级别
           center: [
             Number(this.deviceInfo[0].longitude),
             Number(this.deviceInfo[0].latitude)
@@ -153,14 +153,22 @@ export default {
             that.map.addControl(new AMap.Geolocation());
           }
         );
+
         resolve();
       });
     },
+    /**
+     * https://i.loli.net/2021/07/27/8IpceAPmVL4gNTz.png
+     https://i.loli.net/2021/07/27/TKXzNU5EkbjolMI.png
+     https://i.loli.net/2021/07/27/5NCSxJq6lfMY91O.png
+     https://i.loli.net/2021/07/27/SBwTivEZzrDnPhW.png
+     * */
     async initMap() {
       await this.getAllDeviceHandler();
       await this.createMap();
       var lnglats = this.deviceInfo;
       this.infoWindow = new AMap.InfoWindow({ offset: new AMap.Pixel(0, -35) });
+      this.markers = [];
       for (var i = 0, marker; i < lnglats.length; i++) {
         if (lnglats[i].deviceType == 18) {
           var marker = new AMap.Marker({
@@ -170,6 +178,26 @@ export default {
             ],
             map: this.map,
             icon: "https://i.loli.net/2021/07/19/lkqTbOmCudxrsXJ.png"
+          });
+          this.markers.push(marker);
+        } else if (lnglats[i].deviceType == 17) {
+          var marker = new AMap.Marker({
+            position: [
+              Number(lnglats[i].longitude),
+              Number(lnglats[i].latitude)
+            ],
+            map: this.map,
+            icon: "https://i.loli.net/2021/07/27/8IpceAPmVL4gNTz.png"
+          });
+          this.markers.push(marker);
+        } else if (lnglats[i].deviceType == 19) {
+          var marker = new AMap.Marker({
+            position: [
+              Number(lnglats[i].longitude),
+              Number(lnglats[i].latitude)
+            ],
+            map: this.map,
+            icon: "https://i.loli.net/2021/07/27/TKXzNU5EkbjolMI.png"
           });
           this.markers.push(marker);
         } else {
@@ -219,6 +247,39 @@ export default {
         `;
         marker.content = content;
         marker.on("click", this.markerClick);
+
+        // 利用styles属性修改点聚合的图标样式
+        var styles = [
+          {
+            url: "imgs/1.png",
+            size: new AMap.Size(32, 32),
+            offset: new AMap.Pixel(-16, -30)
+          },
+          {
+            url: "imgs/2.png",
+            size: new AMap.Size(32, 32),
+            offset: new AMap.Pixel(-16, -30)
+          },
+          {
+            url: "imgs/3.png",
+            size: new AMap.Size(48, 48),
+            offset: new AMap.Pixel(-24, -45),
+            textColor: "#CC0066"
+          }
+        ];
+
+        let that = this;
+
+        //添加聚合组件
+        that.map.plugin(["AMap.MarkerClusterer"], function() {
+          let cluster = new AMap.MarkerClusterer(
+            that.map, // 地图实例
+            that.markers, // 海量点组成的数组
+            {
+              maxZoom: 10
+            }
+          );
+        });
       }
     },
     markerClick(e) {
@@ -228,12 +289,18 @@ export default {
         size: new AMap.Size(40, 62), //图标大小
         imageSize: new AMap.Size(40, 62)
       });
+
+      // let clickEmsIcon =  new AMap.Icon({
+      //   image: "https://i.loli.net/2021/07/19/eWwrOMcHSGTsZ7E.png",
+      //   size: new AMap.Size(40, 62), //图标大小
+      //   imageSize: new AMap.Size(40, 62)
+      // });
       if (e.target.content.indexOf("2KW移动电源") != -1) {
         e.target.setIcon(click2kwIcon);
       }
       this.infoWindow.setContent(e.target.content);
       this.infoWindow.open(this.map, e.target.getPosition());
-      this.infoWindow.on('close',this.closeInfo)
+      this.infoWindow.on("close", this.closeInfo);
     },
     resetIcon() {
       let click2kwIcon = new AMap.Icon({
@@ -271,7 +338,7 @@ export default {
       this.initMap();
     },
     closeInfo() {
-      this.resetIcon()
+      this.resetIcon();
     }
   },
   mounted() {

@@ -354,7 +354,7 @@ export default {
         { key: 4, label: `消费状态`, visible: true },
         { key: 5, label: `消息id`, visible: true },
         { key: 6, label: `消息内容`, visible: true },
-        { key: 7, label: `消费时间`, visible: true },
+        { key: 7, label: `消费时间`, visible: true }
       ]
     };
   },

@@ -133,7 +133,7 @@ export default {
       return temp.length ? temp[0].dictLabel : "";
     },
     resetForm() {
-      this.detailInfo = {}
+      this.detailInfo = {};
     }
   },
   created() {

@@ -206,7 +206,9 @@
                       }}
                     </template>
 
-                    <template v-else-if="key != 'ContactorState' && key != 'BMSState'">
+                    <template
+                      v-else-if="key != 'ContactorState' && key != 'BMSState'"
+                    >
                       {{ value || value == "0" ? value : "-" }}
                       <span v-if="!key.indexOf('Temp')">℃</span>
                     </template>
@@ -252,16 +254,16 @@
     </div>
 
     <div class="back-bar">
-      <!-- <el-switch
-        v-model="version"
-        active-text="新版"
-        inactive-text="旧版"
-        active-value="new"
-        inactive-value="old"
-        style="margin-right: 20px"
-        active-color="#1890ff"
-        inactive-color="rgb(255, 73, 73)"
-      ></el-switch> -->
+      <!--      <el-switch-->
+      <!--        v-model="version"-->
+      <!--        active-text="新版"-->
+      <!--        inactive-text="旧版"-->
+      <!--        active-value="new"-->
+      <!--        inactive-value="old"-->
+      <!--        style="margin-right: 20px"-->
+      <!--        active-color="#1890ff"-->
+      <!--        inactive-color="rgb(255, 73, 73)"-->
+      <!--      ></el-switch>-->
       <el-button
         size="small"
         type="primary"
