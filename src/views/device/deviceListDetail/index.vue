@@ -5,138 +5,159 @@
         <span class="bar-title">设备信息</span>
       </div>
 
-      <div class="top-detail-info">
-        <table v-if="version == 'old'">
-          <tr>
-            <td class="label">设备编码</td>
-            <td>{{ detailInfo.deviceCode }}</td>
-            <td class="label">设备名称</td>
-            <td>{{ detailInfo.deviceName }}</td>
-            <td class="label">设备SN码</td>
-            <td>{{ detailInfo.sn }}</td>
-          </tr>
+      <template v-if="$route.query.deviceType == 19">
+        <div class="top-detail-info">
+          <div class="top-detail-item">
+            <label for="">设备编码:</label>
+            <span>{{ detailInfo.deviceCode }}</span>
+          </div>
 
-          <tr>
-            <td class="label">所属产品</td>
-            <td>{{ detailInfo.deviceTypeName }}</td>
-            <td class="label">设备专责</td>
-            <td>{{ detailInfo.equipSpecialist }}</td>
-            <td class="label">IEME卡号</td>
-            <td>{{ detailInfo.ieme }}</td>
-          </tr>
-
-          <tr>
-            <td class="label">安装位置</td>
-            <td>{{ detailInfo.installPosition }}</td>
-            <td class="label">联系厂家</td>
-            <td>{{ detailInfo.manufactor }}</td>
-            <td class="label">电网专责</td>
-            <td>{{ detailInfo.powergridSpecialist }}</td>
-          </tr>
-
-          <template v-if="$route.query.deviceType != 17">
-            <tr>
-              <td class="label">设备状态</td>
-              <td>{{ statusFormatter(detailInfo.status) }}</td>
-              <td class="label">备注</td>
-              <td colspan="3">{{ detailInfo.remark }}</td>
-            </tr>
-          </template>
-
-          <template v-if="$route.query.deviceType == 17">
-            <tr>
-              <td class="label">设备状态</td>
-              <td>{{ statusFormatter(detailInfo.status) }}</td>
-              <td class="label">经纬度</td>
-              <td>
-                {{
-                  "经度: " +
-                    detailInfo.longitude +
-                    "°" +
-                    "，" +
-                    "纬度: " +
-                    detailInfo.latitude +
-                    "°"
-                }}
-              </td>
-              <td class="label">备注</td>
-              <td>{{ detailInfo.remark }}</td>
-            </tr>
-          </template>
-        </table>
-
-        <template v-if="version == 'new'">
           <div class="top-detail-item">
             <label for="">设备名称:</label>
             <span>{{ detailInfo.deviceName }}</span>
           </div>
 
           <div class="top-detail-item">
-            <label for="">额定功率:</label>
-            <span>2kw</span>
+            <label for="">设备状态:</label>
+            <span>{{ detailInfo.status == "1" ? "在线" : "离线" }}</span>
           </div>
 
           <div class="top-detail-item">
-            <label for="">实时位置:</label>
+            <label for="">最后在线时间:</label>
+            <span> {{ detailInfo.onlineTime || "暂无数据" }} </span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">运行状态:</label>
+            <span>{{ yxztFormate(detailInfo.yxzt) || "暂无数据" }}</span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">电压检测状态:</label>
+            <span>{{ dyjcztFormate(detailInfo.dyjczt) }}</span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">温度:</label>
+            <span>{{ detailInfo.temp || "暂无数据" }}</span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">触电检测1:</label>
+            <span>{{ cdjcFormate(detailInfo.cdjc1) }}</span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">触电检测2:</label>
             <span>
-              {{
-                addressInfo ||
-                  getPositionByLonLats(
-                    detailInfo.longitude,
-                    detailInfo.latitude
-                  ) ||
-                  "暂无数据"
-              }}
+              {{ cdjcFormate(detailInfo.cdjc2) }}
             </span>
+          </div>
+        </div>
+      </template>
+
+      <template v-if="$route.query.deviceType == 18">
+        <div class="top-detail-info">
+          <div class="top-detail-item">
+            <label for="">设备编码:</label>
+            <span>{{ detailInfo.deviceCode }}</span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">设备名称:</label>
+            <span>{{ detailInfo.deviceName }}</span>
           </div>
 
           <div class="top-detail-item">
             <label for="">设备状态:</label>
-            <span>{{ statusFormatter(detailInfo.status) }}</span>
+            <span>{{ detailInfo.status == "1" ? "在线" : "离线" }}</span>
           </div>
 
           <div class="top-detail-item">
-            <label for="">剩余容量:</label>
-            <span>{{ "85%" }}</span>
+            <label for="">最后在线时间:</label>
+            <span> {{ detailInfo.onlineTime || "暂无数据" }}} </span>
           </div>
 
           <div class="top-detail-item">
-            <label for="">设备温度:</label>
-            <span>{{ "32℃" }}</span>
+            <label for="">运行状态:</label>
+            <span>{{ yxztFormate(detailInfo.yxzt) || "暂无数据" }}</span>
           </div>
 
           <div class="top-detail-item">
-            <label for="">累计放电:</label>
-            <span>{{ "435kWh" }}</span>
-          </div>
-
-          <div class="line-vertical"></div>
-
-          <div class="double-item">
-            <div>
-              <label for="">出厂时间:</label>
-              <span>{{ new Date() }}</span>
-            </div>
-
-            <div>
-              <label for="">离线时间:</label>
-              <span>{{ detailInfo.offlineTime }}</span>
-            </div>
+            <label for="">电池总压:</label>
+            <span>{{ detailInfo.dczy || "暂无数据" }}</span>
           </div>
 
           <div class="top-detail-item">
-            <label for="">售后电话:</label>
-            <span>1517344444444</span>
+            <label for="">直流功率:</label>
+            <span>{{ detailInfo.zlgl || "暂无数据" }}</span>
           </div>
-
-          <div class="line-vertical"></div>
 
           <div class="top-detail-item">
-            <label for="">威克电力:</label>
-            <span>xxxxxxxxx</span>
+            <label for="">温度:</label>
+            <span>{{ detailInfo.temp || "暂无数据" }}</span>
           </div>
-        </template>
-      </div>
+
+          <div class="top-detail-item">
+            <label for="">SOC:</label>
+            <span>{{ detailInfo.soc || "暂无数据" }}</span>
+          </div>
+        </div>
+      </template>
+
+      <template v-else-if="$route.query.deviceType == 17">
+        <div class="top-detail-info">
+          <div class="top-detail-item">
+            <label for="">设备编码:</label>
+            <span>{{ detailInfo.deviceCode }}</span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">设备名称:</label>
+            <span>{{ detailInfo.deviceName }}</span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">设备状态:</label>
+            <span>{{ detailInfo.status == "1" ? "在线" : "离线" }}</span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">最后在线时间:</label>
+            <span> {{ detailInfo.onlineTime || "暂无数据" }}} </span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">运行状态:</label>
+            <span>{{ yxztFormate(detailInfo.yxzt) || "暂无数据" }}</span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">储能交流有功功率:</label>
+            <span>{{ detailInfo.cnjlyggl || "暂无数据" }}</span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">温度:</label>
+            <span>{{ detailInfo.temp || "暂无数据" }}</span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">单体最高/低电压:</label>
+            <span>{{ detailInfo.dtdy || "暂无数据" }}</span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">相电压:</label>
+            <span>{{ detailInfo.xdy || "暂无数据" }}</span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">SOC:</label>
+            <span>{{ detailInfo.soc || "暂无数据" }}</span>
+          </div>
+        </div>
+      </template>
     </div>
 
     <div class="extra-info">
@@ -356,6 +377,37 @@ export default {
         this.addressInfo = res;
       });
     },
+    dyjcztFormate(val) {
+      if (!val) return "暂无数据";
+      return val == 0 ? "断开" : "闭合";
+    },
+    cdjcFormate(val) {
+      if (!val) return "暂无数据";
+      return val == 0 ? "断" : "通";
+    },
+    yxztFormate(val) {
+      switch (val) {
+        case "wait": {
+          return "待机";
+        }
+
+        case "charge": {
+          return "充电";
+        }
+
+        case "discharge": {
+          return "放电";
+        }
+
+        case "offline": {
+          return 故障;
+        }
+
+        default: {
+          return val;
+        }
+      }
+    },
     async getDetailInfo() {
       this.loading = true;
       this.$route.query.deviceType != 17 && (await this.getDiceDict());
@@ -534,9 +586,8 @@ export default {
     line-height: 40px;
     label {
       font-size: 16px;
-      width: 90px;
+      width: 150px;
       display: inline-block;
-      font-weight: normal;
       color: black;
       font-weight: bold;
     }
@@ -555,9 +606,8 @@ export default {
       }
       label {
         font-size: 16px;
-        width: 90px;
+        width: 120px;
         display: inline-block;
-        font-weight: normal;
         color: black;
         font-weight: bold;
       }

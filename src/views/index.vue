@@ -176,7 +176,7 @@ export default {
           this.markers.push(marker);
         }
 
-        let content = ''
+        let content = "";
         if (lnglats[i].deviceType == 19) {
           content = `
             <div class="info-wrapper">
@@ -206,27 +206,33 @@ export default {
 
                 <div class="info-item">
                   <span>运行状态：</span>
-                  <span>正常</span>
+                  <span>${yxztFormate(lnglats[i].yxzt) || "暂无数据"}</span>
                 </div>
 
                 <div class="info-item">
                   <span>电压检测状态：</span>
-                  <span>闭合</span>
+                  <span>${
+                    lnglats[i].dyjczt == 0 ? "断开" : "闭合" || "暂无数据"
+                  }</span>
                 </div>
 
                 <div class="info-item">
                   <span>温度：</span>
-                  <span>32.1°C</span>
+                  <span>${lnglats[i].temp || "暂无数据"}</span>
                 </div>
 
                 <div class="info-item">
                   <span>触电检测1：</span>
-                  <span>通</span>
+                  <span>${
+                    lnglats[i].cdjc1 == 0 ? "断" : "通" || "暂无数据"
+                  }</span>
                 </div>
 
                 <div class="info-item">
                   <span>触电检测2：</span>
-                  <span>通</span>
+                  <span>${
+                    lnglats[i].cdjc2 == 0 ? "断" : "通" || "暂无数据"
+                  }</span>
                 </div>
 
               </div>
@@ -267,27 +273,27 @@ export default {
 
                 <div class="info-item">
                   <span>运行状态：</span>
-                  <span>正常</span>
+                  <span>${yxztFormate(lnglats[i].yxzt) || "暂无数据"}</span>
                 </div>
 
                 <div class="info-item">
                   <span>电池总压：</span>
-                  <span>36.0V</span>
+                  <span>${lnglats[i].dczy || "暂无数据"}</span>
                 </div>
 
                 <div class="info-item">
                   <span>直流功率：</span>
-                  <span>0.43kW</span>
+                  <span>${lnglats[i].zlgl || "暂无数据"}</span>
                 </div>
 
                 <div class="info-item">
                   <span>温度：</span>
-                  <span>27.1°C</span>
+                  <span>${lnglats[i].temp || "暂无数据"}</span>
                 </div>
 
                 <div class="info-item">
                   <span>SOC：</span>
-                  <span>90%</span>
+                  <span>${lnglats[i].soc || "暂无数据"}</span>
                 </div>
 
               </div>
@@ -328,32 +334,32 @@ export default {
 
                 <div class="info-item">
                   <span>运行状态：</span>
-                  <span>正常</span>
+                  <span>${yxztFormate(lnglats[i].yxzt) || "暂无数据"}</span>
                 </div>
 
                 <div class="info-item">
                   <span>储能交流有功功率：</span>
-                  <span>-/+1.3kW</span>
+                  <span>${lnglats[i].cnjlyggl || "暂无数据"}</span>
                 </div>
 
                 <div class="info-item">
                   <span>温度：</span>
-                  <span>36.1°C</span>
+                  <span>${lnglats[i].temp || "暂无数据"}</span>
                 </div>
 
                 <div class="info-item">
                   <span>单体最高/低电压：</span>
-                  <span>3.328/3.324V</span>
+                  <span>${lnglats[i].dtdy || "暂无数据"}</span>
                 </div>
 
                 <div class="info-item">
                   <span>相电压：</span>
-                  <span>221.5/216.8/225.3V</span>
+                  <span>${lnglats[i].xdy || "暂无数据"}</span>
                 </div>
 
                 <div class="info-item">
                   <span>SOC：</span>
-                  <span>90%</span>
+                  <span>${lnglats[i].soc || "暂无数据"}</span>
                 </div>
 
               </div>
@@ -404,6 +410,7 @@ export default {
         });
       }
     },
+
     markerClick(e) {
       this.resetIcon();
       let click2kwIcon = new AMap.Icon({
@@ -531,6 +538,29 @@ export default {
           deviceType: type
         }
       });
+    };
+    window.yxztFormate = val => {
+      switch (val) {
+        case "wait": {
+          return "待机";
+        }
+
+        case "charge": {
+          return "充电";
+        }
+
+        case "discharge": {
+          return "放电";
+        }
+
+        case "offline": {
+          return 故障;
+        }
+
+        default: {
+          return val;
+        }
+      }
     };
   }
 };

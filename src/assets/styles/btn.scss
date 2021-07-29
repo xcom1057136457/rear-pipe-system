@@ -42,15 +42,17 @@
 }
 
 .pan-btn {
-  font-size: 14px;
+  font-size: 12px;
   color: #fff;
-  padding: 14px 36px;
-  border-radius: 8px;
+  padding: 9px 15px;
+  border-radius: 4px;
   border: none;
   outline: none;
   transition: 600ms ease all;
   position: relative;
   display: inline-block;
+  cursor: pointer;
+  margin: 0 5px;
 
   &:hover {
     background: #fff;

@@ -1,4 +1,5 @@
 import { parseTime } from "./ruoyi";
+import { clearTime } from "element-ui";
 
 /**
  * 表格时间格式化
@@ -403,7 +404,7 @@ export function getPositionByLonLats(lng, lat, callback) {
     geocoder.getAddress(lnglatXY, function(status, result) {
       if (status === "complete" && result.info === "OK") {
         var address = result.regeocode.formattedAddress;
-        address && callback(address)
+        address && callback(address);
       }
     });
   });
