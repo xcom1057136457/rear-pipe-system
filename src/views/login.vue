@@ -102,7 +102,11 @@
           @keyup.enter.native="loginByPhoneHandler"
         >
           <template slot="append">
-            <el-button @click="sendSmsHandler">{{ sendText }}</el-button>
+            <el-button
+              @click="sendSmsHandler"
+              :disabled="sendText == '发送验证码' ? false : true"
+              >{{ sendText }}</el-button
+            >
           </template>
         </el-input>
       </el-form-item>
@@ -160,6 +164,23 @@
           prefix-icon="el-icon-mobile"
           @keyup.enter.native="loginVisitorHandler"
         >
+          <template slot="append">
+            <el-button
+              @click="sendLoginSmsHandler"
+              :disabled="sendVisiteText == '发送验证码' ? false : true"
+              >{{ sendVisiteText }}</el-button
+            >
+          </template>
+        </el-input>
+      </el-form-item>
+      <el-form-item prop="code">
+        <el-input
+          v-model="loginVisitor.code"
+          auto-complete="off"
+          placeholder="验证码"
+          prefix-icon="el-icon-chat-round"
+          @keyup.enter.native="loginVisitorHandler"
+        >
         </el-input>
       </el-form-item>
       <div class="operator-box">
@@ -198,7 +219,7 @@
 </template>
 
 <script>
-import { getCodeImg, sendSms, loginByPhone } from "@/api/login";
+import { getCodeImg, sendSms, loginByPhone, sendSmsVisitor } from "@/api/login";
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from "@/utils/jsencrypt";
 
@@ -241,11 +262,13 @@ export default {
       loginVisitorRules: {
         phonenumber: [
           { required: true, trigger: "blur", message: "手机号码不能为空" }
-        ]
+        ],
+        code: [{ required: true, trigger: "blur", message: "验证码不能为空" }]
       },
       loading: false,
       redirect: undefined,
       sendText: "发送验证码",
+      sendVisiteText: "发送验证码",
       timeId: null
     };
   },
@@ -285,7 +308,10 @@ export default {
         this.$message.error("请输入手机号码");
         return;
       }
-      sendSms(this.loginByPhoneForm.phonenumber).then(res => {
+      sendSms({
+        phonenumber: this.loginByPhoneForm.phonenumber,
+        loginSystem: "1"
+      }).then(res => {
         if (res.code == 200) {
           this.$refs.loginByPhoneForm.clearValidate();
           this.$notify({
@@ -299,6 +325,30 @@ export default {
             if (this.sendText.split("s")[0] <= 0) {
               clearInterval(this.timeId);
               this.sendText = "发送验证码";
+            }
+          }, 1000);
+        }
+      });
+    },
+    sendLoginSmsHandler() {
+      if (!this.loginVisitor.phonenumber) {
+        this.$message.error("请输入手机号码");
+        return;
+      }
+      sendSmsVisitor(this.loginVisitor.phonenumber).then(res => {
+        if (res.code == 200) {
+          this.$refs.loginVisitor.clearValidate();
+          this.$notify({
+            type: "success",
+            title: "成功提示",
+            message: "发送验证码成功!"
+          });
+          this.sendVisiteText = "60s";
+          this.timeId = setInterval(() => {
+            this.sendVisiteText = this.sendVisiteText.split("s")[0] - 1 + "s";
+            if (this.sendVisiteText.split("s")[0] <= 0) {
+              clearInterval(this.timeId);
+              this.sendVisiteText = "发送验证码";
             }
           }, 1000);
         }

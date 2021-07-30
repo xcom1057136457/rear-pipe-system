@@ -57,8 +57,8 @@
                   <el-select
                     v-model="searchParams.deviceType"
                     placeholder="请选择所属产品"
+                    multiple
                   >
-                    <el-option label="全部产品" :value="null"></el-option>
                     <el-option
                       v-for="(item, index) in deviceType"
                       :key="index"
@@ -401,8 +401,8 @@ export default {
     // 获取列表数据
     async getDeviceList() {
       this.tableLoading = true;
-
       let params = Object.assign({}, this.searchParams, this.pageParams);
+      params.deviceType && (params.deviceType = params.deviceType.join(','))
       let { code, rows, total } = await getDeviceList(params);
       if (code == 200) {
         this.tableData = rows;

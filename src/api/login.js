@@ -29,21 +29,31 @@ export function loginByPhone(phonenumber, code) {
 }
 
 // 游客登陆
-export function loginByVisitor(phonenumber) {
+export function loginByVisitor(phonenumber, code) {
   const data = {
-    phonenumber
+    phonenumber,
+    code
   };
   return request({
-    url: "/login",
+    url: "/visitor/login",
     method: "post",
     data: data
   });
 }
 
-// 发送验证码
-export function sendSms(phoneNumbers) {
+// 游客获取验证码
+export function sendSmsVisitor(phoneNumbers) {
   return request({
-    url: `/captchaSms/${phoneNumbers}`,
+    url: `getSmsCode/${phoneNumbers}`,
+    method: 'get'
+  })
+}
+
+
+// 发送验证码
+export function sendSms(userInfo) {
+  return request({
+    url: `/captchaSms/${userInfo.phoneNumbers}/${userInfo.loginSystem}`,
     method: "get"
   });
 }

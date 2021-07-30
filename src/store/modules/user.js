@@ -1,4 +1,10 @@
-import { login, logout, getInfo, loginByPhone, loginByVisitor } from "@/api/login";
+import {
+  login,
+  logout,
+  getInfo,
+  loginByPhone,
+  loginByVisitor
+} from "@/api/login";
 import { getToken, setToken, removeToken } from "@/utils/auth";
 
 const user = {
@@ -68,8 +74,9 @@ const user = {
     // 游客登陆
     loginVisitor({ commit }, userInfo) {
       const phonenumber = userInfo.phonenumber.trim();
+      const code = userInfo.code.trim();
       return new Promise((resolve, reject) => {
-        loginByVisitor(phonenumber)
+        loginByVisitor(phonenumber, code)
           .then(res => {
             setToken(res.token);
             commit("SET_TOKEN", res.token);

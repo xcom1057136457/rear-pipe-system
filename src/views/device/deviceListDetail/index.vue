@@ -75,7 +75,7 @@
 
           <div class="top-detail-item">
             <label for="">最后在线时间:</label>
-            <span> {{ detailInfo.onlineTime || "暂无数据" }}} </span>
+            <span> {{ detailInfo.onlineTime || "暂无数据" }} </span>
           </div>
 
           <div class="top-detail-item">
@@ -124,7 +124,7 @@
 
           <div class="top-detail-item">
             <label for="">最后在线时间:</label>
-            <span> {{ detailInfo.onlineTime || "暂无数据" }}} </span>
+            <span> {{ detailInfo.onlineTime || "暂无数据" }} </span>
           </div>
 
           <div class="top-detail-item">

@@ -23,12 +23,12 @@
     </div>
 
     <div class="select-device">
-      <el-checkbox-group v-model="deviceSelect">
+      <el-checkbox-group v-model="deviceSelect" :min="1">
         <el-checkbox
-          v-for="(item, index) in deviceList"
+          v-for="(item, index) in deviceType"
           :key="index"
-          :label="item.deviceTypeName"
-          :value="item.deviceType"
+          :label="item.label"
+          :value="item.value"
           @change="deviceChange"
         ></el-checkbox>
       </el-checkbox-group>
@@ -52,7 +52,8 @@ export default {
       deviceStatus: [],
       markers: [],
       deviceSelect: [],
-      deviceList: []
+      deviceList: [],
+      selectData: []
     };
   },
   methods: {
@@ -69,16 +70,21 @@ export default {
       }
     },
     // 获取产品列表
-    async getAllProductHandler() {
-      let { code, rows } = await getAllProduct();
-      if (code == 200) {
-        this.deviceType = rows.map(item => {
-          return {
-            label: item.productName,
-            value: item.productId
-          };
-        });
-      }
+    getAllProductHandler() {
+      return new Promise(async resolve => {
+        let { code, rows } = await getAllProduct();
+        if (code == 200) {
+          this.deviceType = rows.map(item => {
+            return {
+              label: item.productName,
+              value: item.productId
+            };
+          });
+          this.deviceSelect = this.deviceType.map(item => item.label);
+          this.selectData = this.deviceType;
+          resolve();
+        }
+      });
     },
     createMap() {
       return new Promise(resolve => {
@@ -129,6 +135,12 @@ export default {
      https://i.loli.net/2021/07/27/SBwTivEZzrDnPhW.png
      * */
     async initMap() {
+      const loading = this.$loading({
+        lock: true,
+        text: "Loading",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)"
+      });
       await this.getAllDeviceHandler();
       await this.createMap();
       var lnglats = this.deviceInfo;
@@ -408,6 +420,7 @@ export default {
             }
           );
         });
+        loading.close();
       }
     },
 
@@ -473,27 +486,15 @@ export default {
     },
     // 获取设备数据
     getAllDeviceHandler() {
-      return new Promise(resolve => {
+      return new Promise(async resolve => {
         getDeviceList({
           pageNum: 1,
           pageSize: 100000,
-          ...this.searchParams
+          ...this.searchParams,
+          deviceType: this.selectData.map(item => item.value).join(",")
         }).then(res => {
           if (res.code == 200) {
             this.deviceInfo = res.rows;
-            let arr = [];
-            for (let item of res.rows) {
-              if (
-                this.deviceList.filter(
-                  actItem => actItem.deviceType == item.deviceType
-                ).length == 0
-              ) {
-                this.deviceList.push(item);
-              }
-            }
-            this.deviceSelect = this.deviceList.map(
-              item => item.deviceTypeName
-            );
             resolve();
           }
         });
@@ -503,12 +504,14 @@ export default {
     deviceChange() {
       let params = [];
       this.deviceSelect.forEach(item1 => {
-        this.deviceList.forEach(item2 => {
-          if (item2.deviceTypeName == item1) {
+        this.deviceType.forEach(item2 => {
+          if (item2.label == item1) {
             params.push(item2);
           }
         });
       });
+      this.selectData = params;
+      this.initMap();
       console.log("params", params);
     },
     // 刷新
@@ -524,10 +527,10 @@ export default {
     }
   },
   mounted() {
-    this.$nextTick(() => {
+    this.$nextTick(async () => {
+      await this.getAllProductHandler();
       this.initMap();
     });
-    this.getAllProductHandler();
     this.getDeviceStatus();
     let that = this;
     window.doDetail = (val, type, e) => {
