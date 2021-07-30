@@ -91,6 +91,18 @@
         </el-col>
 
         <el-col :span="6">
+          <el-form-item label="topic主题" prop="topicType">
+            <el-input
+              v-model="queryParams.topicType"
+              placeholder="请输入topic主题"
+              clearable
+              size="small"
+              @keyup.enter.native="handleQuery"
+            ></el-input>
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="6">
           <el-button
             type="primary"
             icon="el-icon-search"
@@ -175,6 +187,13 @@
         prop="topicName"
         show-overflow-tooltip
         v-if="columns[3].visible"
+      />
+      <el-table-column
+        label="topic主题"
+        align="center"
+        prop="topicType"
+        show-overflow-tooltip
+        v-if="columns[8].visible"
       />
       <el-table-column
         label="消费状态"
@@ -351,6 +370,7 @@ export default {
         { key: 1, label: `设备名称`, visible: true },
         { key: 2, label: `产品key`, visible: true },
         { key: 3, label: `topic名称`, visible: true },
+        { key: 8, label: `topic主题`, visible: true },
         { key: 4, label: `消费状态`, visible: true },
         { key: 5, label: `消息id`, visible: true },
         { key: 6, label: `消息内容`, visible: true },

@@ -9,49 +9,94 @@
         <div class="top-detail-info">
           <div class="top-detail-item">
             <label for="">设备编码:</label>
-            <span>{{ detailInfo.deviceCode }}</span>
+            <span>dev004</span>
           </div>
 
           <div class="top-detail-item">
             <label for="">设备名称:</label>
-            <span>{{ detailInfo.deviceName }}</span>
+            <span>台区</span>
           </div>
 
           <div class="top-detail-item">
-            <label for="">设备状态:</label>
-            <span>{{ detailInfo.status == "1" ? "在线" : "离线" }}</span>
+            <label for="">光伏容量:</label>
+            <span>-kWp</span>
           </div>
 
           <div class="top-detail-item">
-            <label for="">最后在线时间:</label>
-            <span> {{ detailInfo.onlineTime || "暂无数据" }} </span>
+            <label for="">光伏逆变器容量:</label>
+            <span> -kW </span>
           </div>
 
           <div class="top-detail-item">
-            <label for="">运行状态:</label>
-            <span>{{ yxztFormate(detailInfo.yxzt) || "暂无数据" }}</span>
+            <label for="">电池容量:</label>
+            <span>-kWh</span>
           </div>
 
           <div class="top-detail-item">
-            <label for="">电压检测状态:</label>
-            <span>{{ dyjcztFormate(detailInfo.dyjczt) }}</span>
+            <label for="">户外温度:</label>
+            <span>-℃</span>
           </div>
 
           <div class="top-detail-item">
-            <label for="">温度:</label>
-            <span>{{ detailInfo.temp || "暂无数据" }}</span>
+            <label for="">当前光伏电压:</label>
+            <span>-VDC</span>
           </div>
 
           <div class="top-detail-item">
-            <label for="">触电检测1:</label>
-            <span>{{ cdjcFormate(detailInfo.cdjc1) }}</span>
+            <label for="">当前光伏功率:</label>
+            <span>-kW</span>
           </div>
 
           <div class="top-detail-item">
-            <label for="">触电检测2:</label>
+            <label for="">当前负载功率:</label>
             <span>
-              {{ cdjcFormate(detailInfo.cdjc2) }}
+              -kW
             </span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">电池总电压:</label>
+            <span>-VDC</span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">电池单体最高电压:</label>
+            <span>-VDC</span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">电池单体最低电压:</label>
+            <span>-VDC</span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">系统运行状态:</label>
+            <span>运行/充电/馈网/故障</span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">今日发电量:</label>
+            <span>-kWh</span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">累计发电量:</label>
+            <span>-kWh</span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">累计馈网电量:</label>
+            <span>-kWh</span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">累计减少二氧化碳排放量:</label>
+            <span>-t</span>
+          </div>
+
+          <div class="top-detail-item">
+            <label for="">故障信息:</label>
+            <span>--</span>
           </div>
         </div>
       </template>
@@ -418,13 +463,8 @@ export default {
           if (res.code == 200) {
             this.detailInfo = res.data;
             let deviceData = {};
-            if (res.data.deviceData && this.$route.query.deviceType != 17) {
+            if (res.data.deviceData) {
               deviceData = res.data.deviceData;
-            } else if (
-              res.data.deviceData &&
-              this.$route.query.deviceType == 17
-            ) {
-              deviceData = JSON.parse(res.data.deviceData);
             } else {
               deviceData = null;
             }

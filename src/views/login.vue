@@ -65,7 +65,7 @@
           >
           <el-divider direction="vertical"></el-divider>
           <el-button type="text" @click="loginTypeChange(2)"
-            >游客登陆</el-button
+            >游客登录</el-button
           >
         </div>
       </div>
@@ -128,7 +128,7 @@
           >
           <el-divider direction="vertical"></el-divider>
           <el-button type="text" @click="loginTypeChange(2)"
-            >游客登陆</el-button
+            >游客登录</el-button
           >
         </div>
       </div>
@@ -191,7 +191,7 @@
           >
           <el-divider direction="vertical"></el-divider>
           <el-button type="text" @click="loginTypeChange(1)"
-            >验证码登陆</el-button
+            >验证码登录</el-button
           >
         </div>
       </div>
@@ -243,7 +243,7 @@ export default {
       loginVisitor: {
         phonenumber: ""
       },
-      loginType: 0, // 0: 账号密码登录，1: 验证码登录, 2: 游客登陆
+      loginType: 0, // 0: 账号密码登录，1: 验证码登录, 2: 游客登录
       loginRules: {
         username: [
           { required: true, trigger: "blur", message: "用户名不能为空" }
@@ -378,7 +378,7 @@ export default {
         }
       });
     },
-    // 游客登陆
+    // 游客登录
     loginVisitorHandler() {
       this.$refs.loginVisitor.validate(valid => {
         if (valid) {

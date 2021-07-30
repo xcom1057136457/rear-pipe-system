@@ -53,7 +53,7 @@ export function sendSmsVisitor(phoneNumbers) {
 // 发送验证码
 export function sendSms(userInfo) {
   return request({
-    url: `/captchaSms/${userInfo.phoneNumbers}/${userInfo.loginSystem}`,
+    url: `/captchaSms/${userInfo.phonenumber}/${userInfo.loginSystem}`,
     method: "get"
   });
 }

@@ -40,6 +40,8 @@
 <script>
 import { getAllDevice, getDeviceList } from "@/api/monitor/device";
 import { getAllProduct } from "@/api/monitor/product";
+import gyhwdy from "@/assets/images/gyhwdy.png"
+import pwzncndy from "@/assets/images/pwzncndy.png"
 export default {
   name: "index",
   data() {
@@ -128,12 +130,6 @@ export default {
         resolve();
       });
     },
-    /**
-     * https://i.loli.net/2021/07/27/8IpceAPmVL4gNTz.png 蓝箱子
-     https://i.loli.net/2021/07/27/TKXzNU5EkbjolMI.png 黄箱子
-     https://i.loli.net/2021/07/27/5NCSxJq6lfMY91O.png click黄箱子
-     https://i.loli.net/2021/07/27/SBwTivEZzrDnPhW.png
-     * */
     async initMap() {
       const loading = this.$loading({
         lock: true,
@@ -154,7 +150,7 @@ export default {
               Number(lnglats[i].latitude)
             ],
             map: this.map,
-            icon: "https://i.loli.net/2021/07/19/lkqTbOmCudxrsXJ.png"
+            icon: gyhwdy
           });
           this.markers.push(marker);
         } else if (lnglats[i].deviceType == 17) {
@@ -164,7 +160,7 @@ export default {
               Number(lnglats[i].latitude)
             ],
             map: this.map,
-            icon: "https://i.loli.net/2021/07/27/8IpceAPmVL4gNTz.png"
+            icon: pwzncndy
           });
           this.markers.push(marker);
         } else if (lnglats[i].deviceType == 19) {
@@ -198,53 +194,37 @@ export default {
               <div class="info-detail">
                 <div class="info-item">
                   <span>设备编码：</span>
-                  <span>${lnglats[i].deviceCode}</span>
+                  <span>dev004</span>
                 </div>
 
                 <div class="info-item">
                   <span>设备名称：</span>
-                  <span>${lnglats[i].deviceName}</span>
+                  <span>台区</span>
                 </div>
 
                 <div class="info-item">
-                  <span>设备状态：</span>
-                  <span>${lnglats[i].status == "1" ? "在线" : "离线"}</span>
+                  <span>当前光伏功率：</span>
+                  <span>-kW</span>
                 </div>
 
                 <div class="info-item">
-                  <span>最后在线时间：</span>
-                  <span>${lnglats[i].onlineTime || "暂无数据"}</span>
+                  <span>当前负载功率：</span>
+                  <span>-kW</span>
                 </div>
 
                 <div class="info-item">
-                  <span>运行状态：</span>
-                  <span>${yxztFormate(lnglats[i].yxzt) || "暂无数据"}</span>
+                  <span>系统运行状态：</span>
+                  <span>运行/充电/馈网/故障</span>
                 </div>
 
                 <div class="info-item">
-                  <span>电压检测状态：</span>
-                  <span>${
-                    lnglats[i].dyjczt == 0 ? "断开" : "闭合" || "暂无数据"
-                  }</span>
+                  <span>今日发电量：</span>
+                  <span>-kWh</span>
                 </div>
 
                 <div class="info-item">
-                  <span>温度：</span>
-                  <span>${lnglats[i].temp || "暂无数据"}</span>
-                </div>
-
-                <div class="info-item">
-                  <span>触电检测1：</span>
-                  <span>${
-                    lnglats[i].cdjc1 == 0 ? "断" : "通" || "暂无数据"
-                  }</span>
-                </div>
-
-                <div class="info-item">
-                  <span>触电检测2：</span>
-                  <span>${
-                    lnglats[i].cdjc2 == 0 ? "断" : "通" || "暂无数据"
-                  }</span>
+                  <span>累计减少二氧化碳排放量：</span>
+                  <span>-t</span>
                 </div>
 
               </div>
@@ -426,14 +406,14 @@ export default {
 
     markerClick(e) {
       this.resetIcon();
-      let click2kwIcon = new AMap.Icon({
-        image: "https://i.loli.net/2021/07/19/eWwrOMcHSGTsZ7E.png",
+      let clickPwzncndy = new AMap.Icon({
+        image: pwzncndy,
         size: new AMap.Size(40, 62), //图标大小
         imageSize: new AMap.Size(40, 62)
       });
 
-      let clickEmsIcon = new AMap.Icon({
-        image: "https://i.loli.net/2021/07/27/5NCSxJq6lfMY91O.png",
+      let clickGyhwdy = new AMap.Icon({
+        image: gyhwdy,
         size: new AMap.Size(40, 62), //图标大小
         imageSize: new AMap.Size(40, 62)
       });
@@ -444,11 +424,11 @@ export default {
         imageSize: new AMap.Size(40, 62)
       });
 
-      if (e.target.content.indexOf("2KW移动电源") != -1) {
-        e.target.setIcon(click2kwIcon);
-      } else if (e.target.content.indexOf("EMS设备") != -1) {
-        e.target.setIcon(clickEmsIcon);
-      } else if (e.target.content.indexOf("4G4远控设备") != -1) {
+      if (e.target.content.indexOf("工业户外电源") != -1) {
+        e.target.setIcon(clickGyhwdy);
+      } else if (e.target.content.indexOf("配网智能储能电源") != -1) {
+        e.target.setIcon(clickPwzncndy);
+      } else if (e.target.content.indexOf("光储充微电网系统") != -1) {
         e.target.setIcon(click4g4Icon);
       }
       this.infoWindow.setContent(e.target.content);
@@ -456,14 +436,14 @@ export default {
       this.infoWindow.on("close", this.closeInfo);
     },
     resetIcon() {
-      let click2kwIcon = new AMap.Icon({
-        image: "https://i.loli.net/2021/07/19/lkqTbOmCudxrsXJ.png",
+      let clickPwzncndy = new AMap.Icon({
+        image: pwzncndy,
         size: new AMap.Size(40, 62), //图标大小
         imageSize: new AMap.Size(40, 62)
       });
 
-      let clickEmsIcon = new AMap.Icon({
-        image: "https://i.loli.net/2021/07/27/5NCSxJq6lfMY91O.png",
+      let clickGyhwdy = new AMap.Icon({
+        image: gyhwdy,
         size: new AMap.Size(40, 62), //图标大小
         imageSize: new AMap.Size(40, 62)
       });
@@ -475,11 +455,11 @@ export default {
       });
 
       this.markers.map(item => {
-        if (item.content.indexOf("2KW移动电源") != -1) {
-          item.setIcon(click2kwIcon);
-        } else if (item.content.indexOf("EMS设备") != -1) {
-          item.setIcon(clickEmsIcon);
-        } else if (item.content.indexOf("4G4远控设备") != -1) {
+        if (item.content.indexOf("工业户外电源") != -1) {
+          item.setIcon(clickGyhwdy);
+        } else if (item.content.indexOf("配网智能储能电源") != -1) {
+          item.setIcon(clickPwzncndy);
+        } else if (item.content.indexOf("光储充微电网系统") != -1) {
           item.setIcon(click4g4Icon);
         }
       });
