@@ -40,6 +40,26 @@
       <el-table-column label="部门名称" align="center" prop="deptName" />
       <el-table-column label="主机" align="center" prop="ipaddr" :show-overflow-tooltip="true" />
       <el-table-column label="登录地点" align="center" prop="loginLocation" :show-overflow-tooltip="true" />
+      <el-table-column
+        label="登录系统"
+        align="center"
+        prop="loginSystem"
+        :show-overflow-tooltip="true"
+        :formatter="systemFormate"
+      />
+      <el-table-column
+        label="登录方式"
+        align="center"
+        prop="loginMode"
+        :show-overflow-tooltip="true"
+        :formatter="loginModeFormate"
+      />
+      <el-table-column
+        label="登录手机号"
+        align="center"
+        prop="phonenumber"
+        :show-overflow-tooltip="true"
+      />
       <el-table-column label="浏览器" align="center" prop="browser" />
       <el-table-column label="操作系统" align="center" prop="os" />
       <el-table-column label="登录时间" align="center" prop="loginTime" width="180">
@@ -83,10 +103,14 @@ export default {
       queryParams: {
         ipaddr: undefined,
         userName: undefined
-      }
+      },
+      loginSystemList: [],
+      loginModeList: []
     };
   },
-  created() {
+  async created() {
+    await this.loginSystemDict()
+    await this.loginModeDict()
     this.getList();
   },
   methods: {
@@ -121,7 +145,33 @@ export default {
           this.getList();
           this.msgSuccess("强退成功");
         }).catch(() => {});
-    }
+    },
+    systemFormate(row, col, cellValue) {
+      let temp = this.loginSystemList.filter(
+        item => item.dictValue == cellValue
+      );
+
+      return temp && temp.length ? temp[0].dictLabel : "暂无数据";
+    },
+    loginSystemDict() {
+      return new Promise(async resolve => {
+        let { code, data } = await this.getDicts("login_system");
+        code == 200 && (this.loginSystemList = data);
+        resolve();
+      });
+    },
+    loginModeFormate(row, col, cellValue) {
+      let temp = this.loginModeList.filter(item => item.dictValue == cellValue);
+
+      return temp && temp.length ? temp[0].dictLabel : "暂无数据";
+    },
+    loginModeDict() {
+      return new Promise(async resolve => {
+        let { code, data } = await this.getDicts("login_mode");
+        code == 200 && (this.loginModeList = data);
+        resolve();
+      });
+    },
   }
 };
 </script>

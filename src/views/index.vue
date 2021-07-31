@@ -2,23 +2,42 @@
   <div class="container">
     <div class="top-nav">
       <div class="top-nav-inner">
-        <div>
-          <div>绿色</div>
-          <div>威克</div>
+        <div
+          class="top-title"
+          @click="isCollapse = !isCollapse"
+          :style="isCollapse ? 'marginBottom: 0' : 'marginBottom: 10px'"
+        >
+          <span
+            class="el-icon-arrow-down"
+            :class="isCollapse ? 'collapseIcon' : ''"
+          ></span>
+          绿色威克
         </div>
-
-        <div>
-          <div>
-            <span class="top-label">累计排放量:</span>
-            <span>423445kWh</span>
+        <el-collapse-transition>
+          <div class="bottom-details" v-show="!isCollapse">
+            <div>
+              <div>
+                <span>423445</span>
+                <span>kWh</span>
+              </div>
+              <div class="top-label">累计排放量</div>
+            </div>
+            <div>
+              <div>
+                <span>2342</span>
+                <span>吨</span>
+              </div>
+              <div class="top-label">累计减排CO2约</div>
+            </div>
+            <div>
+              <div>
+                <span>2342</span>
+                <span>吨</span>
+              </div>
+              <div class="top-label">累计减排SO2约</div>
+            </div>
           </div>
-          <div>
-            <span class="top-label">累计减排CO2约:</span>
-            <span>2342吨</span>
-          </div>
-        </div>
-
-        <div>累计减排SO2约：2342吨</div>
+        </el-collapse-transition>
       </div>
     </div>
 
@@ -33,15 +52,18 @@
         ></el-checkbox>
       </el-checkbox-group>
     </div>
-    <div id="container"></div>
+    <div
+      id="container"
+      :class="isCollapse ? 'collapseHeight' : 'notCollapseHeight'"
+    ></div>
   </div>
 </template>
 
 <script>
 import { getAllDevice, getDeviceList } from "@/api/monitor/device";
 import { getAllProduct } from "@/api/monitor/product";
-import gyhwdy from "@/assets/images/gyhwdy.png"
-import pwzncndy from "@/assets/images/pwzncndy.png"
+import gyhwdy from "@/assets/images/gyhwdy.png";
+import pwzncndy from "@/assets/images/pwzncndy.png";
 export default {
   name: "index",
   data() {
@@ -55,7 +77,8 @@ export default {
       markers: [],
       deviceSelect: [],
       deviceList: [],
-      selectData: []
+      selectData: [],
+      isCollapse: false
     };
   },
   methods: {
@@ -230,9 +253,7 @@ export default {
               </div>
 
               <div class="info-foot">
-                <a href="javascript:;" onClick="doDetail(${
-                  lnglats[i].deviceId
-                }, ${lnglats[i].deviceType})">进入详情</a>
+                <a href="javascript:;" onClick="doDetail(${lnglats[i].deviceId}, ${lnglats[i].deviceType})">进入详情</a>
               </div>
             </div>
           `;
@@ -554,34 +575,77 @@ $detailHeight: 60px;
 
 #container {
   width: 100%;
-  height: calc(100vh - 34px - 50px - 120px);
+}
+
+.collapseHeight {
+  height: calc(100vh - 34px - 50px - 62px - 40px);
+}
+
+.notCollapseHeight {
+  height: calc(100vh - 34px - 50px - 157px);
 }
 
 .container {
   position: relative;
 }
 
+.el-icon-arrow-down {
+  transition-property: all;
+  transition-duration: 0.3s;
+  margin-right: 10px;
+}
+
+.collapseIcon {
+  transform: rotate(180deg);
+}
+
 .top-nav {
-  padding: 10px;
-  height: 80px;
-  overflow: hidden;
-  font-size: 14px;
-  background-color: #f0f0f0;
+  background-color: #f9f9f9;
   box-sizing: border-box;
-  .top-nav-inner {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    background-color: #fff;
-    padding: 10px;
-    border-radius: 4px;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.top-nav-inner {
+  padding: 10px 20px;
+  background-color: #fff;
+  margin: 10px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.bottom-details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  > div {
+    > div {
+      &:first-child {
+        > span {
+          &:first-child {
+            font-size: 18px;
+            font-weight: bold;
+            margin-right: 4px;
+          }
+
+          &:last-child {
+            font-size: 14px;
+            color: #a3a3a3;
+          }
+        }
+      }
+    }
   }
 }
 
+.top-title {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
 .top-label {
-  width: 120px;
-  display: inline-block;
+  font-size: 14px;
+  color: #a3a3a3;
 }
 
 .select-device {

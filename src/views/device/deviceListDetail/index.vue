@@ -228,9 +228,9 @@
                     <template v-if="key == 'GeoLocation'">
                       {{
                         "经度：" +
-                          value[0].Latitude +
+                          value.Latitude +
                           " 纬度：" +
-                          value[0].Longitude
+                          value.Longitude
                       }}
                     </template>
 
@@ -465,6 +465,7 @@ export default {
             let deviceData = {};
             if (res.data.deviceData) {
               deviceData = res.data.deviceData;
+              console.log('deviceData', deviceData);
             } else {
               deviceData = null;
             }

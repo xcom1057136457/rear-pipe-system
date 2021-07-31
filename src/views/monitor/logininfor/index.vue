@@ -84,9 +84,9 @@
         </el-col>
 
         <el-col :span="6">
-          <el-form-item label="登录方式" prop="loginModeList">
+          <el-form-item label="登录方式" prop="loginMode">
             <el-select
-              v-model="queryParams.loginModeList"
+              v-model="queryParams.loginMode"
               style="width: 100%"
               clearable
             >
