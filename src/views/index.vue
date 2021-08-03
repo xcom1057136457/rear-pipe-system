@@ -20,7 +20,7 @@
                 <span>423445</span>
                 <span>kWh</span>
               </div>
-              <div class="top-label">累计排放量</div>
+              <div class="top-label">累计供电量</div>
             </div>
             <div>
               <div>
@@ -62,10 +62,14 @@
 <script>
 import { getAllDevice, getDeviceList } from "@/api/monitor/device";
 import { getAllProduct } from "@/api/monitor/product";
-import gyhwdy from "@/assets/images/gyhwdy.png";
-import pwzncndy from "@/assets/images/pwzncndy.png";
+import image1 from "@/assets/images/1.png";
+import image1_1 from "@/assets/images/1-1.png";
+import image2 from "@/assets/images/2.png";
+import image2_2 from "@/assets/images/2-2.png";
+import image3 from "@/assets/images/3.png";
+import image3_3 from "@/assets/images/3-3.png";
 export default {
-  name: "index",
+  name: "首页",
   data() {
     return {
       map: null,
@@ -78,7 +82,7 @@ export default {
       deviceSelect: [],
       deviceList: [],
       selectData: [],
-      isCollapse: false
+      isCollapse: false,
     };
   },
   methods: {
@@ -86,40 +90,40 @@ export default {
     async getDeviceStatus() {
       let { code, data } = await this.getDicts("device_status");
       if (code == 200) {
-        this.deviceStatus = data.map(item => {
+        this.deviceStatus = data.map((item) => {
           return {
             value: item.dictValue,
-            label: item.dictLabel
+            label: item.dictLabel,
           };
         });
       }
     },
     // 获取产品列表
     getAllProductHandler() {
-      return new Promise(async resolve => {
+      return new Promise(async (resolve) => {
         let { code, rows } = await getAllProduct();
         if (code == 200) {
-          this.deviceType = rows.map(item => {
+          this.deviceType = rows.map((item) => {
             return {
               label: item.productName,
-              value: item.productId
+              value: item.productId,
             };
           });
-          this.deviceSelect = this.deviceType.map(item => item.label);
+          this.deviceSelect = this.deviceType.map((item) => item.label);
           this.selectData = this.deviceType;
           resolve();
         }
       });
     },
     createMap() {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         this.map = new AMap.Map("container", {
           zoom: 5, //级别
           center: [
             Number(this.deviceInfo[0].longitude),
-            Number(this.deviceInfo[0].latitude)
+            Number(this.deviceInfo[0].latitude),
           ], //中心点坐标
-          viewMode: "3D" //使用3D视图
+          viewMode: "3D", //使用3D视图
         });
 
         let that = this;
@@ -130,9 +134,9 @@ export default {
             "AMap.Scale",
             "AMap.OverView",
             "AMap.MapType",
-            "AMap.Geolocation"
+            "AMap.Geolocation",
           ],
-          function() {
+          function () {
             // 在图面添加工具条控件，工具条控件集成了缩放、平移、定位等功能按钮在内的组合控件
             that.map.addControl(new AMap.ToolBar());
 
@@ -158,51 +162,70 @@ export default {
         lock: true,
         text: "Loading",
         spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)"
+        background: "rgba(0, 0, 0, 0.7)",
       });
       await this.getAllDeviceHandler();
       await this.createMap();
       var lnglats = this.deviceInfo;
       this.infoWindow = new AMap.InfoWindow({ offset: new AMap.Pixel(0, -35) });
       this.markers = [];
+
+      let clickPwzncndy = new AMap.Icon({
+        image: image1_1,
+        size: new AMap.Size(50, 55), //图标大小
+        imageSize: new AMap.Size(50, 55),
+      });
+
+      let clickGyhwdy = new AMap.Icon({
+        image: image2_2,
+        size: new AMap.Size(50, 55), //图标大小
+        imageSize: new AMap.Size(50, 55),
+      });
+
+      let click4g4Icon = new AMap.Icon({
+        image: image3_3,
+        size: new AMap.Size(50, 55), //图标大小
+        imageSize: new AMap.Size(50, 55),
+      });
+
       for (var i = 0, marker; i < lnglats.length; i++) {
         if (lnglats[i].deviceType == 18) {
           var marker = new AMap.Marker({
             position: [
               Number(lnglats[i].longitude),
-              Number(lnglats[i].latitude)
+              Number(lnglats[i].latitude),
             ],
             map: this.map,
-            icon: gyhwdy
+            icon: clickGyhwdy,
           });
           this.markers.push(marker);
         } else if (lnglats[i].deviceType == 17) {
           var marker = new AMap.Marker({
             position: [
               Number(lnglats[i].longitude),
-              Number(lnglats[i].latitude)
+              Number(lnglats[i].latitude),
             ],
             map: this.map,
-            icon: pwzncndy
+            icon: clickPwzncndy,
           });
           this.markers.push(marker);
         } else if (lnglats[i].deviceType == 19) {
           var marker = new AMap.Marker({
             position: [
               Number(lnglats[i].longitude),
-              Number(lnglats[i].latitude)
+              Number(lnglats[i].latitude),
             ],
             map: this.map,
-            icon: "https://i.loli.net/2021/07/27/TKXzNU5EkbjolMI.png"
+            icon: click4g4Icon,
           });
           this.markers.push(marker);
         } else {
           var marker = new AMap.Marker({
             position: [
               Number(lnglats[i].longitude),
-              Number(lnglats[i].latitude)
+              Number(lnglats[i].latitude),
             ],
-            map: this.map
+            map: this.map,
           });
           this.markers.push(marker);
         }
@@ -215,9 +238,9 @@ export default {
                 设备信息
               </div>
               <div class="info-detail">
-                <div class="info-item">
-                  <span>设备编码：</span>
-                  <span>dev004</span>
+                <div class="info-item" style="display: none">
+                  <span>设备类型：</span>
+                  <span>${"光储充微电网系统"}</span>
                 </div>
 
                 <div class="info-item">
@@ -253,7 +276,9 @@ export default {
               </div>
 
               <div class="info-foot">
-                <a href="javascript:;" onClick="doDetail(${lnglats[i].deviceId}, ${lnglats[i].deviceType})">进入详情</a>
+                <a href="javascript:;" onClick="doDetail(${
+                  lnglats[i].deviceId
+                }, ${lnglats[i].deviceType})">进入详情</a>
               </div>
             </div>
           `;
@@ -264,9 +289,9 @@ export default {
                 设备信息
               </div>
               <div class="info-detail">
-                <div class="info-item">
-                  <span>设备编码：</span>
-                  <span>${lnglats[i].deviceCode}</span>
+                <div class="info-item" style="display: none">
+                  <span>设备类型：</span>
+                  <span>${"工业户外电源"}</span>
                 </div>
 
                 <div class="info-item">
@@ -325,9 +350,9 @@ export default {
                 设备信息
               </div>
               <div class="info-detail">
-                <div class="info-item">
-                  <span>设备编码：</span>
-                  <span>${lnglats[i].deviceCode}</span>
+                <div class="info-item" style="display: none">
+                  <span>设备类型：</span>
+                  <span>${"配网智能储能电源"}</span>
                 </div>
 
                 <div class="info-item">
@@ -394,30 +419,30 @@ export default {
           {
             url: "imgs/1.png",
             size: new AMap.Size(32, 32),
-            offset: new AMap.Pixel(-16, -30)
+            offset: new AMap.Pixel(-16, -30),
           },
           {
             url: "imgs/2.png",
             size: new AMap.Size(32, 32),
-            offset: new AMap.Pixel(-16, -30)
+            offset: new AMap.Pixel(-16, -30),
           },
           {
             url: "imgs/3.png",
             size: new AMap.Size(48, 48),
             offset: new AMap.Pixel(-24, -45),
-            textColor: "#CC0066"
-          }
+            textColor: "#CC0066",
+          },
         ];
 
         let that = this;
 
         //添加聚合组件
-        that.map.plugin(["AMap.MarkerClusterer"], function() {
+        that.map.plugin(["AMap.MarkerClusterer"], function () {
           let cluster = new AMap.MarkerClusterer(
             that.map, // 地图实例
             that.markers, // 海量点组成的数组
             {
-              maxZoom: 10
+              maxZoom: 10,
             }
           );
         });
@@ -428,23 +453,22 @@ export default {
     markerClick(e) {
       this.resetIcon();
       let clickPwzncndy = new AMap.Icon({
-        image: pwzncndy,
-        size: new AMap.Size(40, 62), //图标大小
-        imageSize: new AMap.Size(40, 62)
+        image: image1,
+        size: new AMap.Size(50, 55), //图标大小
+        imageSize: new AMap.Size(50, 55),
       });
 
       let clickGyhwdy = new AMap.Icon({
-        image: gyhwdy,
-        size: new AMap.Size(40, 62), //图标大小
-        imageSize: new AMap.Size(40, 62)
+        image: image2,
+        size: new AMap.Size(50, 55), //图标大小
+        imageSize: new AMap.Size(50, 55),
       });
 
       let click4g4Icon = new AMap.Icon({
-        image: "https://i.loli.net/2021/07/27/SBwTivEZzrDnPhW.png",
-        size: new AMap.Size(40, 62), //图标大小
-        imageSize: new AMap.Size(40, 62)
+        image: image3,
+        size: new AMap.Size(50, 55), //图标大小
+        imageSize: new AMap.Size(50, 55),
       });
-
       if (e.target.content.indexOf("工业户外电源") != -1) {
         e.target.setIcon(clickGyhwdy);
       } else if (e.target.content.indexOf("配网智能储能电源") != -1) {
@@ -458,24 +482,24 @@ export default {
     },
     resetIcon() {
       let clickPwzncndy = new AMap.Icon({
-        image: pwzncndy,
-        size: new AMap.Size(40, 62), //图标大小
-        imageSize: new AMap.Size(40, 62)
+        image: image1_1,
+        size: new AMap.Size(50, 55), //图标大小
+        imageSize: new AMap.Size(50, 55),
       });
 
       let clickGyhwdy = new AMap.Icon({
-        image: gyhwdy,
-        size: new AMap.Size(40, 62), //图标大小
-        imageSize: new AMap.Size(40, 62)
+        image: image2_2,
+        size: new AMap.Size(50, 55), //图标大小
+        imageSize: new AMap.Size(50, 55),
       });
 
       let click4g4Icon = new AMap.Icon({
-        image: "https://i.loli.net/2021/07/27/SBwTivEZzrDnPhW.png",
-        size: new AMap.Size(40, 62), //图标大小
-        imageSize: new AMap.Size(40, 62)
+        image: image3_3,
+        size: new AMap.Size(50, 55), //图标大小
+        imageSize: new AMap.Size(50, 55),
       });
 
-      this.markers.map(item => {
+      this.markers.map((item) => {
         if (item.content.indexOf("工业户外电源") != -1) {
           item.setIcon(clickGyhwdy);
         } else if (item.content.indexOf("配网智能储能电源") != -1) {
@@ -487,13 +511,13 @@ export default {
     },
     // 获取设备数据
     getAllDeviceHandler() {
-      return new Promise(async resolve => {
+      return new Promise(async (resolve) => {
         getDeviceList({
           pageNum: 1,
           pageSize: 100000,
           ...this.searchParams,
-          deviceType: this.selectData.map(item => item.value).join(",")
-        }).then(res => {
+          deviceType: this.selectData.map((item) => item.value).join(","),
+        }).then((res) => {
           if (res.code == 200) {
             this.deviceInfo = res.rows;
             resolve();
@@ -504,8 +528,8 @@ export default {
     // 设备更改
     deviceChange() {
       let params = [];
-      this.deviceSelect.forEach(item1 => {
-        this.deviceType.forEach(item2 => {
+      this.deviceSelect.forEach((item1) => {
+        this.deviceType.forEach((item2) => {
           if (item2.label == item1) {
             params.push(item2);
           }
@@ -513,7 +537,6 @@ export default {
       });
       this.selectData = params;
       this.initMap();
-      console.log("params", params);
     },
     // 刷新
     refresh() {
@@ -525,7 +548,7 @@ export default {
     },
     closeInfo() {
       this.resetIcon();
-    }
+    },
   },
   mounted() {
     this.$nextTick(async () => {
@@ -539,11 +562,11 @@ export default {
         name: "DeviceListDetail",
         query: {
           deviceId: val,
-          deviceType: type
-        }
+          deviceType: type,
+        },
       });
     };
-    window.yxztFormate = val => {
+    window.yxztFormate = (val) => {
       switch (val) {
         case "wait": {
           return "待机";
@@ -566,7 +589,7 @@ export default {
         }
       }
     };
-  }
+  },
 };
 </script>
 
@@ -648,11 +671,22 @@ $detailHeight: 60px;
   color: #a3a3a3;
 }
 
-.select-device {
+::v-deep .select-device {
   padding: 10px;
   background-color: #dedede;
   height: 40px;
   overflow: hidden;
+  .el-checkbox__input.is-disabled.is-checked .el-checkbox__inner {
+    background-color: #1890ff;
+    border-color: #1890ff;
+  }
+  .el-checkbox__input.is-disabled + span.el-checkbox__label {
+    color: #1890ff;
+  }
+  .el-checkbox__input.is-disabled.is-checked .el-checkbox__inner::after {
+    color: #fff;
+    border-color: #fff;
+  }
 }
 
 .label {
@@ -674,17 +708,15 @@ $detailHeight: 60px;
   .info-detail {
     > div {
       padding: 5px;
-      &:nth-child(2) {
-        display: flex;
-        align-items: flex-start;
-        > span {
-          &:first-child {
-            flex: 0 0 60px;
-          }
+      display: flex;
+      align-items: flex-start;
+      > span {
+        &:first-child {
+          flex: 0 0 110px;
+        }
 
-          &:last-child {
-            flex: 1;
-          }
+        &:last-child {
+          flex: 1;
         }
       }
     }

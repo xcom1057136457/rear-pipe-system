@@ -6,200 +6,240 @@
       </div>
 
       <template v-if="$route.query.deviceType == 19">
-        <div class="top-detail-info">
+        <div class="top-detail-info long-item-detail">
           <div class="top-detail-item">
-            <label for="">设备编码:</label>
             <span>dev004</span>
+            <label for="">设备编码</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">设备名称:</label>
             <span>台区</span>
+            <label for="">设备名称</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">光伏容量:</label>
-            <span>-kWp</span>
-          </div>
-
-          <div class="top-detail-item">
-            <label for="">光伏逆变器容量:</label>
-            <span> -kW </span>
-          </div>
-
-          <div class="top-detail-item">
-            <label for="">电池容量:</label>
-            <span>-kWh</span>
-          </div>
-
-          <div class="top-detail-item">
-            <label for="">户外温度:</label>
-            <span>-℃</span>
-          </div>
-
-          <div class="top-detail-item">
-            <label for="">当前光伏电压:</label>
-            <span>-VDC</span>
-          </div>
-
-          <div class="top-detail-item">
-            <label for="">当前光伏功率:</label>
-            <span>-kW</span>
-          </div>
-
-          <div class="top-detail-item">
-            <label for="">当前负载功率:</label>
             <span>
-              -kW
+              <span>-</span>
+              <span>kWp</span>
             </span>
+            <label for="">光伏容量</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">电池总电压:</label>
-            <span>-VDC</span>
+            <span>
+              <span>1234</span>
+              <span>kW</span>
+            </span>
+            <label for="">光伏逆变器容量</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">电池单体最高电压:</label>
-            <span>-VDC</span>
+            <span>
+              <span>-</span>
+              <span>kWh</span>
+            </span>
+            <label for="">电池容量</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">电池单体最低电压:</label>
-            <span>-VDC</span>
+            <span>
+              <span>-</span>
+              <span>℃</span>
+            </span>
+            <label for="">户外温度</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">系统运行状态:</label>
+            <span>
+              <span>-</span>
+              <span>VDC</span>
+            </span>
+            <label for="">当前光伏电压</label>
+          </div>
+
+          <div class="top-detail-item">
+            <span>
+              <span>-</span>
+              <span>kW</span>
+            </span>
+            <label for="">当前光伏功率</label>
+          </div>
+
+          <div class="top-detail-item">
+            <span>
+              <span>-</span>
+              <span>kW</span>
+            </span>
+            <label for="">当前负载功率</label>
+          </div>
+
+          <div class="top-detail-item">
+            <span>
+              <span>-</span>
+              <span>VDC</span>
+            </span>
+            <label for="">电池总电压</label>
+          </div>
+
+          <div class="top-detail-item">
+            <span>
+              <span>-</span>
+              <span>VDC</span>
+            </span>
+            <label for="">电池单体最高电压</label>
+          </div>
+
+          <div class="top-detail-item">
+            <span>
+              <span>-</span>
+              <span>VDC</span>
+            </span>
+            <label for="">电池单体最低电压</label>
+          </div>
+
+          <div class="top-detail-item">
             <span>运行/充电/馈网/故障</span>
+            <label for="">系统运行状态</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">今日发电量:</label>
-            <span>-kWh</span>
+            <span>
+              <span>-</span>
+              <span>kWh</span>
+            </span>
+            <label for="">今日发电量</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">累计发电量:</label>
-            <span>-kWh</span>
+            <span>
+              <span>-</span>
+              <span>kWh</span>
+            </span>
+            <label for="">累计发电量</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">累计馈网电量:</label>
-            <span>-kWh</span>
+            <span>
+              <span>-</span>
+              <span>kWh</span>
+            </span>
+            <label for="">累计馈网电量</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">累计减少二氧化碳排放量:</label>
-            <span>-t</span>
+            <span>
+              <span>-</span>
+              <span>t</span>
+            </span>
+            <label for="">累计减少二氧化碳排放量</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">故障信息:</label>
             <span>--</span>
+            <label for="">故障信息</label>
           </div>
         </div>
       </template>
 
       <template v-if="$route.query.deviceType == 18">
-        <div class="top-detail-info">
+        <div class="top-detail-info long-item-detail">
           <div class="top-detail-item">
-            <label for="">设备编码:</label>
             <span>{{ detailInfo.deviceCode }}</span>
+            <label for="">设备编码</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">设备名称:</label>
             <span>{{ detailInfo.deviceName }}</span>
+            <label for="">设备名称</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">设备状态:</label>
             <span>{{ detailInfo.status == "1" ? "在线" : "离线" }}</span>
+            <label for="">设备状态</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">最后在线时间:</label>
             <span> {{ detailInfo.onlineTime || "暂无数据" }} </span>
+            <label for="">最后在线时间</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">运行状态:</label>
             <span>{{ yxztFormate(detailInfo.yxzt) || "暂无数据" }}</span>
+            <label for="">运行状态</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">电池总压:</label>
             <span>{{ detailInfo.dczy || "暂无数据" }}</span>
+            <label for="">电池总压</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">直流功率:</label>
             <span>{{ detailInfo.zlgl || "暂无数据" }}</span>
+            <label for="">直流功率</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">温度:</label>
             <span>{{ detailInfo.temp || "暂无数据" }}</span>
+            <label for="">温度</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">SOC:</label>
             <span>{{ detailInfo.soc || "暂无数据" }}</span>
+            <label for="">SOC</label>
           </div>
         </div>
       </template>
 
       <template v-else-if="$route.query.deviceType == 17">
-        <div class="top-detail-info">
+        <div class="top-detail-info long-item-detail">
           <div class="top-detail-item">
-            <label for="">设备编码:</label>
             <span>{{ detailInfo.deviceCode }}</span>
+            <label for="">设备编码</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">设备名称:</label>
             <span>{{ detailInfo.deviceName }}</span>
+            <label for="">设备名称</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">设备状态:</label>
             <span>{{ detailInfo.status == "1" ? "在线" : "离线" }}</span>
+            <label for="">设备状态</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">最后在线时间:</label>
             <span> {{ detailInfo.onlineTime || "暂无数据" }} </span>
+            <label for="">最后在线时间</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">运行状态:</label>
             <span>{{ yxztFormate(detailInfo.yxzt) || "暂无数据" }}</span>
+            <label for="">运行状态</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">储能交流有功功率:</label>
             <span>{{ detailInfo.cnjlyggl || "暂无数据" }}</span>
+            <label for="">储能交流有功功率</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">温度:</label>
             <span>{{ detailInfo.temp || "暂无数据" }}</span>
+            <label for="">温度</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">单体最高/低电压:</label>
             <span>{{ detailInfo.dtdy || "暂无数据" }}</span>
+            <label for="">单体最高/低电压</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">相电压:</label>
             <span>{{ detailInfo.xdy || "暂无数据" }}</span>
+            <label for="">相电压</label>
           </div>
 
           <div class="top-detail-item">
-            <label for="">SOC:</label>
             <span>{{ detailInfo.soc || "暂无数据" }}</span>
+            <label for="">SOC</label>
           </div>
         </div>
       </template>
@@ -228,9 +268,9 @@
                     <template v-if="key == 'GeoLocation'">
                       {{
                         "经度：" +
-                          value.Latitude +
+                          (value.Latitude || "暂无数据") +
                           " 纬度：" +
-                          value.Longitude
+                          (value.Longitude || "暂无数据")
                       }}
                     </template>
 
@@ -320,16 +360,6 @@
     </div>
 
     <div class="back-bar">
-      <!--      <el-switch-->
-      <!--        v-model="version"-->
-      <!--        active-text="新版"-->
-      <!--        inactive-text="旧版"-->
-      <!--        active-value="new"-->
-      <!--        inactive-value="old"-->
-      <!--        style="margin-right: 20px"-->
-      <!--        active-color="#1890ff"-->
-      <!--        inactive-color="rgb(255, 73, 73)"-->
-      <!--      ></el-switch>-->
       <el-button
         size="small"
         type="primary"
@@ -465,7 +495,7 @@ export default {
             let deviceData = {};
             if (res.data.deviceData) {
               deviceData = res.data.deviceData;
-              console.log('deviceData', deviceData);
+              console.log("deviceData", deviceData);
             } else {
               deviceData = null;
             }
@@ -624,7 +654,10 @@ export default {
 
 .top-detail-info {
   > div.top-detail-item {
-    line-height: 40px;
+    margin-bottom: 20px;
+    > span {
+      margin-bottom: 5px;
+    }
     label {
       font-size: 16px;
       width: 150px;
@@ -754,5 +787,37 @@ table {
   background-color: #f0f0f0;
   width: 180px;
   color: #666;
+}
+
+.long-item-detail {
+  display: flex;
+  flex-wrap: wrap;
+  > div {
+    flex: 0 0 25%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    > span {
+      display: flex;
+      align-items: flex-end;
+      > span {
+        &:first-child {
+          font-size: 18px;
+          font-weight: bold;
+          margin-right: 10px;
+        }
+
+        &:last-child {
+          font-size: 14px;
+          color: #a3a3a3;
+        }
+      }
+    }
+    > label {
+      width: 220px !important;
+      // color: #a3a3a3 !important;
+      // font-weight: normal !important;
+    }
+  }
 }
 </style>
