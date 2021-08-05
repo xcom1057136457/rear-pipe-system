@@ -5,7 +5,7 @@
       backgroundColor:
         settings.sideTheme === 'theme-dark'
           ? variables.menuBg
-          : variables.menuLightBg
+          : variables.menuLightBg,
     }"
   >
     <logo v-if="showLogo" :collapse="isCollapse" />
@@ -28,44 +28,12 @@
         :collapse-transition="false"
         mode="vertical"
       >
-        <template v-if="!roles.includes('visitor')">
-          <sidebar-item
-            v-for="(route, index) in sidebarRouters"
-            :key="route.path + index"
-            :item="route"
-            :base-path="route.path"
-          />
-        </template>
-
-        <template v-else>
-          <app-link :to="'/index'">
-            <el-menu-item index="/index" popper-append-to-body>
-              <i class="el-icon-menu"></i>
-              <span slot="title">首页</span>
-            </el-menu-item>
-          </app-link>
-
-          <app-link :to="'/alarm/emsAlarm'">
-            <el-menu-item index="/alarm/emsAlarm" popper-append-to-body>
-              <i class="el-icon-menu"></i>
-              <span slot="title">EMS设备告警</span>
-            </el-menu-item>
-          </app-link>
-
-          <app-link :to="'/alarm/powerAlarm'">
-            <el-menu-item index="/alarm/powerAlarm" popper-append-to-body>
-              <i class="el-icon-menu"></i>
-              <span slot="title">2kW电源告警</span>
-            </el-menu-item>
-          </app-link>
-
-          <app-link :to="'/alarm/4g4Alarm'">
-            <el-menu-item index="/alarm/4g4Alarm" popper-append-to-body>
-              <i class="el-icon-menu"></i>
-              <span slot="title">4G4设备告警</span>
-            </el-menu-item>
-          </app-link>
-        </template>
+        <sidebar-item
+          v-for="(route, index) in sidebarRouters"
+          :key="route.path + index"
+          :item="route"
+          :base-path="route.path"
+        />
       </el-menu>
     </el-scrollbar>
   </div>
@@ -110,7 +78,7 @@ export default {
         return this.basePath;
       }
       return path.resolve(this.basePath, routePath);
-    }
-  }
+    },
+  },
 };
 </script>

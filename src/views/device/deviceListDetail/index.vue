@@ -268,9 +268,9 @@
                     <template v-if="key == 'GeoLocation'">
                       {{
                         "经度：" +
-                          (value.Latitude || "暂无数据") +
-                          " 纬度：" +
-                          (value.Longitude || "暂无数据")
+                        (value.Latitude || "暂无数据") +
+                        " 纬度：" +
+                        (value.Longitude || "暂无数据")
                       }}
                     </template>
 
@@ -285,8 +285,8 @@
                         active-color="#13ce66"
                         inactive-color="#ff4949"
                         :inactive-text="deviceData[key] == 0 ? '断开' : '闭合'"
-                        active-value="1"
-                        inactive-value="0"
+                        :active-value="1"
+                        :inactive-value="0"
                         @change="switchChange($event, key)"
                       >
                       </el-switch>
@@ -297,10 +297,10 @@
                     <template
                       v-if="
                         key == 'PRSwitch' ||
-                          key == 'LSwitch' ||
-                          key == 'HTState' ||
-                          key == 'BeepState' ||
-                          key == 'FanState'
+                        key == 'LSwitch' ||
+                        key == 'HTState' ||
+                        key == 'BeepState' ||
+                        key == 'FanState'
                       "
                     >
                       {{ value == "0" ? "关" : "开" }}
@@ -310,6 +310,10 @@
                       {{
                         "经度：" + value.Latitude + " 纬度：" + value.Longitude
                       }}
+                    </template>
+
+                    <template v-else-if="key == 'BMSState'">
+                      {{ getLabelDictValue(value) }}
                     </template>
 
                     <template
@@ -344,9 +348,7 @@
       <!-- 设备是EMS设备时 -->
       <template v-if="loadChart && peakChart && deviceType == 1">
         <div class="top-title">
-          <span class="bar-title">
-            24小时储能功率曲线
-          </span>
+          <span class="bar-title"> 24小时储能功率曲线 </span>
           <span>(数据更新时间: {{ detailInfo.updateTime }})</span>
         </div>
         <div class="chart-wrapper">
@@ -391,56 +393,58 @@ export default {
       deviceStatus: [],
       deviceWordsName: [],
       version: "old",
+      runingDict: [],
       topDetail: [
         {
           label: "设备编码",
-          value: "deviceCode"
+          value: "deviceCode",
         },
         {
           label: "设备名称",
-          value: "deviceName"
+          value: "deviceName",
         },
         {
           label: "所属产品",
-          value: "deviceTypeName"
+          value: "deviceTypeName",
         },
         {
           label: "设备专责",
-          value: "equipSpecialist"
+          value: "equipSpecialist",
         },
         {
           label: "IEME卡号",
-          value: "ieme"
+          value: "ieme",
         },
         {
           label: "安装位置",
-          value: "installPosition"
+          value: "installPosition",
         },
         {
           label: "联系厂家",
-          value: "manufactor"
+          value: "manufactor",
         },
         {
           label: "电网专责",
-          value: "powergridSpecialist"
+          value: "powergridSpecialist",
         },
         {
           label: "设备状态",
-          value: "status"
+          value: "status",
         },
         {
           label: "备注",
-          value: "remark"
-        }
+          value: "remark",
+        },
       ],
-      addressInfo: ""
+      addressInfo: "",
     };
   },
   components: {
-    lineChart
+    lineChart,
   },
-  created() {
+  async created() {
     this.getDeviceStatus();
+    await this.getRuningStatus();
     this.$nextTick(() => {
       this.getDetailInfo();
     });
@@ -448,7 +452,7 @@ export default {
   methods: {
     // 获取地址
     getPositionByLonLats(longitude, latitude) {
-      getPositionByLonLats(longitude, latitude, res => {
+      getPositionByLonLats(longitude, latitude, (res) => {
         this.addressInfo = res;
       });
     },
@@ -487,9 +491,9 @@ export default {
       this.loading = true;
       this.$route.query.deviceType != 17 && (await this.getDiceDict());
       getDeiveDetail({
-        deviceId: this.$route.query.deviceId
+        deviceId: this.$route.query.deviceId,
       })
-        .then(async res => {
+        .then(async (res) => {
           if (res.code == 200) {
             this.detailInfo = res.data;
             let deviceData = {};
@@ -508,7 +512,7 @@ export default {
                 dataObj = await this.getDictObj("4g4Device_dataFormat");
               }
               let saveObj = {};
-              dataObj.map(item => {
+              dataObj.map((item) => {
                 saveObj[item.dictValue] = null;
               });
               for (let key in saveObj) {
@@ -546,37 +550,52 @@ export default {
         }
       });
     },
+    // 获取运行状态
+    getRuningStatus() {
+      return new Promise(async (resolve) => {
+        let { code, data } = await this.getDicts("runing_status");
+        if (code == 200) {
+          this.runingDict = data;
+          resolve();
+        }
+      });
+    },
+    // 获取字段数据
+    getLabelDictValue(value) {
+      let temp = this.runingDict.filter((item) => item.dictValue == value);
+      return temp && temp.length ? temp[0].dictLabel : "暂无数据";
+    },
     // 获取设备状态
     async getDeviceStatus() {
       let { code, data } = await this.getDicts("device_status");
       if (code == 200) {
-        this.deviceStatus = data.map(item => {
+        this.deviceStatus = data.map((item) => {
           return {
             value: item.dictValue,
-            label: item.dictLabel
+            label: item.dictLabel,
           };
         });
       }
     },
     statusFormatter(value) {
-      let temp = this.deviceStatus.filter(item => item.value == value);
+      let temp = this.deviceStatus.filter((item) => item.value == value);
       return temp.length ? temp[0].label : "";
     },
     // 查设备字段字典
     getDiceDict() {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         let deviceType = null;
         if (this.$route.query.deviceType == 19) {
           deviceType = "4g4Device_dataFormat";
         } else if (this.$route.query.deviceType == 18) {
           deviceType = "2kwDevice_dataFormat";
         }
-        this.getDicts(deviceType).then(res => {
+        this.getDicts(deviceType).then((res) => {
           if (res.code == 200) {
-            this.deviceWordsName = res.data.map(item => {
+            this.deviceWordsName = res.data.map((item) => {
               return {
                 value: item.dictValue,
-                label: item.dictLabel
+                label: item.dictLabel,
               };
             });
           }
@@ -585,25 +604,25 @@ export default {
       });
     },
     labelFormat(val) {
-      let temp = this.deviceWordsName.filter(item => item.value == val);
+      let temp = this.deviceWordsName.filter((item) => item.value == val);
       return temp.length ? temp.shift().label : val;
     },
     switchChange(val, key) {
-      let temp = this.deviceWordsName.filter(item => item.value == key);
+      let temp = this.deviceWordsName.filter((item) => item.value == key);
       temp = temp.length ? temp.shift().label : key;
       this.$confirm(`此操作将更改${temp}, 是否继续?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
           deviceControl({
             item: key,
             productKey: this.detailInfo.productKey,
             sn: this.detailInfo.sn,
-            val
+            val,
           })
-            .then(res => {
+            .then((res) => {
               if (res.code == 200) {
                 this.$message.success("修改成功!");
                 // setTimeout(() => {
@@ -619,8 +638,8 @@ export default {
           this.deviceData[key] = val == 0 ? 1 : 0;
           this.$message.info("已取消修改!");
         });
-    }
-  }
+    },
+  },
 };
 </script>
 

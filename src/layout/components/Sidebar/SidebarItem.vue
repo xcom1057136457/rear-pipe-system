@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!item.hidden">
+  <div v-if="!item.hidden && visitorHideDevice(item)">
     <template
       v-if="
         hasOneShowingChild(item.children, item) &&
@@ -51,6 +51,7 @@ import { isExternal } from "@/utils/validate";
 import Item from "./Item";
 import AppLink from "./Link";
 import FixiOSBug from "./FixiOSBug";
+import { mapGetters } from "vuex"
 
 export default {
   name: "SidebarItem",
@@ -75,7 +76,18 @@ export default {
     this.onlyOneChild = null;
     return {};
   },
+  computed: {
+    ...mapGetters(['roles'])
+  },
   methods: {
+    // 游客访问隐藏设备详情
+    visitorHideDevice(item) {
+      if (this.roles.includes('visitor') && item.name == "Device") {
+        return false
+      } else {
+        return true
+      }
+    },
     hasOneShowingChild(children = [], parent) {
       if (!children) {
         children = [];

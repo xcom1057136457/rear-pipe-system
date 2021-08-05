@@ -431,8 +431,9 @@ export default {
 <style rel="stylesheet/scss" lang="scss">
 .login {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
+  position: relative;
   height: 100%;
   background-image: url("../assets/images/login-background.jpg");
   background-size: cover;
@@ -444,6 +445,7 @@ export default {
 }
 
 .login-form {
+  margin-right: 10%;
   border-radius: 6px;
   background: #ffffff;
   width: 400px;

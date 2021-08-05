@@ -15,26 +15,12 @@
         </div>
         <el-collapse-transition>
           <div class="bottom-details" v-show="!isCollapse">
-            <div>
+            <div v-for="(item, index) in topInfoDetail" :key="index">
               <div>
-                <span>423445</span>
-                <span>kWh</span>
+                <span>{{ topInfo[item.value] || '暂无数据' }}</span>
+                <span>{{ item.unit }}</span>
               </div>
-              <div class="top-label">累计供电量</div>
-            </div>
-            <div>
-              <div>
-                <span>2342</span>
-                <span>吨</span>
-              </div>
-              <div class="top-label">累计减排CO2约</div>
-            </div>
-            <div>
-              <div>
-                <span>2342</span>
-                <span>吨</span>
-              </div>
-              <div class="top-label">累计减排SO2约</div>
+              <div class="top-label">{{ item.name }}</div>
             </div>
           </div>
         </el-collapse-transition>
@@ -61,6 +47,7 @@
 
 <script>
 import { getAllDevice, getDeviceList } from "@/api/monitor/device";
+import { getDeviceStatistics } from "@/api/tool/carbonEmissions"
 import { getAllProduct } from "@/api/monitor/product";
 import image1 from "@/assets/images/1.png";
 import image1_1 from "@/assets/images/1-1.png";
@@ -69,7 +56,7 @@ import image2_2 from "@/assets/images/2-2.png";
 import image3 from "@/assets/images/3.png";
 import image3_3 from "@/assets/images/3-3.png";
 export default {
-  name: "首页",
+  name: "Dashbords",
   data() {
     return {
       map: null,
@@ -83,6 +70,39 @@ export default {
       deviceList: [],
       selectData: [],
       isCollapse: false,
+      topInfo: {},
+      topInfoDetail: [
+        {
+          name: '累计供电量',
+          unit: 'kWh',
+          value: 'ljgdl'
+        },
+        {
+          name: '累计减排CO2约',
+          unit: '吨',
+          value: 'ljjpco2'
+        },
+        {
+          name: '累计减排SO2约',
+          unit: '吨',
+          value: 'ljjpso2'
+        },
+        {
+          name: '设备总数',
+          unit: '台',
+          value: 'sbzs'
+        },
+        {
+          name: '设备在线数',
+          unit: '台',
+          value: 'sbzxs'
+        },
+        {
+          name: '设备离线数',
+          unit: '台',
+          value: 'sblxs'
+        }
+      ]
     };
   },
   methods: {
@@ -96,6 +116,13 @@ export default {
             label: item.dictLabel,
           };
         });
+      }
+    },
+    // 获取碳排放数据
+    async getDeviceStatisticsHandler() {
+      let { code, data } = await getDeviceStatistics()
+      if (code == 200) {
+        this.topInfo = data
       }
     },
     // 获取产品列表
@@ -556,6 +583,7 @@ export default {
       this.initMap();
     });
     this.getDeviceStatus();
+    this.getDeviceStatisticsHandler()
     let that = this;
     window.doDetail = (val, type, e) => {
       that.$router.push({
