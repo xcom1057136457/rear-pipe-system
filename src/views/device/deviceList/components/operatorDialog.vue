@@ -60,6 +60,15 @@
             </el-option>
           </el-select>
         </el-form-item>
+
+        <el-form-item label="产品KEY" prop="productKey">
+          <el-input
+            readonly
+            v-model="params.productKey"
+            placeholder="请输入产品KEY..."
+          ></el-input>
+        </el-form-item>
+
         <el-form-item label="所属产品" prop="deviceType">
           <el-select
             v-model="params.deviceType"
@@ -143,6 +152,7 @@ export default {
       dialogVisible: false,
       params: {
         deviceCode: "",
+        productKey: "",
         deviceName: "",
         sn: "",
         deviceType: "",
@@ -151,60 +161,63 @@ export default {
         installPosition: "",
         manufactor: "",
         powergridSpecialist: "",
-        remark: ""
+        remark: "",
       },
       buttonLoading: false,
       pageParams: {
         pageNum: 1,
-        pageSize: 20
+        pageSize: 20,
       },
       rules: {
         deptId: [
-          { required: true, message: "请选择归属部门", trigger: "change" }
+          { required: true, message: "请选择归属部门", trigger: "change" },
         ],
         ieme: [{ required: true, message: "请输入IEME卡号", trigger: "blur" }],
         deviceCode: [
-          { required: true, message: "请输入设备编码", trigger: "blur" }
+          { required: true, message: "请输入设备编码", trigger: "blur" },
         ],
         sn: [{ required: true, message: "请输入设备SN码", trigger: "change" }],
         deviceName: [
-          { required: true, message: "请输入设备名称", trigger: "blur" }
+          { required: true, message: "请输入设备名称", trigger: "blur" },
         ],
         deviceType: [
-          { required: true, message: "请输入所属产品", trigger: "change" }
-        ]
+          { required: true, message: "请输入所属产品", trigger: "change" },
+        ],
+        productKey: [
+          { required: true, message: "请输入产品KEY", trigger: "blur" },
+        ],
       },
       selectLoading: false,
       snList: [],
       productList: [],
       // 部门树选项
-      deptOptions: undefined
+      deptOptions: undefined,
     };
   },
   components: {
-    Treeselect
+    Treeselect,
   },
   props: {
     visible: {
       default: () => {
         return false;
-      }
+      },
     },
     deptId: {
       default: () => {
         return "";
-      }
+      },
     },
     updateInfo: {
       default: () => {
         return {};
-      }
+      },
     },
     operatorType: {
       default: () => {
         return "";
-      }
-    }
+      },
+    },
   },
   watch: {
     visible(val) {
@@ -221,8 +234,8 @@ export default {
           this.snList = [];
         }
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
   methods: {
     initData() {
@@ -234,13 +247,13 @@ export default {
       }
     },
     async submitHandler() {
-      this.$refs["ruleForm"].validate(valid => {
+      this.$refs["ruleForm"].validate((valid) => {
         if (valid) {
           this.buttonLoading = true;
           let params = JSON.parse(JSON.stringify(this.params));
           if (this.operatorType == 0) {
             addDevice(params)
-              .then(res => {
+              .then((res) => {
                 if (res.code == 200) {
                   this.$message.success("新增设备成功!");
                   this.dialogVisible = false;
@@ -253,7 +266,7 @@ export default {
               });
           } else {
             updateDevice(params)
-              .then(res => {
+              .then((res) => {
                 if (res.code == 200) {
                   this.$message.success("修改设备成功!");
                   this.dialogVisible = false;
@@ -287,14 +300,14 @@ export default {
         this.selectLoading = true;
         let params = Object.assign({}, this.pageParams, { sn: query });
         getSN(params)
-          .then(res => {
+          .then((res) => {
             if (res.code == 200) {
-              this.snList = res.rows.map(item => {
+              this.snList = res.rows.map((item) => {
                 return {
                   label: item.deviceName + " (" + item.isEnabled + ")",
                   value: item.deviceName,
                   productKey: item.productKey,
-                  disabled: item.isEnabled == "已使用" ? true : false
+                  disabled: item.isEnabled == "已使用" ? true : false,
                 };
               });
             }
@@ -312,16 +325,17 @@ export default {
       if (val) {
         this.$set(this.params, "deviceType", "");
         this.productList = [];
-        let productKey = this.snList.filter(item => item.value == val)[0]
+        let productKey = this.snList.filter((item) => item.value == val)[0]
           .productKey;
+        this.params.productKey = productKey;
         getProductList({
-          productKey: productKey
-        }).then(res => {
+          productKey: productKey,
+        }).then((res) => {
           if (res.code == 200) {
-            this.productList = res.rows.map(item => {
+            this.productList = res.rows.map((item) => {
               return {
                 value: item.productId,
-                label: item.productName
+                label: item.productName,
               };
             });
           }
@@ -330,22 +344,22 @@ export default {
     },
     /** 查询部门下拉树结构 */
     getTreeselect() {
-      treeselect().then(response => {
+      treeselect().then((response) => {
         this.deptOptions = response.data;
       });
     },
     getSnProductKey(query) {
       let params = Object.assign({}, this.pageParams, { sn: query });
-      getSN(params).then(res => {
+      getSN(params).then((res) => {
         if (res.code == 200) {
           getProductList({
-            productKey: res.rows[0].productKey
-          }).then(res => {
+            productKey: res.rows[0].productKey,
+          }).then((res) => {
             if (res.code == 200) {
-              let test = res.rows.map(item => {
+              let test = res.rows.map((item) => {
                 return {
                   value: String(item.productId),
-                  label: item.productName
+                  label: item.productName,
                 };
               });
               this.$set(this, "productList", test);
@@ -353,11 +367,11 @@ export default {
           });
         }
       });
-    }
+    },
   },
   created() {
     this.getTreeselect();
-  }
+  },
 };
 </script>
 
