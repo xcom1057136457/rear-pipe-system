@@ -56,7 +56,7 @@ import image2_2 from "@/assets/images/2-2.png";
 import image3 from "@/assets/images/3.png";
 import image3_3 from "@/assets/images/3-3.png";
 export default {
-  name: "Dashbords",
+  name: "Dashboard",
   data() {
     return {
       map: null,
