@@ -37,6 +37,8 @@
           @change="deviceChange"
         ></el-checkbox>
       </el-checkbox-group>
+
+      <el-button icon="el-icon-search" circle size="mini" @click="initMap"></el-button>
     </div>
     <div
       id="container"
@@ -276,28 +278,48 @@ export default {
                 </div>
 
                 <div class="info-item">
-                  <span>当前光伏功率：</span>
-                  <span>-kW</span>
+                  <span>位置信息：</span>
+                  <span>实际位置，到区或者**路</span>
                 </div>
 
                 <div class="info-item">
-                  <span>当前负载功率：</span>
-                  <span>-kW</span>
+                  <span>在线时间：</span>
+                  <span>---</span>
                 </div>
 
                 <div class="info-item">
-                  <span>系统运行状态：</span>
-                  <span>运行/充电/馈网/故障</span>
+                  <span>运行状态：</span>
+                  <span>在线</span>
                 </div>
 
                 <div class="info-item">
-                  <span>今日发电量：</span>
-                  <span>-kWh</span>
+                  <span>负载需求：</span>
+                  <span>115 kW</span>
                 </div>
 
                 <div class="info-item">
-                  <span>累计减少二氧化碳排放量：</span>
-                  <span>-t</span>
+                  <span>电网供电：</span>
+                  <span>15 kW</span>
+                </div>
+
+                <div class="info-item">
+                  <span>光伏发电：</span>
+                  <span>75 kW</span>
+                </div>
+
+                <div class="info-item">
+                  <span>储能设备：</span>
+                  <span>25 kW (注意：放电为+，充电为-）</span>
+                </div>
+
+                <div class="info-item">
+                  <span>储能状态：</span>
+                  <span>放电</span>
+                </div>
+
+                <div class="info-item">
+                  <span>电池电量:</span>
+                  <span>75%</span>
                 </div>
 
               </div>
@@ -332,6 +354,16 @@ export default {
                 </div>
 
                 <div class="info-item">
+                  <span>额定功率：</span>
+                  <span>2kW</span>
+                </div>
+
+                <div class="info-item">
+                  <span>位置信息：</span>
+                  <span>实际位置，到区或者**路</span>
+                </div>
+
+                <div class="info-item">
                   <span>最后在线时间：</span>
                   <span>${lnglats[i].onlineTime || "暂无数据"}</span>
                 </div>
@@ -342,23 +374,8 @@ export default {
                 </div>
 
                 <div class="info-item">
-                  <span>电池总压：</span>
-                  <span>${lnglats[i].dczy || "暂无数据"}</span>
-                </div>
-
-                <div class="info-item">
-                  <span>直流功率：</span>
-                  <span>${lnglats[i].zlgl || "暂无数据"}</span>
-                </div>
-
-                <div class="info-item">
-                  <span>温度：</span>
-                  <span>${lnglats[i].temp || "暂无数据"}</span>
-                </div>
-
-                <div class="info-item">
-                  <span>SOC：</span>
-                  <span>${lnglats[i].soc || "暂无数据"}</span>
+                  <span>电池电量：</span>
+                  <span>--</span>
                 </div>
 
               </div>
@@ -388,8 +405,13 @@ export default {
                 </div>
 
                 <div class="info-item">
-                  <span>设备状态：</span>
-                  <span>${statusFormatter(lnglats[i].status)}</span>
+                  <span>额定功率：</span>
+                  <span>--</span>
+                </div>
+
+                <div class="info-item">
+                  <span>位置信息：</span>
+                  <span>实际位置，到区或者**路</span>
                 </div>
 
                 <div class="info-item">
@@ -398,35 +420,34 @@ export default {
                 </div>
 
                 <div class="info-item">
-                  <span>运行状态：</span>
-                  <span>${yxztFormate(lnglats[i].yxzt) || "暂无数据"}</span>
+                  <span>设备状态：</span>
+                  <span>${statusFormatter(lnglats[i].status)}</span>
                 </div>
 
                 <div class="info-item">
-                  <span>储能交流有功功率：</span>
-                  <span>${lnglats[i].cnjlyggl || "暂无数据"}</span>
+                  <span>负载需求：</span>
+                  <span>-- kW</span>
                 </div>
 
                 <div class="info-item">
-                  <span>温度：</span>
-                  <span>${lnglats[i].temp || "暂无数据"}</span>
+                  <span>电网供电：</span>
+                  <span>-- kW</span>
                 </div>
 
                 <div class="info-item">
-                  <span>单体最高/低电压：</span>
-                  <span>${lnglats[i].dtdy || "暂无数据"}</span>
+                  <span>储能设备：</span>
+                  <span>'-25 kW   （注意：放电为+，充电为-）</span>
                 </div>
 
                 <div class="info-item">
-                  <span>相电压：</span>
-                  <span>${lnglats[i].xdy || "暂无数据"}</span>
+                  <span>储能状态：</span>
+                  <span>充电</span>
                 </div>
 
                 <div class="info-item">
-                  <span>SOC：</span>
-                  <span>${lnglats[i].soc || "暂无数据"}</span>
+                  <span>电池电量:</span>
+                  <span>75%</span>
                 </div>
-
               </div>
 
               <div class="info-foot">
@@ -563,7 +584,7 @@ export default {
         });
       });
       this.selectData = params;
-      this.initMap();
+      // this.initMap();
     },
     // 刷新
     refresh() {
@@ -724,6 +745,11 @@ $detailHeight: 60px;
   background-color: #dedede;
   height: 40px;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  > .el-button {
+    margin-left: 20px;
+  }
   .el-checkbox__input.is-disabled.is-checked .el-checkbox__inner {
     background-color: #1890ff;
     border-color: #1890ff;

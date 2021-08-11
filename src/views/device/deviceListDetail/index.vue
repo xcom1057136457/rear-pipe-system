@@ -6,348 +6,297 @@
       </div>
 
       <template v-if="$route.query.deviceType == 19">
-        <div class="top-detail-info long-item-detail">
-          <div class="top-detail-item">
-            <span>dev004</span>
-            <label for="">设备编码</label>
-          </div>
+        <table>
+          <tr>
+            <td rowspan="2">
+              <div class="text-label">2021-08-10</div>
+              <div class="text-value">17:22</div>
+            </td>
+            <td class="text-value">dev004</td>
+            <td colspan="2" class="text-value">威克电力光储充微电网系统</td>
+            <td class="text-value">2323小时</td>
+          </tr>
+          <tr>
+            <td class="text-label">设备编码</td>
+            <td colspan="2" class="text-label">湖南省长沙市雨花区总部基地</td>
+            <td class="text-label">累计投运时间</td>
+          </tr>
 
-          <div class="top-detail-item">
-            <span>台区</span>
-            <label for="">设备名称</label>
-          </div>
+          <tr>
+            <td rowspan="2" class="text-value">负载</td>
+            <td class="text-value">115 kW</td>
+            <td class="text-value">1150 kWh</td>
+            <td class="text-value">220/211/244 VAC</td>
+            <td class="text-value">11/23/12 A</td>
+          </tr>
+          <tr>
+            <td class="text-label">实时需求功率</td>
+            <td class="text-label">累计用电量</td>
+            <td class="text-label">相电压</td>
+            <td class="text-label">相电流</td>
+          </tr>
 
-          <div class="top-detail-item">
-            <span>
-              <span>-</span>
-              <span>kWp</span>
-            </span>
-            <label for="">光伏容量</label>
-          </div>
+          <tr>
+            <td rowspan="2" class="text-value">电网</td>
+            <td class="text-value">15 kW</td>
+            <td class="text-value">150 kW</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="text-label">实时供电功率</td>
+            <td class="text-label">累计供电量</td>
+            <td></td>
+            <td></td>
+          </tr>
 
-          <div class="top-detail-item">
-            <span>
-              <span>1234</span>
-              <span>kW</span>
-            </span>
-            <label for="">光伏逆变器容量</label>
-          </div>
+          <tr>
+            <td rowspan="2" class="text-value">光伏</td>
+            <td class="text-value">75 kW</td>
+            <td class="text-value">750 kW</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="text-label">实时发电功率</td>
+            <td class="text-label">累计发电量</td>
+            <td></td>
+            <td></td>
+          </tr>
 
-          <div class="top-detail-item">
-            <span>
-              <span>-</span>
-              <span>kWh</span>
-            </span>
-            <label for="">电池容量</label>
-          </div>
+          <tr>
+            <td rowspan="4" class="text-value">储能</td>
+            <td class="text-value">25 kW 放电</td>
+            <td class="text-value">250 kW</td>
+            <td class="text-value">220 kW</td>
+            <td class="text-value">86.98%</td>
+          </tr>
+          <tr>
+            <td class="text-label">设备实时功率</td>
+            <td class="text-label">累计储电量</td>
+            <td class="text-label">累计发电量</td>
+            <td class="text-label">系统效率</td>
+          </tr>
+          <tr>
+            <td class="text-value">77%</td>
+            <td class="text-value">27 ℃</td>
+            <td class="text-value">3.53/3.63 VDC</td>
+            <td class="text-value">7/122</td>
+          </tr>
+          <tr>
+            <td class="text-label">储能SOC</td>
+            <td class="text-label">系统温度</td>
+            <td class="text-label">最低最高电压</td>
+            <td class="text-label">最低最高节数</td>
+          </tr>
 
-          <div class="top-detail-item">
-            <span>
-              <span>-</span>
-              <span>℃</span>
-            </span>
-            <label for="">户外温度</label>
-          </div>
-
-          <div class="top-detail-item">
-            <span>
-              <span>-</span>
-              <span>VDC</span>
-            </span>
-            <label for="">当前光伏电压</label>
-          </div>
-
-          <div class="top-detail-item">
-            <span>
-              <span>-</span>
-              <span>kW</span>
-            </span>
-            <label for="">当前光伏功率</label>
-          </div>
-
-          <div class="top-detail-item">
-            <span>
-              <span>-</span>
-              <span>kW</span>
-            </span>
-            <label for="">当前负载功率</label>
-          </div>
-
-          <div class="top-detail-item">
-            <span>
-              <span>-</span>
-              <span>VDC</span>
-            </span>
-            <label for="">电池总电压</label>
-          </div>
-
-          <div class="top-detail-item">
-            <span>
-              <span>-</span>
-              <span>VDC</span>
-            </span>
-            <label for="">电池单体最高电压</label>
-          </div>
-
-          <div class="top-detail-item">
-            <span>
-              <span>-</span>
-              <span>VDC</span>
-            </span>
-            <label for="">电池单体最低电压</label>
-          </div>
-
-          <div class="top-detail-item">
-            <span>运行/充电/馈网/故障</span>
-            <label for="">系统运行状态</label>
-          </div>
-
-          <div class="top-detail-item">
-            <span>
-              <span>-</span>
-              <span>kWh</span>
-            </span>
-            <label for="">今日发电量</label>
-          </div>
-
-          <div class="top-detail-item">
-            <span>
-              <span>-</span>
-              <span>kWh</span>
-            </span>
-            <label for="">累计发电量</label>
-          </div>
-
-          <div class="top-detail-item">
-            <span>
-              <span>-</span>
-              <span>kWh</span>
-            </span>
-            <label for="">累计馈网电量</label>
-          </div>
-
-          <div class="top-detail-item">
-            <span>
-              <span>-</span>
-              <span>t</span>
-            </span>
-            <label for="">累计减少二氧化碳排放量</label>
-          </div>
-
-          <div class="top-detail-item">
-            <span>--</span>
-            <label for="">故障信息</label>
-          </div>
-        </div>
+          <tr>
+            <td rowspan="2" class="text-value">双碳贡献</td>
+            <td class="text-value">3234 kg</td>
+            <td class="text-value">233 kg</td>
+            <td class="text-value"></td>
+            <td class="text-value"></td>
+          </tr>
+          <tr>
+            <td class="text-label">减少CO2排放量</td>
+            <td class="text-label">减少SO2排放量</td>
+            <td></td>
+            <td></td>
+          </tr>
+        </table>
       </template>
 
       <template v-if="$route.query.deviceType == 18">
-        <div class="top-detail-info long-item-detail">
-          <div class="top-detail-item">
-            <span>{{ detailInfo.deviceCode }}</span>
-            <label for="">设备编码</label>
-          </div>
+        <table>
+          <tr>
+            <td rowspan="2" class="text-value">设备信息</td>
+            <td class="text-value">{{ detailInfo.deviceCode }}</td>
+            <td colspan="2" class="text-value">工业户外电源</td>
+            <td class="text-value">-- kW</td>
+          </tr>
+          <tr>
+            <td class="text-label">设备编码</td>
+            <td colspan="2" class="text-label">设备名称</td>
+            <td class="text-label">额定功率</td>
+          </tr>
 
-          <div class="top-detail-item">
-            <span>{{ detailInfo.deviceName }}</span>
-            <label for="">设备名称</label>
-          </div>
+          <tr>
+            <td rowspan="4" class="text-value">实时</td>
+            <td class="text-value">{{ statusFormatter(detailInfo.status) }}</td>
+            <td class="text-value">{{ detailInfo.dczy || "暂无数据" }}</td>
+            <td class="text-value">{{ detailInfo.soc || "暂无数据" }}</td>
+            <td class="text-value">{{ detailInfo.temp || "暂无数据" }}</td>
+          </tr>
 
-          <div class="top-detail-item">
-            <span>{{ statusFormatter(detailInfo.status) }}</span>
-            <label for="">设备状态</label>
-          </div>
+          <tr>
+            <td class="text-label">实时状态</td>
+            <td class="text-label">实时电池电压</td>
+            <td class="text-label">电池SOC</td>
+            <td class="text-label">设备温度</td>
+          </tr>
+          <tr>
+            <td>--</td>
+            <td>--</td>
+            <td class="text-value">{{ statusFormatter(detailInfo.status) }}</td>
+            <td class="text-value">{{ detailInfo.onlineTime || "暂无数据" }}</td>
+          </tr>
+          <tr>
+            <td class="text-label">直流功率</td>
+            <td class="text-label">交流功率</td>
+            <td class="text-label">设备状态</td>
+            <td class="text-label">在线时间</td>
+          </tr>
 
-          <div class="top-detail-item">
-            <span> {{ detailInfo.onlineTime || "暂无数据" }} </span>
-            <label for="">最后在线时间</label>
-          </div>
+          <tr>
+            <td rowspan="2" class="text-value">累计</td>
+            <td class="text-value">-- kW</td>
+            <td class="text-value">--</td>
+            <td></td>
+            <td class="text-value">ON/OFF</td>
+          </tr>
+          <tr>
+            <td class="text-label">累计放电量</td>
+            <td class="text-label">累计运行天数</td>
+            <td></td>
+            <td class="text-label">一键离线</td>
+          </tr>
 
-          <div class="top-detail-item">
-            <span>{{ yxztFormate(detailInfo.yxzt) || "暂无数据" }}</span>
-            <label for="">运行状态</label>
-          </div>
+          <tr>
+            <td rowspan="2" class="text-value">位置</td>
+            <td colspan="4" class="text-value">湖南省长沙市天心区湘府路2231号</td>
+          </tr>
+          <tr>
+            <td colspan="4">
+              <div id="map-container"></div>
+            </td>
+          </tr>
 
-          <div class="top-detail-item">
-            <span>{{ detailInfo.dczy || "暂无数据" }}</span>
-            <label for="">电池总压</label>
-          </div>
+          <tr>
+            <td rowspan="2" class="text-value">运维</td>
+            <td class="text-value">0731-86281319</td>
+            <td class="text-value">13974864753</td>
+            <td class="text-value"></td>
+            <td class="text-value">E32</td>
+          </tr>
 
-          <div class="top-detail-item">
-            <span>{{ detailInfo.zlgl || "暂无数据" }}</span>
-            <label for="">直流功率</label>
-          </div>
-
-          <div class="top-detail-item">
-            <span>{{ detailInfo.temp || "暂无数据" }}</span>
-            <label for="">温度</label>
-          </div>
-
-          <div class="top-detail-item">
-            <span>{{ detailInfo.soc || "暂无数据" }}</span>
-            <label for="">SOC</label>
-          </div>
-        </div>
+          <tr>
+            <td class="text-label">威克电力</td>
+            <td class="text-label">运维人微信</td>
+            <td class="text-label">购买人</td>
+            <td class="text-label">故障代码</td>
+          </tr>
+        </table>
       </template>
 
       <template v-else-if="$route.query.deviceType == 17">
-        <div class="top-detail-info long-item-detail">
-          <div class="top-detail-item">
-            <span>{{ detailInfo.deviceCode }}</span>
-            <label for="">设备编码</label>
-          </div>
+        <table>
+          <tr>
+            <td colspan="5" style="text-align: center; fontWeight: bold">
+              威克电力配网智能储能装置-设备详情
+            </td>
+          </tr>
+          <tr>
+            <td rowspan="4" class="text-value">设备信息</td>
+            <td rowspan="2">
+              <div>2021-08-10</div>
+              <div class="text-value">17:22</div>
+            </td>
+            <td colspan="2" class="text-value">{{ detailInfo.deviceName }}</td>
+            <td class="text-value">-- 小时</td>
+          </tr>
+          <tr>
+            <td colspan="2" class="text-label">
+              实时位置：湖南省长沙市雨花区总部基地
+            </td>
+            <td class="text-label">累计投运时间</td>
+          </tr>
+          <tr>
+            <td class="text-value">{{ detailInfo.deviceCode }}</td>
+            <td class="text-value">--</td>
+            <td class="text-value">-- kVA</td>
+            <td class="text-value">ON/OFF</td>
+          </tr>
+          <tr>
+            <td class="text-label">设备编码</td>
+            <td class="text-label">工作模式</td>
+            <td class="text-label">变压器容量</td>
+            <td class="text-label">一键脱网</td>
+          </tr>
 
-          <div class="top-detail-item">
-            <span>{{ detailInfo.deviceName }}</span>
-            <label for="">设备名称</label>
-          </div>
+          <tr>
+            <td rowspan="2" class="text-value">负载</td>
+            <td class="text-value">-- kW</td>
+            <td class="text-value">-- kWh</td>
+            <td class="text-value">{{ detailInfo.xdy || "--" }}</td>
+            <td class="text-value">-- A</td>
+          </tr>
+          <tr>
+            <td class="text-label">实时需求功率</td>
+            <td class="text-label">累计用电量</td>
+            <td class="text-label">相电压</td>
+            <td class="text-label">相电流</td>
+          </tr>
 
-          <div class="top-detail-item">
-            <span>{{ statusFormatter(detailInfo.status) }}</span>
-            <label for="">设备状态</label>
-          </div>
+          <tr>
+            <td rowspan="2" class="text-value">电网</td>
+            <td class="text-value">-- kW</td>
+            <td class="text-value">-- kW</td>
+            <td class="text-value"></td>
+            <td class="text-value"></td>
+          </tr>
+          <tr>
+            <td class="text-label">实时供电功率</td>
+            <td class="text-label">累计供电量</td>
+            <td></td>
+            <td></td>
+          </tr>
 
-          <div class="top-detail-item">
-            <span> {{ detailInfo.onlineTime || "暂无数据" }} </span>
-            <label for="">最后在线时间</label>
-          </div>
+          <tr>
+            <td rowspan="4" class="text-value">储能</td>
+            <td class="text-value">-- kW 放电</td>
+            <td class="text-value">-- kW</td>
+            <td class="text-value">-- kW</td>
+            <td class="text-value">--.98%</td>
+          </tr>
+          <tr>
+            <td class="text-label">设备实时功率</td>
+            <td class="text-label">累计储电量</td>
+            <td class="text-label">累计发电量</td>
+            <td class="text-label">系统效率</td>
+          </tr>
+          <tr>
+            <td class="text-value">{{ detailInfo.soc || "--" }}</td>
+            <td class="text-value">{{ detailInfo.temp || "--" }}</td>
+            <td class="text-value">{{ detailInfo.dtdy || "暂无数据" }}</td>
+            <td class="text-value">--</td>
+          </tr>
+          <tr>
+            <td class="text-label">储能SOC</td>
+            <td class="text-label">系统温度</td>
+            <td class="text-label">最低最高电压</td>
+            <td class="text-label">最低最高节数</td>
+          </tr>
 
-          <div class="top-detail-item">
-            <span>{{ yxztFormate(detailInfo.yxzt) || "暂无数据" }}</span>
-            <label for="">运行状态</label>
-          </div>
-
-          <div class="top-detail-item">
-            <span>{{ detailInfo.cnjlyggl || "暂无数据" }}</span>
-            <label for="">储能交流有功功率</label>
-          </div>
-
-          <div class="top-detail-item">
-            <span>{{ detailInfo.temp || "暂无数据" }}</span>
-            <label for="">温度</label>
-          </div>
-
-          <div class="top-detail-item">
-            <span>{{ detailInfo.dtdy || "暂无数据" }}</span>
-            <label for="">单体最高/低电压</label>
-          </div>
-
-          <div class="top-detail-item">
-            <span>{{ detailInfo.xdy || "暂无数据" }}</span>
-            <label for="">相电压</label>
-          </div>
-
-          <div class="top-detail-item">
-            <span>{{ detailInfo.soc || "暂无数据" }}</span>
-            <label for="">SOC</label>
-          </div>
-        </div>
+          <tr>
+            <td rowspan="2" class="text-value">双碳贡献</td>
+            <td class="text-value">-- kg</td>
+            <td class="text-value">-- kg</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="text-label">减少CO2排放量</td>
+            <td class="text-label">减少SO2排放量</td>
+            <td></td>
+            <td></td>
+          </tr>
+        </table>
       </template>
     </div>
 
-    <div class="extra-info">
-      <!-- 设备不是EMS设备时 -->
-      <template v-if="deviceData && deviceType == 0">
-        <!-- S 设备实时数据 -->
-        <div class="top-title">
-          <span class="bar-title">设备实时数据</span>
-        </div>
-        <div class="deivice-data">
-          <el-row :gutter="20">
-            <el-col
-              :span="6"
-              v-for="(value, key, index) in deviceData"
-              :key="index"
-            >
-              <div class="top-item">
-                <div class="top-text">
-                  {{ labelFormat(key) }}
-                </div>
-                <div class="bottom-detail">
-                  <template v-if="$route.query.deviceType == 19">
-                    <template v-if="key == 'GeoLocation'">
-                      {{
-                        "经度：" +
-                          (value.Latitude || "暂无数据") +
-                          " 纬度：" +
-                          (value.Longitude || "暂无数据")
-                      }}
-                    </template>
-
-                    <template v-else-if="key != 'Switch1'">
-                      {{ value || value == "0" ? value : "-" }}
-                      <span v-if="!key.indexOf('Temp')">℃</span>
-                    </template>
-
-                    <template v-else>
-                      <el-switch
-                        v-model="deviceData[key]"
-                        active-color="#13ce66"
-                        inactive-color="#ff4949"
-                        :inactive-text="deviceData[key] == 0 ? '断开' : '闭合'"
-                        :active-value="1"
-                        :inactive-value="0"
-                        @change="switchChange($event, key)"
-                      >
-                      </el-switch>
-                    </template>
-                  </template>
-
-                  <template v-if="$route.query.deviceType == 18">
-                    <template
-                      v-if="
-                        key == 'PRSwitch' ||
-                          key == 'LSwitch' ||
-                          key == 'HTState' ||
-                          key == 'BeepState' ||
-                          key == 'FanState'
-                      "
-                    >
-                      {{ value == "0" ? "关" : "开" }}
-                    </template>
-
-                    <template v-else-if="key == 'GeoLocation'">
-                      {{
-                        "经度：" + value.Latitude + " 纬度：" + value.Longitude
-                      }}
-                    </template>
-
-                    <template v-else-if="key == 'BMSState'">
-                      {{ getLabelDictValue(value) }}
-                    </template>
-
-                    <template
-                      v-else-if="key != 'ContactorState' && key != 'BMSState'"
-                    >
-                      {{ value || value == "0" ? value : "-" }}
-                      <span v-if="!key.indexOf('Temp')">℃</span>
-                    </template>
-
-                    <template v-else>
-                      <el-switch
-                        v-model="deviceData[key]"
-                        active-color="#13ce66"
-                        inactive-color="#ff4949"
-                        :inactive-text="deviceData[key] == 0 ? '断开' : '闭合'"
-                        :active-value="1"
-                        :inactive-value="0"
-                        @change="switchChange($event, key)"
-                      >
-                      </el-switch>
-                    </template>
-                  </template>
-                </div>
-              </div>
-            </el-col>
-          </el-row>
-        </div>
-        <!-- E 设备实时数据 -->
-      </template>
-      <!-- 设备不是EMS设备时 -->
-
-      <!-- 设备是EMS设备时 -->
-      <template v-if="loadChart && peakChart && deviceType == 1">
-        <div class="top-title">
+    <template v-if="loadChart && peakChart && deviceType == 1">
+      <div class="info-dom" style="padding: 0">
+        <div class="top-title" style="padding: 20px 10px 10px">
           <span class="bar-title"> 24小时储能功率曲线 </span>
           <span>(数据更新时间: {{ detailInfo.updateTime }})</span>
         </div>
@@ -357,9 +306,87 @@
             :peakChart="peakChart"
           ></line-chart>
         </div>
-      </template>
-      <!-- 设备是EMS设备时 -->
-    </div>
+      </div>
+    </template>
+
+    <template v-if="$route.query.deviceType == 19">
+      <div class="info-dom" style="padding: 0">
+        <div class="top-title" style="padding: 20px 10px 10px">
+          <span class="bar-title"> 光储充24小时曲线 </span>
+        </div>
+        <div class="chart-wrapper"></div>
+      </div>
+    </template>
+
+    <!-- START EMS -->
+    <template v-if="$route.query.deviceType == 17">
+      <div class="info-dom" id="map-container"></div>
+
+      <div class="info-dom">
+        <div class="top-title">
+          <span class="bar-title">项目简介</span>
+        </div>
+        <div :style="{ textIndent: '2em' }">
+          ****台区配网智能储能项目于2021年11月3日部署在**位置，主要目的是为用户提供更可靠的电能供应，同时对末端电压偏差、三相不平衡和变压器过载进行治理。该项目上端变压器的容量为**kVA，储能容量为**kW/**kWh，主要工作模式为并网模式；项目图片为：
+        </div>
+      </div>
+
+      <div class="info-dom">
+        <table>
+          <tr>
+            <td rowspan="2" class="text-value">运维</td>
+            <td class="text-value">0731-86281319</td>
+            <td class="text-value">13974864753</td>
+            <td></td>
+            <td class="text-value">E32</td>
+          </tr>
+
+          <tr>
+            <td class="text-label">威克电力</td>
+            <td class="text-label">运维人微信</td>
+            <td class="text-label">购买人</td>
+            <td class="text-label">故障代码</td>
+          </tr>
+        </table>
+      </div>
+    </template>
+    <!-- END EMS -->
+
+    <!-- START 光储充微电网系统 -->
+    <template v-if="$route.query.deviceType == 19">
+      <div class="info-dom" id="map-container"></div>
+
+      <div class="info-dom">
+        <div class="top-title">
+          <span class="bar-title">项目简介</span>
+        </div>
+        <div :style="{ textIndent: '2em' }">
+           威克电力光储充微电网项目于2021年11月3日部署在**位置，主要目的是为用户提供更低的用电成本、更可靠的电能供应。该项目光伏装机量为**kW，储能容量为**kW/**kWh，主要工作模式为并网模式；项目图片为：
+        </div>
+      </div>
+
+      <div class="info-dom">
+        <table>
+          <tr>
+            <td rowspan="2" class="text-value">运维</td>
+            <td class="text-value">0731-86281319</td>
+            <td class="text-value">13974864753</td>
+            <td></td>
+            <td class="text-value">E32</td>
+          </tr>
+
+          <tr>
+            <td class="text-label">威克电力</td>
+            <td class="text-label">运维人微信</td>
+            <td class="text-label">购买人</td>
+            <td class="text-label">故障代码</td>
+          </tr>
+        </table>
+      </div>
+    </template>
+    <!-- END 光储充微电网系统 -->
+
+    <!-- START  -->
 
     <div class="back-bar">
       <el-button
@@ -488,6 +515,23 @@ export default {
         }
       }
     },
+    // 初始化地图
+    createMap(longitude, latitude) {
+      console.log("longitude", longitude);
+      console.log("latitude", latitude);
+      return new Promise(resolve => {
+        let map = new AMap.Map("map-container", {
+          zoom: 11, //级别
+          center: [Number(longitude), Number(latitude)], //中心点坐标
+          viewMode: "3D" //使用3D视图
+        });
+        new AMap.Marker({
+          position: [Number(longitude), Number(latitude)],
+          map: map
+        });
+        resolve();
+      });
+    },
     async getDetailInfo() {
       this.loading = true;
       this.$route.query.deviceType != 17 && (await this.getDiceDict());
@@ -520,6 +564,12 @@ export default {
                 saveObj[key] = deviceData[key];
               }
               this.deviceData = saveObj;
+              this.$nextTick(() => {
+                this.createMap(
+                  this.detailInfo.longitude,
+                  this.detailInfo.latitude
+                );
+              });
               this.deviceType = 0;
             } else if (deviceData && deviceData.loadChart) {
               this.deviceData = null;
@@ -527,6 +577,10 @@ export default {
                 this.loadChart = deviceData.loadChart;
                 this.peakChart = deviceData.peakChart;
                 this.detailInfo.updateTime = deviceData.updatetime;
+                this.createMap(
+                  this.detailInfo.longitude,
+                  this.detailInfo.latitude
+                );
               });
               this.deviceType = 1;
             } else {
@@ -679,6 +733,13 @@ export default {
   }
 }
 
+.info-dom {
+  background-color: #fff;
+  padding: 10px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
 ::v-deep .el-switch__label {
   &.is-active {
     color: black;
@@ -810,19 +871,6 @@ export default {
   }
 }
 
-table {
-  width: 100%;
-  border-left: 1px solid #dedede;
-  border-bottom: 1px solid #dedede;
-  border-collapse: collapse;
-  tr > td {
-    border-top: 1px solid #dedede;
-    border-right: 1px solid #dedede;
-    padding: 10px 0 10px 10px;
-    font-size: 14px;
-  }
-}
-
 .label {
   background-color: #f0f0f0;
   width: 180px;
@@ -859,5 +907,33 @@ table {
       // font-weight: normal !important;
     }
   }
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-right: 1px solid #dedede;
+  border-bottom: 1px solid #dedede;
+  td {
+    text-align: center;
+    padding: 8px 0;
+    border-left: 1px solid #dedede;
+    border-top: 1px solid #dedede;
+  }
+  .text-label {
+    color: #a3a3a3;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  .text-value {
+    color: #333;
+    font-size: 14px;
+    font-weight: bold;
+  }
+}
+
+#map-container {
+  width: 100%;
+  height: 300px;
 }
 </style>

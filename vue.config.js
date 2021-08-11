@@ -34,8 +34,8 @@ module.exports = {
     proxy: {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
-        target: `http://192.168.3.153:58080`,
-        // target: `http://120.25.120.118:58080`,
+        // target: `http://192.168.3.153:58080`,
+        target: `http://120.25.120.118:58080`,
         // target: `http://47.106.193.135:58080`, // 线上
         changeOrigin: true,
         pathRewrite: {
