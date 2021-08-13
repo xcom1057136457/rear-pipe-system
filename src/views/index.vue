@@ -57,6 +57,7 @@ import image2 from "@/assets/images/2.png";
 import image2_2 from "@/assets/images/2-2.png";
 import image3 from "@/assets/images/3.png";
 import image3_3 from "@/assets/images/3-3.png";
+import { getMapList } from "@/api/map"
 export default {
   name: "Dashboard",
   data() {
@@ -274,52 +275,52 @@ export default {
 
                 <div class="info-item">
                   <span>设备名称：</span>
-                  <span>台区</span>
+                  <span>${lnglats[i].deviceName}</span>
                 </div>
 
                 <div class="info-item">
                   <span>位置信息：</span>
-                  <span>实际位置，到区或者**路</span>
+                  <span>${lnglats[i].geoaddress || '--'}</span>
                 </div>
 
                 <div class="info-item">
                   <span>在线时间：</span>
-                  <span>---</span>
+                  <span>${lnglats[i].onlineTime || '--'}</span>
                 </div>
 
                 <div class="info-item">
                   <span>运行状态：</span>
-                  <span>在线</span>
+                  <span>${lnglats[i].yxzt || '--'}</span>
                 </div>
 
                 <div class="info-item">
                   <span>负载需求：</span>
-                  <span>115 kW</span>
+                  <span>${lnglats[i].fzxq || '--'}</span>
                 </div>
 
                 <div class="info-item">
                   <span>电网供电：</span>
-                  <span>15 kW</span>
+                  <span>${lnglats[i].dwgd || '--'}</span>
                 </div>
 
                 <div class="info-item">
                   <span>光伏发电：</span>
-                  <span>75 kW</span>
+                  <span>${lnglats[i].gffd || '--'}</span>
                 </div>
 
                 <div class="info-item">
                   <span>储能设备：</span>
-                  <span>25 kW (注意：放电为+，充电为-）</span>
+                  <span>${lnglats[i].cnsb || '--'}</span>
                 </div>
 
                 <div class="info-item">
                   <span>储能状态：</span>
-                  <span>放电</span>
+                  <span>${lnglats[i].yxzt || '--'}</span>
                 </div>
 
                 <div class="info-item">
                   <span>电池电量:</span>
-                  <span>75%</span>
+                  <span>${lnglats[i].soc || '--'}</span>
                 </div>
 
               </div>
@@ -355,12 +356,12 @@ export default {
 
                 <div class="info-item">
                   <span>额定功率：</span>
-                  <span>2kW</span>
+                  <span>${lnglats[i].kva || '--'}</span>
                 </div>
 
                 <div class="info-item">
                   <span>位置信息：</span>
-                  <span>实际位置，到区或者**路</span>
+                  <span>${lnglats[i].geoaddress || '--'}</span>
                 </div>
 
                 <div class="info-item">
@@ -375,7 +376,7 @@ export default {
 
                 <div class="info-item">
                   <span>电池电量：</span>
-                  <span>--</span>
+                  <span>${lnglats[i].soc || '--'}</span>
                 </div>
 
               </div>
@@ -406,12 +407,12 @@ export default {
 
                 <div class="info-item">
                   <span>额定功率：</span>
-                  <span>--</span>
+                  <span>${ lnglats[i].kva || '--' }</span>
                 </div>
 
                 <div class="info-item">
                   <span>位置信息：</span>
-                  <span>实际位置，到区或者**路</span>
+                  <span>${ lnglats[i].geoaddress || '--' }</span>
                 </div>
 
                 <div class="info-item">
@@ -426,27 +427,27 @@ export default {
 
                 <div class="info-item">
                   <span>负载需求：</span>
-                  <span>-- kW</span>
+                  <span>${ lnglats[i].fzxq || '--' } kW</span>
                 </div>
 
                 <div class="info-item">
                   <span>电网供电：</span>
-                  <span>-- kW</span>
+                  <span>${lnglats[i].dwgd || '--'} kW</span>
                 </div>
 
                 <div class="info-item">
                   <span>储能设备：</span>
-                  <span>'-25 kW   （注意：放电为+，充电为-）</span>
+                  <span>${lnglats[i].cnsb || '--'}</span>
                 </div>
 
                 <div class="info-item">
                   <span>储能状态：</span>
-                  <span>充电</span>
+                  <span>${lnglats[i].yxzt || '--'}</span>
                 </div>
 
                 <div class="info-item">
                   <span>电池电量:</span>
-                  <span>75%</span>
+                  <span>${ lnglats[i].soc || '--' }</span>
                 </div>
               </div>
 
@@ -560,7 +561,7 @@ export default {
     // 获取设备数据
     getAllDeviceHandler() {
       return new Promise(async resolve => {
-        getDeviceList({
+        getMapList({
           pageNum: 1,
           pageSize: 100000,
           ...this.searchParams,
